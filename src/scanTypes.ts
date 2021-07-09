@@ -15,7 +15,7 @@ export type strictQuant = "long" | "short";
 export type vowel = "a" | "e" | "i" | "o" | "u" | "A" | "E" | "I" | "O" | "U";
 export type quantity = "undefined" | "long" | "short" | "break";
 
-export type scannedLine = {
+export type scannedLineType = {
   line: string;
   raws: string[];
   full: string[][];

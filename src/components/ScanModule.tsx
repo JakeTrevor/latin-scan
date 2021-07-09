@@ -1,16 +1,17 @@
 import React from "react";
 import { useState } from "react";
-import type { scannedLine } from "src/utils";
 import { ScannedLine } from "./ScannedLine";
-
+import { scanLine } from "../scan";
+import type { setting } from "../scanTypes";
 export let ScanModule = () => {
   let [text, setText] = useState("");
   let lines = text.split("\n");
+  let options: setting = { meter: "hex" };
   return (
     <div>
       <textarea value={text} onChange={(e) => setText(e.target.value)} />
       {lines.map((each) => {
-        return <ScannedLine line={tester(each)} />;
+        return <ScannedLine line={scanLine(each, options)} />;
       })}
     </div>
   );

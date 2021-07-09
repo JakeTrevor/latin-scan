@@ -2,9 +2,10 @@
 import type {
   metaLine,
   quantity,
-  scannedLine,
+  scannedLineType,
   setting,
   sylMap,
+  vowel,
 } from "./scanTypes";
 import {
   expressions,
@@ -22,20 +23,19 @@ import {
  * wrapper takes two arguments:
  * @param {string} text - a list of lines to be scanned
  * @param {settings} settings - special object that details the specifics of the scan
- * @returns {scannedLine}
+ * @returns {scannedLineType}
  */
 export let ScanParagraph = (text: string, settings: setting) => {
   let lines = text.split("\n");
-  let done: scannedLine[] = [];
+  let done: scannedLineType[] = [];
   for (let line of lines) {
     done.push(scanLine(line, settings));
   }
   return done;
 };
 
-let scanLine = (line: string, settings: setting): scannedLine => {
-  let output: scannedLine;
-  output.line = line;
+export let scanLine = (line: string, settings: setting): scannedLineType => {
+  let output: scannedLineType = { line: line, raws: [], full: [] }; //initialize output object
 
   let meta: metaLine = undress(line);
   let raws = prescan(meta.line);
@@ -90,7 +90,7 @@ let undress = (line: string): metaLine => {
  * @returns {sylMap[]}
  */
 let prescan = (line: string): sylMap[] => {
-  let quants: sylMap;
+  let quants: sylMap = {};
   line = line.toLowerCase();
 
   //start by removing fake vowels from the text; replaced with @; this never otherwise appears
@@ -115,14 +115,14 @@ let prescan = (line: string): sylMap[] => {
   ); //find cases of vowel adjacency where no diphthong is formed.
 
   //clean up into three variables:
-  let spondees = [];
+  let spondees: number[] = [];
   spondees = spondees.concat(longByPos);
   spondees = spondees.concat(diphs);
 
-  let dactyls = [];
+  let dactyls: number[] = [];
   dactyls = dactyls.concat(adjacents);
 
-  let fakes = [];
+  let fakes: number[] = [];
   fakes = fakes.concat(diphs2);
   fakes = fakes.concat(elide1);
   fakes = fakes.concat(elide2);
@@ -170,16 +170,49 @@ let prescan = (line: string): sylMap[] => {
 };
 
 let postScan = (meta: metaLine, markings: sylMap): string => {
-  let line = meta.line;
+  let line: string[] = Array.from(meta.line); //we want to use array.splice to inset our characters, so we need our string to be an array
+  let punctuation = meta.markup;
   let breaks: number[] = [];
-  for (let each of Object.keys(markings)) {
+  let positions = Object.keys(markings).map((el) => {
+    //positions currently holds the positions of valid vowels.
+    return parseInt(el);
+  });
+  for (let each of positions) {
     if (markings[each] === "break") {
-      breaks.push(parseInt(each));
+      breaks.push(each);
     } else {
-      //insert the mark
+      line.splice(each, 1, getLetter(markings[each], line[each] as vowel));
     }
   }
-  return line;
+  //at this point, the string has foot markings, but no punctuation.
+  //time to add punctuation back...
+  positions = Object.keys(punctuation).map((el) => {
+    //positions now holds the positions of punctuation marks
+    return parseInt(el);
+  });
+  let pointer = 0;
+  for (let each of positions) {
+    if (pointer === breaks.length) {
+      break;
+    } else if (breaks[pointer] > each) {
+      pointer++;
+    }
+    for (let i = pointer; i < breaks.length; i++) {
+      breaks[i]++;
+    }
+  }
+
+  for (let i = 0; i < breaks.length; i++) {
+    if (breaks[i] in punctuation) {
+      breaks[i]++;
+    }
+  }
+
+  line = insertPunctuation(line, punctuation, positions); //this inserts the punctuation into the line
+  for (let each of breaks) {
+    line.splice(each, 0, "|");
+  }
+  return line.join("");
 };
 // let { Line, scans, quants, markup } = carrier;
 // let line = Array.from(Line);
@@ -278,7 +311,7 @@ let hexScan = (map: sylMap): quantity[][] => {
   }
   //positions do not matter to the analyser, so we
   let quantValues = Object.values(map); //extract quantities array
-  let meters: quantity[][];
+  let meters: quantity[][] = [];
 
   //now, calculate the number of spondaic syllables
   let vowels = quantValues.length;
@@ -319,7 +352,7 @@ let hexScan = (map: sylMap): quantity[][] => {
 };
 
 function arrToQuantity(arr: number[][]): quantity[][] {
-  let output: quantity[][];
+  let output: quantity[][] = [];
   for (let each of arr) {
     let temp = each.map((el) => {
       //first we map each 0 or 1 to an array of quantities.
@@ -365,3 +398,14 @@ function marryUp(quants: quantity[], positions: number[]): sylMap {
   }
   return output;
 }
+
+let insertPunctuation = (
+  line: string[],
+  markup: Record<number, string>,
+  positions: number[]
+): string[] => {
+  for (let each of positions) {
+    line.splice(each, 0, markup[each]);
+  }
+  return line;
+};
