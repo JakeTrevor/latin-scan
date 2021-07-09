@@ -38,7 +38,7 @@ export let scanLine = (line: string, settings: setting): scannedLineType => {
   let output: scannedLineType = { line: line, raws: [], full: [] }; //initialize output object
 
   let meta: metaLine = undress(line);
-  let raws = prescan(meta.line);
+  let raws = preScan(meta.line);
   let dressedRaws: string[] = [];
   for (let each of raws) {
     dressedRaws.push(postScan(meta, each));
@@ -75,7 +75,7 @@ export let scanLine = (line: string, settings: setting): scannedLineType => {
  * @param {string} line
  * @returns {metaLine}
  */
-let undress = (line: string): metaLine => {
+export let undress = (line: string): metaLine => {
   let markup = mapFind(line, expressions["punc"]);
   line = line.replace(expressions["punc"], "");
   return { line: line, markup: markup };
@@ -89,7 +89,7 @@ let undress = (line: string): metaLine => {
  * @param {string} line - the line being preped.
  * @returns {sylMap[]}
  */
-let prescan = (line: string): sylMap[] => {
+export let preScan = (line: string): sylMap[] => {
   let quants: sylMap = {};
   line = line.toLowerCase();
 
@@ -111,7 +111,7 @@ let prescan = (line: string): sylMap[] => {
   let maybeDiphs = find(line, expressions["maybeDiphthong"]); //look for "eu" formations. these are weird and are handled later.
   let adjacents = find(line, expressions["doubleVowel"]);
   adjacents = adjacents.filter(
-    (pos) => !diphs.includes(pos) || !maybeDiphs.includes(pos)
+    (pos) => !(diphs.includes(pos) || maybeDiphs.includes(pos))
   ); //find cases of vowel adjacency where no diphthong is formed.
 
   //clean up into three variables:
@@ -169,7 +169,7 @@ let prescan = (line: string): sylMap[] => {
   return outputArr;
 };
 
-let postScan = (meta: metaLine, markings: sylMap): string => {
+export let postScan = (meta: metaLine, markings: sylMap): string => {
   let line: string[] = Array.from(meta.line); //we want to use array.splice to inset our characters, so we need our string to be an array
   let punctuation = meta.markup;
   let breaks: number[] = [];
@@ -208,71 +208,12 @@ let postScan = (meta: metaLine, markings: sylMap): string => {
     }
   }
 
-  line = insertPunctuation(line, punctuation, positions); //this inserts the punctuation into the line
+  line = insertPunctuation(line, punctuation); //this inserts the punctuation into the line
   for (let each of breaks) {
     line.splice(each, 0, "|");
   }
   return line.join("");
 };
-// let { Line, scans, quants, markup } = carrier;
-// let line = Array.from(Line);
-// let prints = [];
-// if (scans.length === 0) {
-//   scans = [];
-//   prints.push(
-//     "No scans fit this line, without breaking a rule. The Natural quantities are:"
-//   );
-//   scans.push(Object.values(quants));
-// } else {
-//   quants = Object.keys(quants);
-
-//   for (let each of scans) {
-//     let temp = Array.from(line);
-//     let pointer = 0;
-//     let breaks = [];
-//     for (let vowels of each) {
-//       if (vowels === 3) {
-//         let prev = parseInt(quants[pointer - 1]);
-//         let space =
-//           line.slice(quants[pointer - 1], quants[pointer]).indexOf(" ") - 1;
-//         space = space < 0 ? 0 : space;
-
-//         let dip = expressions["diphthongs"].test(
-//           line.slice(prev, prev + 2).join("")
-//         )
-//           ? 1
-//           : 0;
-
-//         space = space | dip;
-//         space = space;
-
-//         breaks.push(parseInt(quants[pointer - 1]) + space);
-//       } else {
-//         let letter = getLetter(vowels, temp[quants[pointer]]);
-//         temp.splice(quants[pointer], 1, letter);
-//         pointer++;
-//       }
-//     }
-//     for (let each2 of breaks) {
-//       markup[each2] = "|";
-//     }
-//     if (Object.values(markup).includes("|")) {
-//       pointer = 0;
-//       for (let position of Object.keys(markup)) {
-//         temp.splice(parseInt(position) + 1 + pointer, 0, markup[position]);
-//         pointer++;
-//       }
-//     } else {
-//       for (let position of Object.keys(markup)) {
-//         temp.splice(parseInt(position) + 1, 0, markup[position]);
-//       }
-//     }
-
-//     prints.push(temp.join(""));
-//   }
-// }
-// carrier["prints"] = prints;
-// return carrier;
 
 /**
  * hexScan matches the possible scans to the known quantities
@@ -280,7 +221,7 @@ let postScan = (meta: metaLine, markings: sylMap): string => {
  * each object containing
  * @param {Object} quants
  */
-let hexScan = (map: sylMap): quantity[][] => {
+export let hexScan = (map: sylMap): quantity[][] => {
   /**
    * you tell it how many spondees there are
    * and it generates all the possible combinations for that line
@@ -351,7 +292,12 @@ let hexScan = (map: sylMap): quantity[][] => {
   return meters;
 };
 
-function arrToQuantity(arr: number[][]): quantity[][] {
+/** function that takes a list of permutator outputs (4 binary arrays) and returns a list of complete quantity descriptions; 1 for each arr in the input.
+ *
+ * @param { number[][] } arr
+ * @returns { quantity[][] }
+ */
+export function arrToQuantity(arr: number[][]): quantity[][] {
   let output: quantity[][] = [];
   for (let each of arr) {
     let temp = each.map((el) => {
@@ -382,7 +328,13 @@ function arrToQuantity(arr: number[][]): quantity[][] {
   return output;
 }
 
-function marryUp(quants: quantity[], positions: number[]): sylMap {
+/** utility function that marries up a list of quantities with a list of positions into a record/dictionary
+ *
+ * @param { quantity[] } quants
+ * @param { number [] } positions
+ * @returns { sylMap }
+ */
+export function marryUp(quants: quantity[], positions: number[]): sylMap {
   let output: sylMap = {};
   let breaks = 0;
   for (let i = 0; i < quants.length; i++) {
@@ -394,16 +346,16 @@ function marryUp(quants: quantity[], positions: number[]): sylMap {
     } else {
       curPos = positions[i - breaks];
     }
-    output[curPos];
+    output[curPos] = curQuant;
   }
   return output;
 }
 
-let insertPunctuation = (
+export let insertPunctuation = (
   line: string[],
-  markup: Record<number, string>,
-  positions: number[]
+  markup: Record<number, string>
 ): string[] => {
+  let positions = Object.keys(markup).map((el) => parseInt(el));
   for (let each of positions) {
     line.splice(each, 0, markup[each]);
   }
