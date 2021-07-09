@@ -1,27 +1,19 @@
 //scan.ts
+import type {
+  metaLine,
+  quantity,
+  scannedLine,
+  setting,
+  sylMap,
+} from "./scanTypes";
 import {
   expressions,
   find,
   getLetter,
   mapFind,
   nBitCombos,
-  quantity,
-  scannedLine,
   sum,
 } from "./utils";
-
-type metaLine = {
-  line: string;
-  markup: Record<number, string>;
-};
-
-type sylMap = Record<number, quantity>;
-
-type meter = "hex" | "pen" | "elegaic";
-
-type settings = {
-  meter: meter;
-};
 
 //*main functions
 /**
@@ -32,7 +24,7 @@ type settings = {
  * @param {settings} settings - special object that details the specifics of the scan
  * @returns {scannedLine}
  */
-export let ScanParagraph = (text: string, settings: settings) => {
+export let ScanParagraph = (text: string, settings: setting) => {
   let lines = text.split("\n");
   let done: scannedLine[] = [];
   for (let line of lines) {
@@ -41,7 +33,7 @@ export let ScanParagraph = (text: string, settings: settings) => {
   return done;
 };
 
-let scanLine = (line: string, settings: settings): scannedLine => {
+let scanLine = (line: string, settings: setting): scannedLine => {
   let output: scannedLine;
   output.line = line;
 
@@ -358,7 +350,7 @@ function arrToQuantity(arr: number[][]): quantity[][] {
 }
 
 function marryUp(quants: quantity[], positions: number[]): sylMap {
-  let output: sylMap;
+  let output: sylMap = {};
   let breaks = 0;
   for (let i = 0; i < quants.length; i++) {
     let curQuant = quants[i];

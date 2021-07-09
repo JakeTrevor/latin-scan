@@ -17,5 +17,6 @@
     "noFallthroughCasesInSwitch": true,
     "lib": ["dom", "dom.iterable", "esnext"],
     "isolatedModules": true
-  }
+  },
+  "include": ["src"]
 }

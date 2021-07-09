@@ -1,3 +1,5 @@
+import type { vowel, quantity, strictQuant } from "./scanTypes";
+
 //regex expressions for constants to do with latin lanaguge
 export const expressions = {
   vowels: /[aeiouy]/g,
@@ -15,7 +17,6 @@ export const expressions = {
 };
 
 //object that contains the alternate character set for the vowels
-
 export const alts = {
   a: {
     long: "ā",
@@ -47,16 +48,6 @@ export const alts = {
     short: "y̌",
   },
   Y: { long: "Ȳ", short: "Y̌" },
-};
-
-type strictQuant = "long" | "short";
-type vowel = "a" | "e" | "i" | "o" | "u" | "A" | "E" | "I" | "O" | "U";
-export type quantity = "undefined" | "long" | "short" | "break";
-
-export type scannedLine = {
-  line: string;
-  raws: string[];
-  full: string[][];
 };
 
 //*busywork functons
