@@ -1,0 +1,375 @@
+//scan.ts
+import {
+  expressions,
+  find,
+  getLetter,
+  mapFind,
+  nBitCombos,
+  quantity,
+  scannedLine,
+  sum,
+} from "./utils";
+
+type metaLine = {
+  line: string;
+  markup: Record<number, string>;
+};
+
+type sylMap = Record<number, quantity>;
+
+type meter = "hex" | "pen" | "elegaic";
+
+type settings = {
+  meter: meter;
+};
+
+//*main functions
+/**
+ * The wrapper function is the interface for scanning lines with the scan algorithm
+ * returns a list of lists; each sublist contains the origional line and the possible scans for that line
+ * wrapper takes two arguments:
+ * @param {string} text - a list of lines to be scanned
+ * @param {settings} settings - special object that details the specifics of the scan
+ * @returns {scannedLine}
+ */
+export let ScanParagraph = (text: string, settings: settings) => {
+  let lines = text.split("\n");
+  let done: scannedLine[] = [];
+  for (let line of lines) {
+    done.push(scanLine(line, settings));
+  }
+  return done;
+};
+
+let scanLine = (line: string, settings: settings): scannedLine => {
+  let output: scannedLine;
+  output.line = line;
+
+  let meta: metaLine = undress(line);
+  let raws = prescan(meta.line);
+  let dressedRaws: string[] = [];
+  for (let each of raws) {
+    dressedRaws.push(postScan(meta, each));
+  }
+  output.raws = dressedRaws;
+
+  //  now we would switch on settings.meter
+  let toDress: sylMap[][] = [];
+  switch (settings.meter) {
+    case "hex":
+      for (let each of raws) {
+        let quantityScans = hexScan(each);
+        let pos = Object.keys(each).map((elt) => {
+          return parseInt(elt);
+        });
+        let scans = quantityScans.map((elt) => {
+          return marryUp(elt, pos);
+        });
+        toDress.push(scans);
+      }
+  }
+
+  let done: string[][] = toDress.map((rawGroup) => {
+    return rawGroup.map((raw) => {
+      return postScan(meta, raw);
+    });
+  });
+  output.full = done;
+  return output;
+};
+
+/** undresses (removes punctuation from) a string
+ *
+ * @param {string} line
+ * @returns {metaLine}
+ */
+let undress = (line: string): metaLine => {
+  let markup = mapFind(line, expressions["punc"]);
+  line = line.replace(expressions["punc"], "");
+  return { line: line, markup: markup };
+};
+
+/**
+ * prescan takes a single line as input
+ * it does the work common to all scan implementations, such as finding the vowels,
+ * assining preliminary quantity, etc.
+ * returns an object mapping position of a vowel to its quantity.
+ * @param {string} line - the line being preped.
+ * @returns {sylMap[]}
+ */
+let prescan = (line: string): sylMap[] => {
+  let quants: sylMap;
+  line = line.toLowerCase();
+
+  //start by removing fake vowels from the text; replaced with @; this never otherwise appears
+  line = line.replace(expressions["silent1"], " @y");
+  line = line.replace(expressions["silent2"], "q@");
+
+  let positions = find(line, expressions["vowels"]); //a list of vowel positions
+
+  //all the things to be removed
+  let elide1 = find(line, expressions["ellisionFirstChar"]); //ellisions on the first word
+  let elide2 = find(line, expressions["ellisionLastChar"]); //elisions on the second word
+  elide2 = elide2.map((x) => positions[positions.indexOf(x) + 1]); //this line changes the pos. so they refer to the first letter of the second word.
+
+  //now we look for known quantity.
+  let longByPos = find(line, expressions["twoCons"]);
+  let diphs = find(line, expressions["diphthongs"]);
+  let diphs2 = diphs.map((x) => x + 1); //the second vowel of a dipthong, to be removed
+  let maybeDiphs = find(line, expressions["maybeDiphthong"]); //look for "eu" formations. these are weird and are handled later.
+  let adjacents = find(line, expressions["doubleVowel"]);
+  adjacents = adjacents.filter(
+    (pos) => !diphs.includes(pos) || !maybeDiphs.includes(pos)
+  ); //find cases of vowel adjacency where no diphthong is formed.
+
+  //clean up into three variables:
+  let spondees = [];
+  spondees = spondees.concat(longByPos);
+  spondees = spondees.concat(diphs);
+
+  let dactyls = [];
+  dactyls = dactyls.concat(adjacents);
+
+  let fakes = [];
+  fakes = fakes.concat(diphs2);
+  fakes = fakes.concat(elide1);
+  fakes = fakes.concat(elide2);
+
+  positions = positions.filter((x) => !fakes.includes(x));
+  spondees = spondees.filter((x) => !fakes.includes(x));
+  dactyls = dactyls.filter((x) => !fakes.includes(x));
+
+  //setup the quants dict. mapping position to a default value of 0
+  for (let position of positions) {
+    quants[position] = "undefined";
+  }
+
+  //write in the spondees and dactyls
+  for (let each of spondees) {
+    quants[each] = "long";
+  }
+  for (let each of dactyls) {
+    quants[each] = "short";
+  }
+
+  //now to handle the maybe Dipthongs
+
+  let outputArr: sylMap[];
+  if (maybeDiphs.length !== 0) {
+    //there is an instance of "eu"
+    let combos = nBitCombos(maybeDiphs.length);
+    outputArr = Array(combos.length).fill(quants);
+    for (let i = 0; i < combos.length; i++) {
+      for (let j = 0; j < maybeDiphs.length; j++) {
+        if (combos[i][j] === "0") {
+          outputArr[i][maybeDiphs[j]] = "long";
+        } else {
+          outputArr[i][maybeDiphs[j]] = "short";
+          outputArr[i][maybeDiphs[j] + 1] = "undefined";
+        }
+      }
+    }
+  } else {
+    outputArr = [quants];
+  }
+  //i feel so gross....
+
+  return outputArr;
+};
+
+let postScan = (meta: metaLine, markings: sylMap): string => {
+  let line = meta.line;
+  let breaks: number[] = [];
+  for (let each of Object.keys(markings)) {
+    if (markings[each] === "break") {
+      breaks.push(parseInt(each));
+    } else {
+      //insert the mark
+    }
+  }
+  return line;
+};
+// let { Line, scans, quants, markup } = carrier;
+// let line = Array.from(Line);
+// let prints = [];
+// if (scans.length === 0) {
+//   scans = [];
+//   prints.push(
+//     "No scans fit this line, without breaking a rule. The Natural quantities are:"
+//   );
+//   scans.push(Object.values(quants));
+// } else {
+//   quants = Object.keys(quants);
+
+//   for (let each of scans) {
+//     let temp = Array.from(line);
+//     let pointer = 0;
+//     let breaks = [];
+//     for (let vowels of each) {
+//       if (vowels === 3) {
+//         let prev = parseInt(quants[pointer - 1]);
+//         let space =
+//           line.slice(quants[pointer - 1], quants[pointer]).indexOf(" ") - 1;
+//         space = space < 0 ? 0 : space;
+
+//         let dip = expressions["diphthongs"].test(
+//           line.slice(prev, prev + 2).join("")
+//         )
+//           ? 1
+//           : 0;
+
+//         space = space | dip;
+//         space = space;
+
+//         breaks.push(parseInt(quants[pointer - 1]) + space);
+//       } else {
+//         let letter = getLetter(vowels, temp[quants[pointer]]);
+//         temp.splice(quants[pointer], 1, letter);
+//         pointer++;
+//       }
+//     }
+//     for (let each2 of breaks) {
+//       markup[each2] = "|";
+//     }
+//     if (Object.values(markup).includes("|")) {
+//       pointer = 0;
+//       for (let position of Object.keys(markup)) {
+//         temp.splice(parseInt(position) + 1 + pointer, 0, markup[position]);
+//         pointer++;
+//       }
+//     } else {
+//       for (let position of Object.keys(markup)) {
+//         temp.splice(parseInt(position) + 1, 0, markup[position]);
+//       }
+//     }
+
+//     prints.push(temp.join(""));
+//   }
+// }
+// carrier["prints"] = prints;
+// return carrier;
+
+/**
+ * hexScan matches the possible scans to the known quantities
+ * returns an array of objects
+ * each object containing
+ * @param {Object} quants
+ */
+let hexScan = (map: sylMap): quantity[][] => {
+  /**
+   * you tell it how many spondees there are
+   * and it generates all the possible combinations for that line
+   * @param {Integer} spondees
+   */
+  function generateHexCombos(dactyls: number): number[][] {
+    let combos = [];
+    let temp = [0, 0, 0, 0];
+
+    if (dactyls === 0) {
+      combos.push(Array.from(temp));
+    }
+    while (sum(temp) < 4) {
+      temp[0]++;
+
+      for (let count = 0; count < 3; count++) {
+        if (temp[count] > 1) {
+          temp[count] = 0;
+          temp[count + 1]++;
+        }
+      }
+
+      if (sum(temp) === dactyls) {
+        combos.push(Array.from(temp));
+      }
+    }
+    return combos;
+  }
+  //positions do not matter to the analyser, so we
+  let quantValues = Object.values(map); //extract quantities array
+  let meters: quantity[][];
+
+  //now, calculate the number of spondaic syllables
+  let vowels = quantValues.length;
+  let dactyls = vowels - 13;
+
+  //handle line too long or short cases
+  if (dactyls > 4) {
+    console.log("too long!");
+    return meters;
+  } else if (dactyls < 0) {
+    console.log("too short!");
+    return meters;
+  }
+
+  meters = arrToQuantity(generateHexCombos(dactyls));
+  //create a copy of the meters without breaks
+  let clone = meters.map((each) => {
+    return each.filter((elt) => {
+      elt != "break";
+    });
+  });
+
+  let curQuant: quantity;
+  for (let vowelCounter = 0; vowelCounter < vowels; vowelCounter++) {
+    curQuant = quantValues[vowelCounter];
+    if (curQuant !== "undefined") {
+      for (let meterCounter = 0; meterCounter < meters.length; meterCounter++) {
+        if (clone[meterCounter][vowelCounter] !== curQuant) {
+          clone.splice(meterCounter, 1);
+          meters.splice(meterCounter, 1);
+          meterCounter--;
+        }
+      }
+    }
+  }
+
+  return meters;
+};
+
+function arrToQuantity(arr: number[][]): quantity[][] {
+  let output: quantity[][];
+  for (let each of arr) {
+    let temp = each.map((el) => {
+      //first we map each 0 or 1 to an array of quantities.
+      return el === 0 //if the element is 0, then the foot is long
+        ? (["long", "long", "break"] as quantity[]) //so insert the long foot template
+        : (["long", "short", "short", "break"] as quantity[]); //else, insert the short foot template
+    });
+
+    //we have now an array of quantity arrays; (quantity[][])
+    temp.push([
+      "long",
+      "short",
+      "short",
+      "break",
+      "long",
+      "undefined",
+    ] as quantity[]);
+
+    //we then flatten this by concatenating all the inner lists
+    //resulting in a quant[]
+    let temp2 = temp.reduce((acc, val) => {
+      return acc.concat(val);
+    });
+
+    output.push(temp2); //push this to the list of meters
+  }
+  return output;
+}
+
+function marryUp(quants: quantity[], positions: number[]): sylMap {
+  let output: sylMap;
+  let breaks = 0;
+  for (let i = 0; i < quants.length; i++) {
+    let curQuant = quants[i];
+    let curPos: number;
+    if (curQuant === "break") {
+      breaks++;
+      curPos = positions[i - breaks] + 1;
+    } else {
+      curPos = positions[i - breaks];
+    }
+    output[curPos];
+  }
+  return output;
+}
