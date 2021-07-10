@@ -1,3 +1,4 @@
+import "../index.css";
 import * as React from "react";
 import { useState } from "react";
 import type { scannedLineType } from "../scanTypes";
@@ -20,7 +21,7 @@ export let ScannedLine = (props: { line: scannedLineType }) => {
   };
 
   return (
-    <div>
+    <div className="scannedLine">
       <text>{selection}</text>
       {options.map((elt) => (
         <text
