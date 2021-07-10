@@ -1,5 +1,10 @@
 import React from "react";
+import "../index.css";
 
 export let Toolbar = () => {
-  return <h1>nothing for now...</h1>;
+  return (
+    <nav className="toolbar">
+      <h1>nothing for now...</h1>
+    </nav>
+  );
 };

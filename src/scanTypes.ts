@@ -4,6 +4,7 @@ export type metaLine = {
 };
 
 export type sylMap = Record<number, quantity>;
+export type generalRecord = Record<number, string>;
 
 export type meter = "hex" | "pen" | "elegaic";
 
@@ -15,7 +16,7 @@ export type strictQuant = "long" | "short";
 export type vowel = "a" | "e" | "i" | "o" | "u" | "A" | "E" | "I" | "O" | "U";
 export type quantity = "undefined" | "long" | "short" | "break";
 
-export type scannedLine = {
+export type scannedLineType = {
   line: string;
   raws: string[];
   full: string[][];

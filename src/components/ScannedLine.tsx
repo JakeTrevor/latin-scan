@@ -1,9 +1,10 @@
+import "../index.css";
 import * as React from "react";
 import { useState } from "react";
-import type { scannedLine } from "../utils";
+import type { scannedLineType } from "../scanTypes";
 
-export let ScannedLine = (props: { line: scannedLine }) => {
-  let line: scannedLine = props.line;
+export let ScannedLine = (props: { line: scannedLineType }) => {
+  let line: scannedLineType = props.line;
   let options = [line.line];
   for (let i = 0; i < line.raws.length; i++) {
     options.push(line.raws[i]);
@@ -20,7 +21,7 @@ export let ScannedLine = (props: { line: scannedLine }) => {
   };
 
   return (
-    <div>
+    <div className="scannedLine">
       <text>{selection}</text>
       {options.map((elt) => (
         <text

@@ -1,7 +1,9 @@
-import type { vowel, quantity, strictQuant } from "./scanTypes";
+import type { vowel, quantity, strictQuant, setting } from "./scanTypes";
+
+export let PresetOptions: setting = { meter: "hex" };
 
 //regex expressions for constants to do with latin lanaguge
-export const expressions = {
+export default {
   vowels: /[aeiouy]/g,
   diphthongs: /(ae)|(au)|(ei)|(oe)|(oi)|(ui)/g,
   maybeDiphthong: /(eu)/g,
