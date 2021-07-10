@@ -7,8 +7,7 @@ import type {
   sylMap,
   vowel,
 } from "./scanTypes";
-import {
-  expressions,
+import expressions, {
   find,
   getLetter,
   mapFind,
@@ -203,6 +202,7 @@ export let postScan = (meta: metaLine, markings: sylMap): string => {
   }
 
   for (let i = 0; i < breaks.length; i++) {
+    breaks[i] += i;
     if (breaks[i] in punctuation) {
       breaks[i]++;
     }
@@ -271,16 +271,17 @@ export let hexScan = (map: sylMap): quantity[][] => {
   //create a copy of the meters without breaks
   let clone = meters.map((each) => {
     return each.filter((elt) => {
-      elt != "break";
+      return elt !== "break";
     });
   });
-
   let curQuant: quantity;
   for (let vowelCounter = 0; vowelCounter < vowels; vowelCounter++) {
     curQuant = quantValues[vowelCounter];
     if (curQuant !== "undefined") {
       for (let meterCounter = 0; meterCounter < meters.length; meterCounter++) {
-        if (clone[meterCounter][vowelCounter] !== curQuant) {
+        if (clone[meterCounter][vowelCounter] === "undefined") {
+          // do nothing.
+        } else if (clone[meterCounter][vowelCounter] !== curQuant) {
           clone.splice(meterCounter, 1);
           meters.splice(meterCounter, 1);
           meterCounter--;

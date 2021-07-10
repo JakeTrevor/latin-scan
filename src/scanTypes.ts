@@ -4,6 +4,7 @@ export type metaLine = {
 };
 
 export type sylMap = Record<number, quantity>;
+export type generalRecord = Record<number, string>;
 
 export type meter = "hex" | "pen" | "elegaic";
 

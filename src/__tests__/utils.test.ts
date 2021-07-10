@@ -1,7 +1,6 @@
 //*all pass!
 
-import {
-  expressions,
+import expressions, {
   find,
   mapFind,
   nBitCombos,

@@ -1,4 +1,10 @@
-import type { metaLine, quantity, sylMap } from "src/scanTypes";
+import type {
+  metaLine,
+  quantity,
+  scannedLineType,
+  sylMap,
+} from "src/scanTypes";
+import { PresetOptions } from "../utils";
 import {
   ScanParagraph,
   scanLine,
@@ -13,10 +19,67 @@ import {
 
 describe("scan algorithm functionality testing", () => {
   //test if each of the functions in scan.ts *works* in some case
+  //none of these are proper stress tests, which would look at edge cases.
+
+  //some vairbles used throughout the testing:
+  let AeneidLn1 = "Arma virumque cano Troiae qui primus ab oris";
+  let AeneidNatQuants: sylMap = {
+    //short for Aeneidln1 natural quantities
+    0: "long",
+    3: "undefined",
+    6: "undefined",
+    8: "long",
+    12: "undefined",
+    15: "undefined",
+    17: "long",
+    21: "long",
+    23: "long",
+    28: "long",
+    32: "undefined",
+    34: "undefined",
+    37: "undefined",
+    40: "undefined",
+    42: "undefined",
+  };
+  let Aend1Markup: metaLine = { line: AeneidLn1, markup: {} };
+  let Aeneid1Scan: quantity[][] = [
+    [
+      "long",
+      "short",
+      "short",
+      "break",
+      "long",
+      "short",
+      "short",
+      "break",
+      "long",
+      "long",
+      "break",
+      "long",
+      "long",
+      "break",
+      "long",
+      "short",
+      "short",
+      "break",
+      "long",
+      "undefined",
+    ],
+  ];
+  let AeneidMarked = "Ārmă vĭ|rūmquĕ că|nō Trō|iāe quī| prīmŭs ă|b ōris";
+  let AeneidLn1Done: scannedLineType = {
+    line: AeneidLn1,
+    raws: [AeneidNatQuants].map((each) => {
+      return postScan(Aend1Markup, each);
+    }),
+    full: [[AeneidMarked]],
+  };
 
   test.todo("scan paragraph");
 
-  test.todo("scan line");
+  test("scan line", () => {
+    expect(scanLine(AeneidLn1, PresetOptions)).toEqual(AeneidLn1Done);
+  });
 
   test("undress", () => {
     let input =
@@ -29,29 +92,23 @@ describe("scan algorithm functionality testing", () => {
   });
 
   test("pre-scan", () => {
-    let input1 = "Arma virumque cano Troiae qui primus ab oris";
-    let output1: sylMap = {
-      0: "long",
-      3: "undefined",
-      6: "undefined",
-      8: "long",
-      12: "undefined",
-      15: "undefined",
-      17: "long",
-      21: "long",
-      23: "long",
-      28: "long",
-      32: "undefined",
-      34: "undefined",
-      37: "undefined",
-      40: "undefined",
-      42: "undefined",
-    };
     //let input2 = "Italiam fato profugus Laviniaque venit";
-    expect(preScan(input1)).toEqual([output1]);
+    expect(preScan(AeneidLn1)).toEqual([AeneidNatQuants]);
   });
 
-  test.todo("post-scan");
+  test("post-scan", () => {
+    let markings = marryUp(
+      Aeneid1Scan[0],
+      Object.keys(AeneidNatQuants).map((el) => {
+        return parseInt(el);
+      })
+    );
+    expect(postScan(Aend1Markup, markings)).toEqual(AeneidMarked);
+  });
+
+  test("hex scan", () => {
+    expect(hexScan(AeneidNatQuants)).toEqual(Aeneid1Scan);
+  });
 
   test("array to quantity", () => {
     let input = [
