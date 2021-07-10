@@ -3,7 +3,6 @@ import React from "react";
 import { useState } from "react";
 import { ScannedLine } from "./ScannedLine";
 import { scanLine } from "../scan";
-import type { setting } from "../scanTypes";
 import { PresetOptions } from "../utils";
 
 export let ScanModule = () => {
@@ -11,7 +10,7 @@ export let ScanModule = () => {
   let lines = text.split("\n");
 
   return (
-    <div className="scanMachine">
+    <div className="scanModule">
       <textarea
         className="inputArea"
         value={text}
@@ -25,11 +24,3 @@ export let ScanModule = () => {
     </div>
   );
 };
-
-function tester(line: string) {
-  return {
-    line: line,
-    raws: [line + " raw 1", line + " raw 2"],
-    full: [[line + " full1.1", line + " full1.2"], [line + " full2.1"]],
-  };
-}

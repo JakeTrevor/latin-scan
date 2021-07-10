@@ -4,7 +4,7 @@ import "../index.css";
 export let Toolbar = () => {
   return (
     <nav className="toolbar">
-      <h1>nothing for now...</h1>
+      <h1>Enter Hexameter poetry below...</h1>
     </nav>
   );
 };

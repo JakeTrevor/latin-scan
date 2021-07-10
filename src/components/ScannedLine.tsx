@@ -13,25 +13,32 @@ export let ScannedLine = (props: { line: scannedLineType }) => {
     }
   }
 
-  let [selection, setSelection] = useState(line.line);
+  let [selection, setSelection] = useState(options.length > 1 ? 0 : 2);
   let [open, setOpen] = useState(false);
   let toggleOpen = () => {
     //function simply sets the
     setOpen(!open);
   };
-
   return (
-    <div className="scannedLine">
-      <text>{selection}</text>
-      {options.map((elt) => (
-        <text
-          onClick={() => {
-            setSelection(elt);
-          }}
-        >
-          {elt}
-        </text>
-      ))}
+    <div className="line">
+      <text className="lineSelection" onClick={toggleOpen}>
+        {options[selection]}
+      </text>
+      {open && (
+        <ul>
+          {options.map((elt, i) => (
+            <li
+              className="lineOther"
+              onClick={() => {
+                setSelection(i);
+                toggleOpen();
+              }}
+            >
+              {elt}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
