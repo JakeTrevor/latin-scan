@@ -3,5 +3,5 @@ import "../index.css.proxy.js";
 export let Toolbar = () => {
   return /* @__PURE__ */ React.createElement("nav", {
     className: "toolbar"
-  }, /* @__PURE__ */ React.createElement("h1", null, "nothing for now..."));
+  }, /* @__PURE__ */ React.createElement("h1", null, "Enter Hexameter poetry below..."));
 };

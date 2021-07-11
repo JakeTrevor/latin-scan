@@ -8,7 +8,7 @@ export let ScanModule = () => {
   let [text, setText] = useState("");
   let lines = text.split("\n");
   return /* @__PURE__ */ React.createElement("div", {
-    className: "scanMachine"
+    className: "scanModule"
   }, /* @__PURE__ */ React.createElement("textarea", {
     className: "inputArea",
     value: text,
@@ -21,10 +21,3 @@ export let ScanModule = () => {
     });
   })));
 };
-function tester(line) {
-  return {
-    line,
-    raws: [line + " raw 1", line + " raw 2"],
-    full: [[line + " full1.1", line + " full1.2"], [line + " full2.1"]]
-  };
-}

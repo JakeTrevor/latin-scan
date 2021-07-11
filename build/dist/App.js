@@ -1,3 +1,4 @@
+import "./index.css.proxy.js";
 import React from "../_snowpack/pkg/react.js";
 import {ScanModule} from "./components/ScanModule.js";
 import {Toolbar} from "./components/Toolbar.js";

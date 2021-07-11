@@ -1,25 +1,62 @@
 import "../index.css.proxy.js";
-import * as React from "../../_snowpack/pkg/react.js";
-import {useState} from "../../_snowpack/pkg/react.js";
+import React from "../../_snowpack/pkg/react.js";
+import {useEffect, useState} from "../../_snowpack/pkg/react.js";
 export let ScannedLine = (props) => {
   let line = props.line;
-  let options = [line.line];
-  for (let i = 0; i < line.raws.length; i++) {
-    options.push(line.raws[i]);
-    for (let j = 0; j < line.full[i].length; j++) {
-      options.push(line.full[i][j]);
-    }
-  }
-  let [selection, setSelection] = useState(line.line);
+  let options = compileResults(line);
+  let [selection, setSelection] = useState(options.length > 1 ? 0 : 2);
   let [open, setOpen] = useState(false);
   let toggleOpen = () => {
     setOpen(!open);
   };
-  return /* @__PURE__ */ React.createElement("div", {
-    className: "scannedLine"
-  }, /* @__PURE__ */ React.createElement("text", null, selection), options.map((elt) => /* @__PURE__ */ React.createElement("text", {
-    onClick: () => {
-      setSelection(elt);
+  useEffect(() => {
+    if (selection >= options.length) {
+      setSelection(0);
     }
-  }, elt)));
+  });
+  return /* @__PURE__ */ React.createElement("div", {
+    className: "line"
+  }, /* @__PURE__ */ React.createElement("div", {
+    className: "lineSelection",
+    onClick: toggleOpen
+  }, options[selection]), open && /* @__PURE__ */ React.createElement("ul", null, options.map((elt, i) => /* @__PURE__ */ React.createElement("li", {
+    onClick: () => {
+      setSelection(i);
+      toggleOpen();
+    }
+  }, elt)).reverse()));
+};
+let compileResults = (input) => {
+  let options = [];
+  let str = "";
+  let element;
+  for (let i = 0; i < input.raws.length; i++) {
+    for (let j = 0; j < input.full[i].length; j++) {
+      str = input.full[i][j];
+      element = /* @__PURE__ */ React.createElement("div", {
+        className: "option fullScan"
+      }, /* @__PURE__ */ React.createElement("text", {
+        className: "info",
+        "data-tooltip": "This line is a Full scan"
+      }, "[S]"), /* @__PURE__ */ React.createElement("text", null, str));
+      options.push(element);
+    }
+    str = input.raws[i];
+    element = /* @__PURE__ */ React.createElement("div", {
+      className: "option naturalQ"
+    }, /* @__PURE__ */ React.createElement("text", {
+      className: "info",
+      "data-tooltip": "This line only includes the natural quantities detected"
+    }, "[NQ]"), /* @__PURE__ */ React.createElement("text", null, str));
+    options.push(element);
+  }
+  str = input.line;
+  element = /* @__PURE__ */ React.createElement("div", {
+    className: "option plainText"
+  }, /* @__PURE__ */ React.createElement("text", {
+    className: "info",
+    "data-tooltip": "This is your input"
+  }, "[i]"), /* @__PURE__ */ React.createElement("text", null, str));
+  options.push(element);
+  return options;
 };
