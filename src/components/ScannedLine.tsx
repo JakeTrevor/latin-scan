@@ -1,6 +1,5 @@
 import "../index.css";
-import React from "react";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import type { scannedLineType } from "../scanTypes";
 
 export let ScannedLine = (props: { line: scannedLineType }) => {
@@ -71,9 +70,9 @@ let compileResults = (input: scannedLineType) => {
       <div className="option naturalQ">
         <text
           className="info"
-          data-tooltip="This line only includes the natural quantities detected"
+          data-tooltip="This line is incomplete; only the quantities that could be determined are displayed"
         >
-          [NQ]
+          [Q]
         </text>
         <text>{str}</text>
       </div>

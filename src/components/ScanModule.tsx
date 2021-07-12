@@ -1,6 +1,5 @@
 import "../index.css";
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { ScannedLine } from "./ScannedLine";
 import { scanLine } from "../scan";
 import { PresetOptions } from "../utils";
@@ -15,6 +14,7 @@ export let ScanModule = () => {
         className="inputArea"
         value={text}
         onChange={(e) => setText(e.target.value)}
+        placeholder="Enter latin here..."
       />
       <div className="outputArea">
         {lines.map((each) => {

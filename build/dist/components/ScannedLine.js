@@ -1,6 +1,5 @@
 import "../index.css.proxy.js";
-import React from "../../_snowpack/pkg/react.js";
-import {useEffect, useState} from "../../_snowpack/pkg/react.js";
+import React, {useEffect, useState} from "../../_snowpack/pkg/react.js";
 export let ScannedLine = (props) => {
   let line = props.line;
   let options = compileResults(line);
@@ -46,8 +45,8 @@ let compileResults = (input) => {
       className: "option naturalQ"
     }, /* @__PURE__ */ React.createElement("text", {
       className: "info",
-      "data-tooltip": "This line only includes the natural quantities detected"
-    }, "[NQ]"), /* @__PURE__ */ React.createElement("text", null, str));
+      "data-tooltip": "This line is incomplete; only the quantities that could be determined are displayed"
+    }, "[Q]"), /* @__PURE__ */ React.createElement("text", null, str));
     options.push(element);
   }
   str = input.line;
