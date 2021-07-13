@@ -33,6 +33,7 @@ export let ScannedLine = (props: { line: scannedLineType }) => {
           {options
             .map((elt, i) => (
               <li
+                key={i}
                 onClick={() => {
                   setSelection(i);
                   toggleOpen();
@@ -57,10 +58,10 @@ let compileResults = (input: scannedLineType) => {
       str = input.full[i][j];
       element = (
         <div className="option fullScan">
-          <text className="info" data-tooltip="This line is a Full scan">
+          <p className="info" data-tooltip="This line is a Full scan">
             [S]
-          </text>
-          <text>{str}</text>
+          </p>
+          <p>{str}</p>
         </div>
       );
       options.push(element);
@@ -68,13 +69,13 @@ let compileResults = (input: scannedLineType) => {
     str = input.raws[i];
     element = (
       <div className="option naturalQ">
-        <text
+        <p
           className="info"
           data-tooltip="This line is incomplete; only the quantities that could be determined are displayed"
         >
           [Q]
-        </text>
-        <text>{str}</text>
+        </p>
+        <p>{str}</p>
       </div>
     );
     options.push(element);
@@ -82,10 +83,10 @@ let compileResults = (input: scannedLineType) => {
   str = input.line;
   element = (
     <div className="option plainText">
-      <text className="info" data-tooltip="This is your input">
+      <p className="info" data-tooltip="This is your input">
         [i]
-      </text>
-      <text>{str}</text>
+      </p>
+      <p>{str}</p>
     </div>
   );
   options.push(element);

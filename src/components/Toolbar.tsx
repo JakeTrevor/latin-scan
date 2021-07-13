@@ -14,7 +14,7 @@ export let Toolbar = () => {
         about
       </button>
       {aboutOpen && <About />}
-      <text>LatinScan</text>
+      <p>LatinScan</p>
       <p></p>
     </nav>
   );

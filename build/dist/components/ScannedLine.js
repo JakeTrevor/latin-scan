@@ -19,6 +19,7 @@ export let ScannedLine = (props) => {
     className: "lineSelection",
     onClick: toggleOpen
   }, options[selection]), open && /* @__PURE__ */ React.createElement("ul", null, options.map((elt, i) => /* @__PURE__ */ React.createElement("li", {
+    key: i,
     onClick: () => {
       setSelection(i);
       toggleOpen();
@@ -34,28 +35,28 @@ let compileResults = (input) => {
       str = input.full[i][j];
       element = /* @__PURE__ */ React.createElement("div", {
         className: "option fullScan"
-      }, /* @__PURE__ */ React.createElement("text", {
+      }, /* @__PURE__ */ React.createElement("p", {
         className: "info",
         "data-tooltip": "This line is a Full scan"
-      }, "[S]"), /* @__PURE__ */ React.createElement("text", null, str));
+      }, "[S]"), /* @__PURE__ */ React.createElement("p", null, str));
       options.push(element);
     }
     str = input.raws[i];
     element = /* @__PURE__ */ React.createElement("div", {
       className: "option naturalQ"
-    }, /* @__PURE__ */ React.createElement("text", {
+    }, /* @__PURE__ */ React.createElement("p", {
       className: "info",
       "data-tooltip": "This line is incomplete; only the quantities that could be determined are displayed"
-    }, "[Q]"), /* @__PURE__ */ React.createElement("text", null, str));
+    }, "[Q]"), /* @__PURE__ */ React.createElement("p", null, str));
     options.push(element);
   }
   str = input.line;
   element = /* @__PURE__ */ React.createElement("div", {
     className: "option plainText"
-  }, /* @__PURE__ */ React.createElement("text", {
+  }, /* @__PURE__ */ React.createElement("p", {
     className: "info",
     "data-tooltip": "This is your input"
-  }, "[i]"), /* @__PURE__ */ React.createElement("text", null, str));
+  }, "[i]"), /* @__PURE__ */ React.createElement("p", null, str));
   options.push(element);
   return options;
 };

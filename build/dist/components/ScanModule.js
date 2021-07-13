@@ -15,8 +15,9 @@ export let ScanModule = () => {
     placeholder: "Enter latin here..."
   }), /* @__PURE__ */ React.createElement("div", {
     className: "outputArea"
-  }, lines.map((each) => {
+  }, lines.map((each, i) => {
     return /* @__PURE__ */ React.createElement(ScannedLine, {
+      key: i,
       line: scanLine(each, PresetOptions)
     });
   })));

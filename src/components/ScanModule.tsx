@@ -17,8 +17,8 @@ export let ScanModule = () => {
         placeholder="Enter latin here..."
       />
       <div className="outputArea">
-        {lines.map((each) => {
-          return <ScannedLine line={scanLine(each, PresetOptions)} />;
+        {lines.map((each, i) => {
+          return <ScannedLine key={i} line={scanLine(each, PresetOptions)} />;
         })}
       </div>
     </div>

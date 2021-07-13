@@ -4,11 +4,11 @@ export function About() {
   return (
     <div className="about">
       <h1>Where am I?</h1>
-      <text>
+      <p>
         Latin-Scan.com is an automatic latin scansion tool - if you don't
         already know what that means, it's probably not for you. It is a hobby
         project of one person. A support/contact email is in the works.
-      </text>
+      </p>
 
       <h1>What is scansion?</h1>
       <p>

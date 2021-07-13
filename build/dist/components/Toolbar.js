@@ -11,5 +11,5 @@ export let Toolbar = () => {
   }, /* @__PURE__ */ React.createElement("button", {
     className: "toolbarButton",
     onClick: toggleAbout
-  }, "about"), aboutOpen && /* @__PURE__ */ React.createElement(About, null), /* @__PURE__ */ React.createElement("text", null, "LatinScan"), /* @__PURE__ */ React.createElement("p", null));
+  }, "about"), aboutOpen && /* @__PURE__ */ React.createElement(About, null), /* @__PURE__ */ React.createElement("p", null, "LatinScan"), /* @__PURE__ */ React.createElement("p", null));
 };
