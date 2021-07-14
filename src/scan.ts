@@ -47,7 +47,7 @@ export let scanLine = (line: string, settings: setting): scannedLineType => {
   //  now we would switch on settings.meter
   let toDress: sylMap[][] = [];
   switch (settings.meter) {
-    case "hex":
+    case "hexameter":
       for (let each of raws) {
         let quantityScans = hexScan(each);
         let pos = Object.keys(each).map((elt) => {

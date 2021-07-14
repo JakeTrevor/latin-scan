@@ -1,6 +1,6 @@
 import type { vowel, quantity, strictQuant, setting } from "./scanTypes";
 
-export let PresetOptions: setting = { meter: "hex" };
+export let PresetOptions: setting = { meter: "hexameter" };
 
 //regex expressions for constants to do with latin lanaguge
 export default {
@@ -8,6 +8,8 @@ export default {
   diphthongs: /(ae)|(au)|(ei)|(oe)|(oi)|(ui)/g,
   maybeDiphthong: /(eu)/g,
   doubleVowel: /[aeiouy][aeiouy]/g,
+  spondeeVowels: /[āēīōūȳ]/g,
+  dactylVowels: /[ăĕĭŏŭy̌]/g,
   silent1: /(\sia)|(\sio)|(\siu)/g,
   silent2: /(qu)/g,
   twoCons: /[aeiouy]\s*([b-df-hj-np-tvwxz]\s*[b-df-hj-np-tvwxz])|[xz]}/g,

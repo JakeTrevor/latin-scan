@@ -14,6 +14,7 @@
 
 * {
   box-sizing: border-box;
+  margin: 0;
 }
 
 body {
@@ -22,6 +23,7 @@ body {
   font-family: roboto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  max-height: auto;
 }
 
 code {
@@ -81,16 +83,30 @@ code {
   background-color: #1a1a1a;
 }
 
+.go {
+  visibility: hidden;
+}
+
 .about {
   position: absolute;
-  background-color: var(--background);
   left: 10px;
   max-width: 25%;
-  height: max-content;
-  top: calc(var(--toolbar-height) - 10px);
+  top: calc(var(--toolbar-height));
   padding: 10px;
+  height: calc(100vh - var(--toolbar-height));
+  overflow-y: auto;
+}
+
+.about::-webkit-scrollbar {
+  width: 0;
+}
+
+.about-box {
+  background-color: var(--background);
+  height: max-content;
   border: #1a1a1a solid;
   border-radius: 10px;
+  padding: 10px;
 }
 
 .scanModule {
@@ -104,17 +120,20 @@ code {
 
 .inputArea {
   width: 50%;
-  min-height: 100%;
   height: fit-content;
-  align-items: center;
-  justify-content: center;
+  padding: 10px;
+  margin: 0 0 0 10px;
+}
+
+.input-box {
   font-size: var(--fontSize);
-  line-height: 1.5;
+  width: 100%;
+  min-height: 100%;
+  line-height: 2;
   resize: none;
   outline: none;
   border-style: none;
-  padding: 10px;
-  margin: 0 0 0 10px;
+  padding: 0;
 }
 
 .outputArea {
@@ -122,6 +141,7 @@ code {
   height: fit-content;
   width: 50%;
   margin: 0 10px 0 0;
+  padding: 10px;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -129,12 +149,12 @@ code {
 }
 
 .line {
-  padding: 10px;
+  font-size: var(--fontSize);
+  min-height: 2em;
+  padding: 0 10px;
   margin: 0;
   display: flex;
   flex-direction: column;
-  background-color: #fff;
-  font-size: var(--fontSize);
 }
 
 .lineSelection {
@@ -149,18 +169,30 @@ code {
   justify-content: space-between;
 }
 
-.naturalQ {
+.Q,
+.S,
+.i {
+  width: 100%;
+  text-align: right;
+}
+
+.Q {
   background-color: rgb(255, 192, 181);
 }
 
-.fullScan {
+.S {
   background-color: rgb(144, 255, 149);
+}
+
+.line-alts {
+  list-style-type: none;
 }
 
 .info {
   position: relative;
   font-size: 50%;
   margin: 10px;
+  min-width: 17px;
 }
 
 .info::before,
@@ -201,4 +233,30 @@ code {
 .info:hover::before {
   z-index: 100;
   --scale: 1;
+}
+
+@media (max-width: 1600px) {
+  .about {
+    max-width: 100%;
+    right: 10px;
+  }
+}
+
+@media (max-width: 750px) {
+  .go {
+    visibility: visible;
+  }
+  .inputArea,
+  .outputArea {
+    position: absolute;
+    left: 0;
+    margin: 0 0 0 10px;
+    width: fit-content;
+  }
+
+  .in {
+  }
+  .out {
+    display: none;
+  }
 }

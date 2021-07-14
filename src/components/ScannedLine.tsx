@@ -21,15 +21,26 @@ export let ScannedLine = (props: { line: scannedLineType }) => {
     }
   });
 
+  let warnTip;
+  let num = line.full.length;
+  if (num === 0) {
+    let warnTip = "There are no valid scans for this line.";
+    //eventually, this will look up erros
+  } else {
+  }
+
+  let warn = <div className="info" data-tooltip=""></div>;
+
   //main component below
   return (
     <div className="line">
       <div className="lineSelection" onClick={toggleOpen}>
         {options[selection]}
+        {warn}
       </div>
 
       {open && ( //options for line displayed here:
-        <ul>
+        <ul className="line-alts">
           {options
             .map((elt, i) => (
               <li
@@ -49,46 +60,44 @@ export let ScannedLine = (props: { line: scannedLineType }) => {
   );
 };
 
+function Option({ type, typeDisplay, ...props }) {
+  return (
+    <div className="option">
+      <p className="info" data-tooltip={type}>
+        [{typeDisplay}]
+      </p>
+      <p className={typeDisplay}>{props.children}</p>
+    </div>
+  );
+}
+
 let compileResults = (input: scannedLineType) => {
   let options = [];
   let str = "";
-  let element;
   for (let i = 0; i < input.raws.length; i++) {
     for (let j = 0; j < input.full[i].length; j++) {
       str = input.full[i][j];
-      element = (
-        <div className="option fullScan">
-          <p className="info" data-tooltip="This line is a Full scan">
-            [S]
-          </p>
-          <p>{str}</p>
-        </div>
+      options.push(
+        <Option type="This line is a Full scan" typeDisplay="S">
+          {str}
+        </Option>
       );
-      options.push(element);
     }
     str = input.raws[i];
-    element = (
-      <div className="option naturalQ">
-        <p
-          className="info"
-          data-tooltip="This line is incomplete; only the quantities that could be determined are displayed"
-        >
-          [Q]
-        </p>
-        <p>{str}</p>
-      </div>
+    options.push(
+      <Option
+        type="This line is incomplete; only the quantities that could be determined are displayed"
+        typeDisplay="Q"
+      >
+        {str}
+      </Option>
     );
-    options.push(element);
   }
   str = input.line;
-  element = (
-    <div className="option plainText">
-      <p className="info" data-tooltip="This is your input">
-        [i]
-      </p>
-      <p>{str}</p>
-    </div>
+  options.push(
+    <Option type="This is your input" typeDisplay="i">
+      {str}
+    </Option>
   );
-  options.push(element);
   return options;
 };
