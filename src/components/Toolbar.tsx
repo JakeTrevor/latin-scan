@@ -21,9 +21,10 @@ export let Toolbar = ({ settings, setSettings, switchMode }) => {
         about
       </button>
       {aboutOpen && <About />}
-      <SettingsButton meter={settings.meter} changeMeter={changeMeter} />
+      <SettingsButton settings={settings} setSettings={setSettings} />
 
       <p>LatinScan</p>
+      <div></div>
       <div></div>
       <button className="toolbarButton go" onClick={switchMode}>
         go!
@@ -34,13 +35,39 @@ export let Toolbar = ({ settings, setSettings, switchMode }) => {
 
 //<button className="toolbarButton">settings</button>
 
-function SettingsButton({ meter, changeMeter }) {
+function SettingsButton({ settings, setSettings }) {
+  const [open, setOpen] = useState(false);
+  function toggleOpen() {
+    setOpen(!open);
+  }
+  let meters = ["Hexameter", "Pentameter", "Elegaic"];
   return (
     <div>
-      <label htmlFor="meter">Currently Scanning:</label>
-      <button name="meter" className="toolbarButton" onClick={changeMeter}>
-        {meter}
-      </button>
+      <p className="toolbarButton" onClick={toggleOpen}>
+        {settings.meter}
+      </p>
+      {open && (
+        <div className="meterOptions">
+          <ul className="options-box">
+            {meters.map((each) => {
+              return (
+                <p
+                  className="toolbarButton"
+                  onClick={() => {
+                    setSettings({
+                      ...settings,
+                      meter: each,
+                    });
+                    toggleOpen();
+                  }}
+                >
+                  {each}
+                </p>
+              );
+            })}
+          </ul>
+        </div>
+      )}
     </div>
   );
 }

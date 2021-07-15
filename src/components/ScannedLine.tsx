@@ -38,9 +38,8 @@ export let ScannedLine = (props: { line: scannedLineType }) => {
         {options[selection]}
         {warn}
       </div>
-
-      {open && ( //options for line displayed here:
-        <ul className="line-alts">
+      {open && (
+        <ul className={"line-alts " + open}>
           {options
             .map((elt, i) => (
               <li

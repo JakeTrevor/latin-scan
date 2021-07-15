@@ -1,0 +1,278 @@
+:root 
+  --toolbar-background: white
+  --toolbar-height: 54px
+  --arrow-color: grey
+  --background: rgba(255, 255, 255, 1)
+  --selected: rgb(79, 79, 79)
+  --button: rgba(0, 0, 0, 0.05)
+  --button-hover: rgba(0, 0, 0, 0.1)
+  --highlight: #c99797ff
+  --border-color: #1a1a1a
+  --font: roboto
+  --fontSize: 24px
+
+
+* 
+  box-sizing: border-box
+  margin: 0
+
+
+body 
+  margin: var(--toolbar-height) 0 0 0
+  background: var(--background)
+  font-family: roboto
+  -webkit-font-smoothing: antialiased
+  -moz-osx-font-smoothing: grayscale
+  max-height: auto
+
+
+code 
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace
+
+
+ul 
+  margin: 0
+  padding: 0
+
+::-webkit-scrollbar 
+  width: 5px
+
+
+::-webkit-scrollbar-track 
+  background-color: #1a1a1a
+
+::-webkit-scrollbar-thumb 
+  background-color: green
+
+
+.app 
+  height: calc(100vh - var(--toolbar-height) - 8px) /* 8px is weird but necessary */
+  display: flex
+  flex-direction: column
+
+
+.toolbar 
+  position: fixed
+  top: 0
+  width: 100%
+  height: var(--toolbar-height)
+  background-color: var(--toolbar-background)
+  opacity: 1
+  z-index: 99
+  display: flex
+  flex-direction: row
+  justify-content: space-between
+  align-items: center
+
+  padding: 0 24px
+  border-bottom: 2px solid
+
+
+.toolbarButton 
+  background-color: var(--button)
+  height: fit-content
+  border-radius: 5px
+  border: none
+  padding: 5px
+  margin: 5px
+
+.toolbarButton:hover 
+  background-color: var(--button-hover)
+
+.toolbarButton:active 
+  background-color: #1a1a1a
+
+.meterOptions 
+  position: absolute
+  max-width: 25%
+  top: calc(var(--toolbar-height) - 10px)
+  overflow-y: auto
+  border: black solid 1px
+  border-radius: 10px
+
+.options-box 
+  background-color: var(--background)
+  height: max-content
+
+
+.go 
+  visibility: hidden
+
+
+.about 
+  position: absolute
+  left: 10px
+  max-width: 25%
+  top: calc(var(--toolbar-height))
+  padding: 10px
+  height: calc(100vh - var(--toolbar-height))
+  overflow-y: auto
+
+
+.about::-webkit-scrollbar 
+  width: 0
+
+
+.about-box 
+  background-color: var(--background)
+  height: max-content
+  border: #1a1a1a solid
+  border-radius: 10px
+  padding: 10px
+
+
+.scanModule 
+  width: 100%
+  min-height: calc(100% - var(--toolbar-height))
+  display: flex
+  flex-direction: row
+  justify-content: center
+  align-items: flex-start
+
+
+.inputArea 
+  width: 50%
+  height: fit-content
+  padding: 10px
+  margin: 0 0 0 10px
+  font-size: var(--fontSize)
+  min-height: 100%
+  line-height: 2
+  resize: none
+  outline: none
+  border-style: none
+
+
+.outputArea 
+  min-height: calc(100% - var(--toolbar-height))
+  height: fit-content
+  width: 50%
+  margin: 0 10px 0 0
+  padding: 10px
+  display: flex
+  flex-direction: column
+  align-items: stretch
+  justify-content: flex-start
+
+
+.line 
+  font-size: var(--fontSize)
+  min-height: 2em
+  padding: 0 10px
+  margin: 0
+  display: flex
+  flex-direction: column
+
+
+.lineSelection 
+  padding: 3px
+  margin: 3px
+  border-bottom: 3px solid rgb(102, 102, 102)
+
+
+.option 
+  display: flex
+  flex-direction: row
+  justify-content: space-between
+
+
+.Q,
+.S,
+.i 
+  width: 100%
+  text-align: right
+
+
+.Q 
+  background-color: rgb(255, 192, 181)
+
+
+.S 
+  background-color: rgb(144, 255, 149)
+
+
+.line-alts 
+  --scale: 0
+  
+  list-style-type: none
+  transform: scale(1, var(--scale)) 
+  transition: transform 200ms, visibility 200s
+  transform-origin: top
+
+.true
+    --scale: 1
+
+.false
+  visibility: hidden
+
+.info 
+  position: relative
+  font-size: 50%
+  margin: 10px
+  min-width: 17px
+
+
+.info::before,
+.info::after 
+  --scale: 0
+  --arrow-size: 10px
+  position: absolute
+  top: -0.25rem
+  left: 50%
+  transform: translateX(-50%) translateY(var(--translate-y, 0)) scale(var(--scale))
+  transition: 100ms transform
+
+
+.info::before 
+  --translate-y: calc(-100% - var(--arrow-size))
+
+  transform-origin: bottom center
+  background-color: var(--arrow-color)
+  width: max-content
+  content: attr(data-tooltip)
+  padding: 0.25rem
+  border-radius: 5px
+  text-align: center
+  font-family: roboto
+  font-size: 125%
+
+
+.info::after 
+  --translate-y: calc(-1.1 * var(--arrow-size))
+
+  content: ""
+  border: var(--arrow-size) solid transparent
+  border-top-color: var(--arrow-color)
+
+
+.info:hover::after,
+.info:hover::before 
+  z-index: 100
+  --scale: 1
+
+
+@media (max-width: 1600px) 
+  .about 
+    max-width: 100%
+    right: 10px
+  
+
+
+@media (max-width: 750px) 
+  .go 
+    visibility: visible
+  
+  .inputArea,
+  .outputArea 
+    position: absolute
+    left: 0
+    margin: 0 0 0 10px
+    width: 100vw
+  
+  .inputArea
+    line-height: 1.25
+    font-size: 18px
+  .out 
+    display: none
+  
+

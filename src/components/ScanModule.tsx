@@ -12,13 +12,12 @@ export let ScanModule = ({ inputDisplayed }) => {
 
   return (
     <div className="scanModule">
-      <div className={"inputArea " + inputDisplayed}>
-        <AutoHeightTextarea
-          value={text}
-          setValue={setText}
-          placeholder="Enter latin here..."
-        />
-      </div>
+      <AutoHeightTextarea
+        className={"inputArea " + inputDisplayed}
+        value={text}
+        setValue={setText}
+        placeholder="Enter latin here..."
+      />
       <div className={"outputArea " + other}>
         {lines.map((each, i) => {
           return <ScannedLine key={i} line={each} />;
@@ -35,7 +34,12 @@ interface textareaProps {
 }
 
 //component that should be an auto-sizing text area (hopefully)
-function AutoHeightTextarea({ value, setValue, placeholder }: textareaProps) {
+function AutoHeightTextarea({
+  className,
+  value,
+  setValue,
+  placeholder,
+}: textareaProps) {
   const textareaRef = useRef(null);
 
   useEffect(() => {
@@ -46,7 +50,7 @@ function AutoHeightTextarea({ value, setValue, placeholder }: textareaProps) {
 
   return (
     <textarea
-      className="input-box"
+      className={className}
       ref={textareaRef}
       value={value}
       placeholder={placeholder}

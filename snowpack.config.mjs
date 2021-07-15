@@ -8,6 +8,13 @@ export default {
     "@snowpack/plugin-react-refresh",
     "@snowpack/plugin-dotenv",
     [
+      "@snowpack/plugin-sass",
+      {
+        /* see options below */
+      },
+    ],
+
+    [
       "@snowpack/plugin-typescript",
       {
         /* Yarn PnP workaround: see https://www.npmjs.com/package/@snowpack/plugin-typescript */
