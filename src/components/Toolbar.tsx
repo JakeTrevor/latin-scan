@@ -52,6 +52,7 @@ function SettingsButton({ settings, setSettings }) {
             {meters.map((each) => {
               return (
                 <p
+                  key={each}
                   className="toolbarButton"
                   onClick={() => {
                     setSettings({
