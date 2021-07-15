@@ -28,6 +28,7 @@ export let ScanModule = ({ inputDisplayed }) => {
 };
 
 interface textareaProps {
+  className: string;
   value: string;
   setValue: Function;
   placeholder: string;
