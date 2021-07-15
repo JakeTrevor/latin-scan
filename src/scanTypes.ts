@@ -10,6 +10,7 @@ export type meter = "Hexameter" | "Pentameter" | "Elegaic";
 
 export type setting = {
   meter: meter;
+  first: meter;
 };
 
 export type strictQuant = "long" | "short";

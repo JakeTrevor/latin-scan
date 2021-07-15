@@ -28,15 +28,27 @@ import expressions, {
 export let ScanParagraph = (text: string, settings: setting) => {
   let lines = text.split("\n");
   let done: scannedLineType[] = [];
-  for (let line of lines) {
-    if (line !== "") {
-      done.push(scanLine(line, settings));
+
+  if (settings.meter === "Elegaic") {
+    let currentMeter = settings.first;
+    for (let line of lines) {
+      if (line !== "") {
+        done.push(scanLine(line, currentMeter));
+        currentMeter =
+          currentMeter === "Hexameter" ? "Pentameter" : "Hexameter";
+      }
+    }
+  } else {
+    for (let line of lines) {
+      if (line !== "") {
+        done.push(scanLine(line, settings.meter));
+      }
     }
   }
   return done;
 };
 
-export let scanLine = (line: string, settings: setting): scannedLineType => {
+export let scanLine = (line: string, meter: meter): scannedLineType => {
   let output: scannedLineType = { line: line, raws: [], full: [] }; //initialize output object
 
   let meta: metaLine = undress(line);
@@ -47,9 +59,9 @@ export let scanLine = (line: string, settings: setting): scannedLineType => {
   }
   output.raws = dressedRaws;
 
-  //  now we would switch on settings.meter
+  //  now we would switch on the meter
   let toDress: sylMap[][] = [];
-  switch (settings.meter) {
+  switch (meter) {
     case "Hexameter":
       for (let each of raws) {
         let quantityScans = hexScan(each);
@@ -61,6 +73,7 @@ export let scanLine = (line: string, settings: setting): scannedLineType => {
         });
         toDress.push(scans);
       }
+      break;
     case "Pentameter":
       for (let each of raws) {
         let quantityScans = penScan(each);
@@ -72,6 +85,7 @@ export let scanLine = (line: string, settings: setting): scannedLineType => {
         });
         toDress.push(scans);
       }
+      break;
   }
 
   let done: string[][] = toDress.map((rawGroup) => {
@@ -255,6 +269,7 @@ export function arrToQuantity(arr: number[][], meter: meter): quantity[][] {
           "long",
           "undefined",
         ] as quantity[]);
+        break;
       case "Pentameter":
         temp.push([
           "long",
@@ -269,6 +284,7 @@ export function arrToQuantity(arr: number[][], meter: meter): quantity[][] {
           "break",
           "long",
         ]);
+        break;
     }
 
     //we then flatten this by concatenating all the inner lists
