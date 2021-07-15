@@ -1,8 +1,9 @@
-Name: Continuous Integration
+name: Node Continuous Integration
 
 on:
   pull_request:
     branches: [ master ]
+
 
 jobs:
   test_pull_request:
@@ -10,7 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
-        node-version: 12
-      -run: npm ci
-      -run: npm test
-      -run: npm run build
+        with:
+          node-version: 12
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
