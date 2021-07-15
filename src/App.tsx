@@ -12,6 +12,7 @@ export default function App() {
 
   const [settings, setSettings] = useState(PresetOptions);
 
+  console.log(settings);
   return (
     <div className="app">
       <Toolbar

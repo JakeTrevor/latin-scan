@@ -4,9 +4,9 @@ import { ScannedLine } from "./ScannedLine";
 import { scanLine, ScanParagraph } from "../scan";
 import { PresetOptions } from "../utils";
 
-export let ScanModule = ({ inputDisplayed }) => {
+export let ScanModule = ({ inputDisplayed, settings }) => {
   let [text, setText] = useState("");
-  let lines = ScanParagraph(text, PresetOptions);
+  let lines = ScanParagraph(text, settings);
 
   let other = inputDisplayed === "in" ? "out" : "in";
 

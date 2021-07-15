@@ -40,9 +40,16 @@ function SettingsButton({ settings, setSettings }) {
   function toggleOpen() {
     setOpen(!open);
   }
+  function toggleFirst() {
+    setSettings({
+      ...settings,
+      first: settings.first === "Hexameter" ? "Pentameter" : "Hexameter",
+    });
+  }
+
   let meters = ["Hexameter", "Pentameter", "Elegaic"];
   return (
-    <div>
+    <div className="meterButton">
       <p className="toolbarButton" onClick={toggleOpen}>
         {settings.meter}
       </p>
@@ -52,6 +59,7 @@ function SettingsButton({ settings, setSettings }) {
             {meters.map((each) => {
               return (
                 <p
+                  key={each}
                   className="toolbarButton"
                   onClick={() => {
                     setSettings({
@@ -67,6 +75,11 @@ function SettingsButton({ settings, setSettings }) {
             })}
           </ul>
         </div>
+      )}
+      {settings.meter === "Elegaic" && (
+        <button className="toolbarButton" onClick={toggleFirst}>
+          {settings.first} 1st
+        </button>
       )}
     </div>
   );

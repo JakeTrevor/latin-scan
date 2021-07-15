@@ -1,6 +1,7 @@
 //scan.ts
 import type {
   metaLine,
+  meter,
   quantity,
   scannedLineType,
   setting,
@@ -27,13 +28,27 @@ import expressions, {
 export let ScanParagraph = (text: string, settings: setting) => {
   let lines = text.split("\n");
   let done: scannedLineType[] = [];
-  for (let line of lines) {
-    done.push(scanLine(line, settings));
+
+  if (settings.meter === "Elegaic") {
+    let currentMeter = settings.first;
+    for (let line of lines) {
+      if (line !== "") {
+        done.push(scanLine(line, currentMeter));
+        currentMeter =
+          currentMeter === "Hexameter" ? "Pentameter" : "Hexameter";
+      }
+    }
+  } else {
+    for (let line of lines) {
+      if (line !== "") {
+        done.push(scanLine(line, settings.meter));
+      }
+    }
   }
   return done;
 };
 
-export let scanLine = (line: string, settings: setting): scannedLineType => {
+export let scanLine = (line: string, meter: meter): scannedLineType => {
   let output: scannedLineType = { line: line, raws: [], full: [] }; //initialize output object
 
   let meta: metaLine = undress(line);
@@ -44,10 +59,10 @@ export let scanLine = (line: string, settings: setting): scannedLineType => {
   }
   output.raws = dressedRaws;
 
-  //  now we would switch on settings.meter
+  //  now we would switch on the meter
   let toDress: sylMap[][] = [];
-  switch (settings.meter) {
-    case "hexameter":
+  switch (meter) {
+    case "Hexameter":
       for (let each of raws) {
         let quantityScans = hexScan(each);
         let pos = Object.keys(each).map((elt) => {
@@ -58,6 +73,19 @@ export let scanLine = (line: string, settings: setting): scannedLineType => {
         });
         toDress.push(scans);
       }
+      break;
+    case "Pentameter":
+      for (let each of raws) {
+        let quantityScans = penScan(each);
+        let pos = Object.keys(each).map((elt) => {
+          return parseInt(elt);
+        });
+        let scans = quantityScans.map((elt) => {
+          return marryUp(elt, pos);
+        });
+        toDress.push(scans);
+      }
+      break;
   }
 
   let done: string[][] = toDress.map((rawGroup) => {
@@ -215,6 +243,95 @@ export let postScan = (meta: metaLine, markings: sylMap): string => {
   return line.join("");
 };
 
+/** function that takes a list of permutator outputs (4 binary arrays) and returns a list of complete quantity descriptions; 1 for each arr in the input.
+ *
+ * @param { number[][] } arr
+ * @returns { quantity[][] }
+ */
+export function arrToQuantity(arr: number[][], meter: meter): quantity[][] {
+  let output: quantity[][] = [];
+  for (let each of arr) {
+    let temp = each.map((el) => {
+      //first we map each 0 or 1 to an array of quantities.
+      return el === 0 //if the element is 0, then the foot is long
+        ? (["long", "long", "break"] as quantity[]) //so insert the long foot template
+        : (["long", "short", "short", "break"] as quantity[]); //else, insert the short foot template
+    });
+
+    //we have now an array of quantity arrays; (quantity[][])
+    switch (meter) {
+      case "Hexameter":
+        temp.push([
+          "long",
+          "short",
+          "short",
+          "break",
+          "long",
+          "undefined",
+        ] as quantity[]);
+        break;
+      case "Pentameter":
+        temp.push([
+          "long",
+          "break",
+          "long",
+          "short",
+          "short",
+          "break",
+          "long",
+          "short",
+          "short",
+          "break",
+          "long",
+        ]);
+        break;
+    }
+
+    //we then flatten this by concatenating all the inner lists
+    //resulting in a quant[]
+    let temp2 = temp.reduce((acc, val) => {
+      return acc.concat(val);
+    });
+
+    output.push(temp2); //push this to the list of meters
+  }
+  return output;
+}
+
+/** utility function that marries up a list of quantities with a list of positions into a record/dictionary
+ *
+ * @param { quantity[] } quants
+ * @param { number [] } positions
+ * @returns { sylMap }
+ */
+export function marryUp(quants: quantity[], positions: number[]): sylMap {
+  let output: sylMap = {};
+  let breaks = 0;
+  for (let i = 0; i < quants.length; i++) {
+    let curQuant = quants[i];
+    let curPos: number;
+    if (curQuant === "break") {
+      breaks++;
+      curPos = positions[i - breaks] + 1;
+    } else {
+      curPos = positions[i - breaks];
+    }
+    output[curPos] = curQuant;
+  }
+  return output;
+}
+
+export let insertPunctuation = (
+  line: string[],
+  markup: Record<number, string>
+): string[] => {
+  let positions = Object.keys(markup).map((el) => parseInt(el));
+  for (let each of positions) {
+    line.splice(each, 0, markup[each]);
+  }
+  return line;
+};
+
 /**
  * hexScan matches the possible scans to the known quantities
  * returns an array of objects
@@ -267,7 +384,7 @@ export let hexScan = (map: sylMap): quantity[][] => {
     return meters;
   }
 
-  meters = arrToQuantity(generateHexCombos(dactyls));
+  meters = arrToQuantity(generateHexCombos(dactyls), "Hexameter");
   //create a copy of the meters without breaks
   let clone = meters.map((each) => {
     return each.filter((elt) => {
@@ -293,72 +410,58 @@ export let hexScan = (map: sylMap): quantity[][] => {
   return meters;
 };
 
-/** function that takes a list of permutator outputs (4 binary arrays) and returns a list of complete quantity descriptions; 1 for each arr in the input.
- *
- * @param { number[][] } arr
- * @returns { quantity[][] }
- */
-export function arrToQuantity(arr: number[][]): quantity[][] {
-  let output: quantity[][] = [];
-  for (let each of arr) {
-    let temp = each.map((el) => {
-      //first we map each 0 or 1 to an array of quantities.
-      return el === 0 //if the element is 0, then the foot is long
-        ? (["long", "long", "break"] as quantity[]) //so insert the long foot template
-        : (["long", "short", "short", "break"] as quantity[]); //else, insert the short foot template
-    });
-
-    //we have now an array of quantity arrays; (quantity[][])
-    temp.push([
-      "long",
-      "short",
-      "short",
-      "break",
-      "long",
-      "undefined",
-    ] as quantity[]);
-
-    //we then flatten this by concatenating all the inner lists
-    //resulting in a quant[]
-    let temp2 = temp.reduce((acc, val) => {
-      return acc.concat(val);
-    });
-
-    output.push(temp2); //push this to the list of meters
-  }
-  return output;
-}
-
-/** utility function that marries up a list of quantities with a list of positions into a record/dictionary
- *
- * @param { quantity[] } quants
- * @param { number [] } positions
- * @returns { sylMap }
- */
-export function marryUp(quants: quantity[], positions: number[]): sylMap {
-  let output: sylMap = {};
-  let breaks = 0;
-  for (let i = 0; i < quants.length; i++) {
-    let curQuant = quants[i];
-    let curPos: number;
-    if (curQuant === "break") {
-      breaks++;
-      curPos = positions[i - breaks] + 1;
-    } else {
-      curPos = positions[i - breaks];
+export let penScan = (map: sylMap): quantity[][] => {
+  function generatePenCombos(dactyls: number): number[][] {
+    switch (dactyls) {
+      case 0:
+        return [[0, 0]];
+      case 1:
+        return [
+          [0, 1],
+          [1, 0],
+        ];
+      case 2:
+        return [[1, 1]];
     }
-    output[curPos] = curQuant;
+    return [[0, 0]]; //the default case is to assume 0 dactyls
   }
-  return output;
-}
+  let quantValues = Object.values(map); //extract quantities array
+  let meters: quantity[][] = [];
 
-export let insertPunctuation = (
-  line: string[],
-  markup: Record<number, string>
-): string[] => {
-  let positions = Object.keys(markup).map((el) => parseInt(el));
-  for (let each of positions) {
-    line.splice(each, 0, markup[each]);
+  //now, calculate the number of spondaic syllables
+  let vowels = quantValues.length;
+  let dactyls = vowels - 12;
+
+  //handle line too long or short cases
+  if (dactyls > 2) {
+    console.log("too long!");
+    return meters;
+  } else if (dactyls < 0) {
+    console.log("too short!");
+    return meters;
   }
-  return line;
+
+  meters = arrToQuantity(generatePenCombos(dactyls), "Pentameter");
+  //create a copy of the meters without breaks
+  let clone = meters.map((each) => {
+    return each.filter((elt) => {
+      return elt !== "break";
+    });
+  });
+  let curQuant: quantity;
+  for (let vowelCounter = 0; vowelCounter < vowels; vowelCounter++) {
+    curQuant = quantValues[vowelCounter];
+    if (curQuant !== "undefined") {
+      for (let meterCounter = 0; meterCounter < meters.length; meterCounter++) {
+        if (clone[meterCounter][vowelCounter] === "undefined") {
+          // do nothing.
+        } else if (clone[meterCounter][vowelCounter] !== curQuant) {
+          clone.splice(meterCounter, 1);
+          meters.splice(meterCounter, 1);
+          meterCounter--;
+        }
+      }
+    }
+  }
+  return meters;
 };
