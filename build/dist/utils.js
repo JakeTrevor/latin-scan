@@ -1,9 +1,11 @@
-export let PresetOptions = {meter: "hex"};
+export let PresetOptions = {meter: "Hexameter", first: "Hexameter"};
 export default {
   vowels: /[aeiouy]/g,
   diphthongs: /(ae)|(au)|(ei)|(oe)|(oi)|(ui)/g,
   maybeDiphthong: /(eu)/g,
   doubleVowel: /[aeiouy][aeiouy]/g,
+  spondeeVowels: /[āēīōūȳ]/g,
+  dactylVowels: /[ăĕĭŏŭy̌]/g,
   silent1: /(\sia)|(\sio)|(\siu)/g,
   silent2: /(qu)/g,
   twoCons: /[aeiouy]\s*([b-df-hj-np-tvwxz]\s*[b-df-hj-np-tvwxz])|[xz]}/g,
@@ -45,7 +47,7 @@ export const alts = {
   Y: {long: "Ȳ", short: "Y̌"}
 };
 export function getLetter(quantity, letter) {
-  if (quantity === "undefined" || quantity === "break") {
+  if (quantity === "undefined" || quantity === "break" || !/[aeiouy]/.test(letter.toLowerCase())) {
     return letter;
   } else {
     let reduced = quantity;
