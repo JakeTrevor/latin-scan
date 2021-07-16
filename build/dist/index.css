@@ -14,6 +14,7 @@
 
 * {
   box-sizing: border-box;
+  margin: 0;
 }
 
 body {
@@ -22,11 +23,16 @@ body {
   font-family: roboto;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  max-height: auto;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
 }
 
 ::-webkit-scrollbar {
@@ -36,14 +42,13 @@ code {
 ::-webkit-scrollbar-track {
   background-color: #1a1a1a;
 }
+
 ::-webkit-scrollbar-thumb {
   background-color: green;
 }
 
 .app {
-  height: calc(
-    100vh - var(--toolbar-height) - 8px
-  ); /* 8px is weird but necessary */
+  height: calc(100vh - var(--toolbar-height) - 8px);
   display: flex;
   flex-direction: column;
 }
@@ -60,7 +65,6 @@ code {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-
   padding: 0 24px;
   border-bottom: 2px solid;
 }
@@ -68,29 +72,63 @@ code {
 .toolbarButton {
   background-color: var(--button);
   height: fit-content;
-  border-width: 1px;
-  border-radius: 10px;
-  border-color: grey;
-  border-style: solid;
-  padding: 2px, 5px;
+  border-radius: 5px;
+  border: none;
+  padding: 5px;
+  margin: 5px;
 }
+
 .toolbarButton:hover {
   background-color: var(--button-hover);
 }
+
 .toolbarButton:active {
   background-color: #1a1a1a;
 }
 
+.meterButton {
+  display: flex;
+  flex-direction: row;
+}
+
+.meterOptions {
+  position: absolute;
+  max-width: 25%;
+  top: calc(var(--toolbar-height) - 10px);
+  overflow-y: auto;
+  border: black solid 1px;
+  border-radius: 10px;
+}
+
+.options-box {
+  background-color: var(--background);
+  height: max-content;
+}
+
+.go {
+  visibility: hidden;
+}
+
 .about {
   position: absolute;
-  background-color: var(--background);
   left: 10px;
   max-width: 25%;
-  height: max-content;
-  top: calc(var(--toolbar-height) - 10px);
+  top: calc(var(--toolbar-height));
   padding: 10px;
+  height: calc(100vh - var(--toolbar-height));
+  overflow-y: auto;
+}
+
+.about::-webkit-scrollbar {
+  width: 0;
+}
+
+.about-box {
+  background-color: var(--background);
+  height: max-content;
   border: #1a1a1a solid;
   border-radius: 10px;
+  padding: 10px;
 }
 
 .scanModule {
@@ -104,17 +142,15 @@ code {
 
 .inputArea {
   width: 50%;
-  min-height: 100%;
   height: fit-content;
-  align-items: center;
-  justify-content: center;
+  padding: 10px;
+  margin: 0 0 0 10px;
   font-size: var(--fontSize);
-  line-height: 1.5;
+  min-height: 100%;
+  line-height: 2;
   resize: none;
   outline: none;
   border-style: none;
-  padding: 10px;
-  margin: 0 0 0 10px;
 }
 
 .outputArea {
@@ -122,6 +158,7 @@ code {
   height: fit-content;
   width: 50%;
   margin: 0 10px 0 0;
+  padding: 10px;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -129,18 +166,19 @@ code {
 }
 
 .line {
+  font-size: var(--fontSize);
+  min-height: 2em;
   padding: 10px;
   margin: 0;
   display: flex;
   flex-direction: column;
-  background-color: #fff;
-  font-size: var(--fontSize);
+  border-bottom: black solid 1px;
 }
 
 .lineSelection {
   padding: 3px;
   margin: 3px;
-  border-bottom: 3px solid rgb(102, 102, 102);
+  border-bottom: 3px solid #666666;
 }
 
 .option {
@@ -149,18 +187,42 @@ code {
   justify-content: space-between;
 }
 
-.naturalQ {
-  background-color: rgb(255, 192, 181);
+.Q,
+.S,
+.i {
+  width: 100%;
+  text-align: right;
 }
 
-.fullScan {
-  background-color: rgb(144, 255, 149);
+.Q {
+  background-color: #ffc0b5;
+}
+
+.S {
+  background-color: #90ff95;
+}
+
+.line-alts {
+  --scale: 0;
+  list-style-type: none;
+  transform: scale(1, var(--scale));
+  transition: transform 200ms, visibility 200s;
+  transform-origin: top;
+}
+
+.true {
+  --scale: 1;
+}
+
+.false {
+  visibility: hidden;
 }
 
 .info {
   position: relative;
   font-size: 50%;
   margin: 10px;
+  min-width: 17px;
 }
 
 .info::before,
@@ -170,14 +232,12 @@ code {
   position: absolute;
   top: -0.25rem;
   left: 50%;
-  transform: translateX(-50%) translateY(var(--translate-y, 0))
-    scale(var(--scale));
+  transform: translateX(-50%) translateY(var(--translate-y, 0)) scale(var(--scale));
   transition: 100ms transform;
 }
 
 .info::before {
   --translate-y: calc(-100% - var(--arrow-size));
-
   transform-origin: bottom center;
   background-color: var(--arrow-color);
   width: max-content;
@@ -191,7 +251,6 @@ code {
 
 .info::after {
   --translate-y: calc(-1.1 * var(--arrow-size));
-
   content: "";
   border: var(--arrow-size) solid transparent;
   border-top-color: var(--arrow-color);
@@ -201,4 +260,33 @@ code {
 .info:hover::before {
   z-index: 100;
   --scale: 1;
+}
+
+@media (max-width: 1600px) {
+  .about {
+    max-width: 100%;
+    right: 10px;
+  }
+}
+@media (max-width: 750px) {
+  .go {
+    visibility: visible;
+  }
+
+  .inputArea,
+.outputArea {
+    position: absolute;
+    left: 0;
+    margin: 0 0 0 10px;
+    width: 100vw;
+  }
+
+  .inputArea {
+    line-height: 1.25;
+    font-size: 18px;
+  }
+
+  .out {
+    display: none;
+  }
 }

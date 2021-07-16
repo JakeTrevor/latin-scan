@@ -2,7 +2,8 @@ import "../index.css";
 import React, { useEffect, useRef, useState } from "react";
 import { ScannedLine } from "./ScannedLine";
 import { scanLine, ScanParagraph } from "../scan";
-import { PresetOptions } from "../utils";
+import { find, getLetter, PresetOptions } from "../utils";
+import type { vowel } from "src/scanTypes";
 
 export let ScanModule = ({ inputDisplayed, settings }) => {
   let [text, setText] = useState("");
@@ -56,7 +57,29 @@ function AutoHeightTextarea({
       value={value}
       placeholder={placeholder}
       onChange={(e) => {
-        setValue(e.target.value);
+        let text = e.target.value;
+        if (/_[aeiouy]/.test(text.toLowerCase())) {
+          //test for _ followed by vowel in the text; this should be converted to a forced spondee
+          let forcedSpondees = find(text.toLocaleLowerCase(), /_[aeiouy]/g);
+          for (let each of forcedSpondees) {
+            let replacement = getLetter("long", text.charAt(each + 1) as vowel);
+            text =
+              text.substring(0, each) + replacement + text.substring(each + 2);
+          }
+        }
+        if (/@[aeiouy]/.test(text.toLocaleLowerCase())) {
+          //test for @ followed by vowel; should be converted to forced dactyl.
+          let forcedDactyls = find(text.toLocaleLowerCase(), /@[aeiouy]/g);
+          for (let each of forcedDactyls) {
+            let replacement = getLetter(
+              "short",
+              text.charAt(each + 1) as vowel
+            );
+            text =
+              text.substring(0, each) + replacement + text.substring(each + 2);
+          }
+        }
+        setValue(text);
       }}
     />
   );

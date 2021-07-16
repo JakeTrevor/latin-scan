@@ -62,7 +62,11 @@ export const alts = {
  * @returns {string}
  */
 export function getLetter(quantity: quantity, letter: vowel): string {
-  if (quantity === "undefined" || quantity === "break") {
+  if (
+    quantity === "undefined" ||
+    quantity === "break" ||
+    !/[aeiouy]/.test(letter.toLowerCase())
+  ) {
     return letter;
   } else {
     let reduced: strictQuant = quantity;

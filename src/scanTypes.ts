@@ -14,7 +14,19 @@ export type setting = {
 };
 
 export type strictQuant = "long" | "short";
-export type vowel = "a" | "e" | "i" | "o" | "u" | "A" | "E" | "I" | "O" | "U";
+export type vowel =
+  | "a"
+  | "e"
+  | "i"
+  | "o"
+  | "y"
+  | "u"
+  | "A"
+  | "E"
+  | "I"
+  | "O"
+  | "U"
+  | "Y";
 export type quantity = "undefined" | "long" | "short" | "break";
 
 export type scannedLineType = {

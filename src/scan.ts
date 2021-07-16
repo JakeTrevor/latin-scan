@@ -53,6 +53,9 @@ export let scanLine = (line: string, meter: meter): scannedLineType => {
 
   let meta: metaLine = undress(line);
   let raws = preScan(meta.line);
+  meta.line = meta.line.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  //remove acents from line to avoid potential printing errors
+
   let dressedRaws: string[] = [];
   for (let each of raws) {
     dressedRaws.push(postScan(meta, each));
@@ -120,6 +123,10 @@ export let preScan = (line: string): sylMap[] => {
   let quants: sylMap = {};
   line = line.toLowerCase();
 
+  let forcedSpondees = find(line, expressions.spondeeVowels);
+  let forcedDactyls = find(line, expressions.dactylVowels);
+  line = line.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); //pull out all the forced vowels and normalise the string.
+
   //start by removing fake vowels from the text; replaced with @; this never otherwise appears
   line = line.replace(expressions["silent1"], " @y");
   line = line.replace(expressions["silent2"], "q@");
@@ -157,6 +164,17 @@ export let preScan = (line: string): sylMap[] => {
   positions = positions.filter((x) => !fakes.includes(x));
   spondees = spondees.filter((x) => !fakes.includes(x));
   dactyls = dactyls.filter((x) => !fakes.includes(x));
+
+  //now we add in the forced quantities
+  //dactyls first
+  positions = positions.concat(forcedDactyls);
+  spondees = spondees.filter((x) => !forcedDactyls.includes(x));
+  dactyls.concat(forcedDactyls);
+
+  //and now spondees
+  positions = positions.concat(forcedSpondees);
+  dactyls = dactyls.filter((x) => !forcedSpondees.includes(x));
+  spondees.concat(forcedSpondees);
 
   //setup the quants dict. mapping position to a default value of 0
   for (let position of positions) {
