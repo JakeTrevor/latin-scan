@@ -37,8 +37,9 @@
   },
   "scripts": {
     "test": "jest --verbose",
-    "build-serviceWorker": "snowpack build && workbox generateSW workbox-config.js",
-    "build": "snowpack build",
+    "build": "snowpack build && workbox generateSW workbox-config.js",
+    "build-NOSW": "snowpack build",
+    "build-SW": "workbox generateSW workbox-config.js",
     "start": "snowpack dev"
   }
 }
