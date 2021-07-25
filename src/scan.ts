@@ -3,6 +3,7 @@ import type {
   metaLine,
   meter,
   quantity,
+  rawType,
   scannedLineType,
   setting,
   sylMap,
@@ -18,9 +19,8 @@ import expressions, {
 
 //*main functions
 /**
- * The wrapper function is the interface for scanning lines with the scan algorithm
- * returns a list of lists; each sublist contains the origional line and the possible scans for that line
- * wrapper takes two arguments:
+ * Wrapper function; The interface for scanning lines with the scan algorithm.
+ *
  * @param {string} text - a list of lines to be scanned
  * @param {settings} settings - special object that details the specifics of the scan
  * @returns {scannedLineType}
@@ -49,82 +49,73 @@ export let ScanParagraph = (text: string, settings: setting) => {
 };
 
 export let scanLine = (line: string, meter: meter): scannedLineType => {
-  let output: scannedLineType = { line: line, raws: [], full: [] }; //initialize output object
+  //start by strippin the line of punctuation and performin a first pass
+  let [punctuation, strippedLine] = undress(line);
+  let firstPasses = preScan(strippedLine);
+  let output: scannedLineType = { line: line, output: [], errors: [] };
 
-  let meta: metaLine = undress(line);
-  let raws = preScan(meta.line);
-  meta.line = meta.line.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  //remove acents from line to avoid potential printing errors
-
-  let dressedRaws: string[] = [];
-  for (let each of raws) {
-    dressedRaws.push(postScan(meta, each));
-  }
-  output.raws = dressedRaws;
-
-  //  now we would switch on the meter
-  let toDress: sylMap[][] = [];
+  //now we need to match the possible scans to the first passes
   switch (meter) {
     case "Hexameter":
-      for (let each of raws) {
-        let quantityScans = hexScan(each);
-        let pos = Object.keys(each).map((elt) => {
-          return parseInt(elt);
-        });
-        let scans = quantityScans.map((elt) => {
-          return marryUp(elt, pos);
-        });
-        toDress.push(scans);
+      for (let each of firstPasses) {
+        //iterate over each quantity possibility
+        let temp: rawType = { raw: "", full: [] };
+        try {
+          let secondPasses = hexScan(each);
+          temp.raw = postScan(strippedLine, punctuation, each, []); //post process the line
+          temp.full = secondPasses.map((each) => {
+            let [sylables, breaks] = each;
+            return postScan(strippedLine, punctuation, sylables, breaks);
+          });
+        } catch (error) {
+          temp = {
+            raw: postScan(strippedLine, punctuation, each, []),
+            full: [],
+            errors: error,
+          };
+        }
+        output.output.push(temp);
       }
       break;
+
     case "Pentameter":
-      for (let each of raws) {
-        let quantityScans = penScan(each);
-        let pos = Object.keys(each).map((elt) => {
-          return parseInt(elt);
-        });
-        let scans = quantityScans.map((elt) => {
-          return marryUp(elt, pos);
-        });
-        toDress.push(scans);
+      for (let each of firstPasses) {
+        //iterate over each quantity possibility
+        let temp: rawType = { raw: "", full: [] };
+        try {
+          let secondPasses = penScan(each);
+          temp.raw = postScan(strippedLine, punctuation, each, []); //post process the line
+          temp.full = secondPasses.map((each) => {
+            let [sylables, breaks] = each;
+            return postScan(strippedLine, punctuation, sylables, breaks);
+          });
+        } catch (error) {
+          temp = {
+            raw: postScan(strippedLine, punctuation, each, []),
+            full: [],
+            errors: error,
+          };
+        }
+        output.output.push(temp);
       }
       break;
   }
-
-  let done: string[][] = toDress.map((rawGroup) => {
-    return rawGroup.map((raw) => {
-      return postScan(meta, raw);
-    });
-  });
-  output.full = done;
   return output;
 };
 
-/** undresses (removes punctuation from) a string
- *
- * @param {string} line
- * @returns {metaLine}
- */
-export let undress = (line: string): metaLine => {
+export let undress = (line: string): [Record<number, string>, string] => {
   let markup = mapFind(line, expressions["punc"]);
   line = line.replace(expressions["punc"], "");
-  return { line: line, markup: markup };
+  return [markup, line];
 };
 
-/**
- * prescan takes a single line as input
- * it does the work common to all scan implementations, such as finding the vowels,
- * assining preliminary quantity, etc.
- * returns an object mapping position of a vowel to its quantity.
- * @param {string} line - the line being preped.
- * @returns {sylMap[]}
- */
 export let preScan = (line: string): sylMap[] => {
   let quants: sylMap = {};
   line = line.toLowerCase();
 
   let forcedSpondees = find(line, expressions.spondeeVowels);
   let forcedDactyls = find(line, expressions.dactylVowels);
+
   line = line.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); //pull out all the forced vowels and normalise the string.
 
   //start by removing fake vowels from the text; replaced with @; this never otherwise appears
@@ -169,12 +160,23 @@ export let preScan = (line: string): sylMap[] => {
   //dactyls first
   positions = positions.concat(forcedDactyls);
   spondees = spondees.filter((x) => !forcedDactyls.includes(x));
-  dactyls.concat(forcedDactyls);
+  dactyls = dactyls.concat(forcedDactyls);
 
   //and now spondees
   positions = positions.concat(forcedSpondees);
   dactyls = dactyls.filter((x) => !forcedSpondees.includes(x));
-  spondees.concat(forcedSpondees);
+  spondees = spondees.concat(forcedSpondees);
+
+  //remove duplicates
+  positions = positions.filter((item, pos) => {
+    return positions.indexOf(item) === pos;
+  });
+  dactyls = dactyls.filter((item, pos) => {
+    return dactyls.indexOf(item) === pos;
+  });
+  spondees = spondees.filter((item, pos) => {
+    return spondees.indexOf(item) === pos;
+  });
 
   //setup the quants dict. mapping position to a default value of 0
   for (let position of positions) {
@@ -190,74 +192,111 @@ export let preScan = (line: string): sylMap[] => {
   }
 
   //now to handle the maybe Dipthongs
-
   let outputArr: sylMap[];
   if (maybeDiphs.length !== 0) {
     //there is an instance of "eu"
     let combos = nBitCombos(maybeDiphs.length);
-    outputArr = Array(combos.length).fill(quants);
+    outputArr = [];
     for (let i = 0; i < combos.length; i++) {
       for (let j = 0; j < maybeDiphs.length; j++) {
-        if (combos[i][j] === "0") {
-          outputArr[i][maybeDiphs[j]] = "long";
+        delete quants[maybeDiphs[j]];
+        delete quants[maybeDiphs[j] + 1];
+        if (combos[i][j] == "0") {
+          quants[maybeDiphs[j]] = "long";
         } else {
-          outputArr[i][maybeDiphs[j]] = "short";
-          outputArr[i][maybeDiphs[j] + 1] = "undefined";
+          quants[maybeDiphs[j]] = "short";
+          quants[maybeDiphs[j] + 1] = "undefined";
         }
       }
+      outputArr.push(JSON.parse(JSON.stringify(quants))); //references are the bain of my life
     }
   } else {
     outputArr = [quants];
   }
   //i feel so gross....
-
   return outputArr;
 };
 
-export let postScan = (meta: metaLine, markings: sylMap): string => {
-  let line: string[] = Array.from(meta.line); //we want to use array.splice to inset our characters, so we need our string to be an array
-  let punctuation = meta.markup;
-  let breaks: number[] = [];
+export let postScan = (
+  lineString: string,
+  punctuation: Record<number, string>,
+  markings: sylMap,
+  breaks: number[]
+): string => {
+  let line: string[] = Array.from(lineString); //we want to use array.splice to inset our characters, so we need our string to be an array
+  let afterBreaks: number[] = [];
+
+  let flag = false;
   let positions = Object.keys(markings).map((el) => {
     //positions currently holds the positions of valid vowels.
-    return parseInt(el);
-  });
-  for (let each of positions) {
-    if (markings[each] === "break") {
-      breaks.push(each);
-    } else {
-      line.splice(each, 1, getLetter(markings[each], line[each] as vowel));
+    let temp = parseInt(el);
+
+    //this if statement generates an index we can use to look at the section of text a break is in
+    //this helps place the break in an intuitive way
+    if (flag) {
+      afterBreaks.push(temp);
+      flag = false;
+    } else if (breaks?.includes(temp + 1)) {
+      flag = true;
     }
+
+    return temp;
+  });
+
+  //insert acented letters
+  for (let each of positions) {
+    line.splice(each, 1, getLetter(markings[each], line[each] as vowel));
   }
-  //at this point, the string has foot markings, but no punctuation.
-  //time to add punctuation back...
+
+  //add the punctuation back in
+  //get a list of positions with punctuation
+  line = insertPunctuation(line, punctuation); //this inserts the punctuation into the line
   positions = Object.keys(punctuation).map((el) => {
     //positions now holds the positions of punctuation marks
     return parseInt(el);
   });
-  let pointer = 0;
-  for (let each of positions) {
-    if (pointer === breaks.length) {
-      break;
-    } else if (breaks[pointer] > each) {
-      pointer++;
+
+  //?this section handles the foot breaks.
+  if (breaks) {
+    //start by figuring out where in the line the break should go
+    //i.e. after a dipthong, in a space, before punctuation
+
+    //start by iterating over the breaks
+    for (let i = 0; i < breaks.length; i++) {
+      let subsection = lineString.substring(breaks[i], afterBreaks[i]) || "@"; //get the section of text the break will be inserted into
+      ///You need the @ because if subsection defaults to "", then subsection[0] is undefined
+      //and the regex match for /[aeiouy]/ returns true for some unfathomable reason
+      if (/\s/.test(subsection)) {
+        //if subsection contains a space
+        breaks[i] += subsection.search(/\s/); //place the break before the space
+
+        //
+      } else if (/[aeiouy]/.test(subsection[0])) {
+        //if the vowel is followed by annother unmarked vowel (i.e. it forms a diphthong)
+        breaks[i] += 1; //place the break after the vowel.
+      } //note that a space takes precedent over a dipthong.
     }
-    for (let i = pointer; i < breaks.length; i++) {
-      breaks[i]++;
+
+    //adjust the position of each break to account for the previous breaks
+    for (let i = 0; i < breaks.length; i++) {
+      breaks[i] += i;
+    }
+
+    //now correct for punctuation
+    for (let i = 0; i < breaks.length; i++) {
+      for (let each of positions) {
+        if (each < breaks[i]) {
+          breaks[i] += 1;
+        }
+      }
+    }
+
+    //insert
+    for (let each of breaks) {
+      line.splice(each, 0, "|");
     }
   }
 
-  for (let i = 0; i < breaks.length; i++) {
-    breaks[i] += i;
-    if (breaks[i] in punctuation) {
-      breaks[i]++;
-    }
-  }
-
-  line = insertPunctuation(line, punctuation); //this inserts the punctuation into the line
-  for (let each of breaks) {
-    line.splice(each, 0, "|");
-  }
   return line.join("");
 };
 
@@ -268,25 +307,19 @@ export let postScan = (meta: metaLine, markings: sylMap): string => {
  */
 export function arrToQuantity(arr: number[][], meter: meter): quantity[][] {
   let output: quantity[][] = [];
+  let temp: quantity[][];
   for (let each of arr) {
-    let temp = each.map((el) => {
+    temp = each.map((el) => {
       //first we map each 0 or 1 to an array of quantities.
       return el === 0 //if the element is 0, then the foot is long
-        ? (["long", "long", "break"] as quantity[]) //so insert the long foot template
-        : (["long", "short", "short", "break"] as quantity[]); //else, insert the short foot template
+        ? ["long", "long", "break"] //so insert the long foot template
+        : ["long", "short", "short", "break"]; //else, insert the short foot template
     });
 
     //we have now an array of quantity arrays; (quantity[][])
     switch (meter) {
       case "Hexameter":
-        temp.push([
-          "long",
-          "short",
-          "short",
-          "break",
-          "long",
-          "undefined",
-        ] as quantity[]);
+        temp.push(["long", "short", "short", "break", "long", "undefined"]);
         break;
       case "Pentameter":
         temp.push([
@@ -322,21 +355,26 @@ export function arrToQuantity(arr: number[][], meter: meter): quantity[][] {
  * @param { number [] } positions
  * @returns { sylMap }
  */
-export function marryUp(quants: quantity[], positions: number[]): sylMap {
+export function marryUp(
+  quants: quantity[],
+  positions: number[]
+): [sylMap, number[]] {
+  //defining structrures to be returned
   let output: sylMap = {};
-  let breaks = 0;
+  let breaks: number[] = [];
+
+  //looping over all quantities/positions
   for (let i = 0; i < quants.length; i++) {
     let curQuant = quants[i];
     let curPos: number;
     if (curQuant === "break") {
-      breaks++;
-      curPos = positions[i - breaks] + 1;
+      breaks.push(positions[i - breaks.length - 1] + 1);
     } else {
-      curPos = positions[i - breaks];
+      curPos = positions[i - breaks.length];
+      output[curPos] = curQuant;
     }
-    output[curPos] = curQuant;
   }
-  return output;
+  return [output, breaks];
 }
 
 export let insertPunctuation = (
@@ -356,7 +394,7 @@ export let insertPunctuation = (
  * each object containing
  * @param {Object} quants
  */
-export let hexScan = (map: sylMap): quantity[][] => {
+export let hexScan = (map: sylMap): [sylMap, number[]][] => {
   /**
    * you tell it how many spondees there are
    * and it generates all the possible combinations for that line
@@ -385,7 +423,10 @@ export let hexScan = (map: sylMap): quantity[][] => {
     }
     return combos;
   }
-  //positions do not matter to the analyser, so we
+  let positions = Object.keys(map).map((each) => {
+    return parseInt(each);
+  }); //extract the posiions; this is used near the end
+
   let quantValues = Object.values(map); //extract quantities array
   let meters: quantity[][] = [];
 
@@ -395,11 +436,9 @@ export let hexScan = (map: sylMap): quantity[][] => {
 
   //handle line too long or short cases
   if (dactyls > 4) {
-    console.log("too long!");
-    return meters;
+    throw "Too long!";
   } else if (dactyls < 0) {
-    console.log("too short!");
-    return meters;
+    throw "Too short!";
   }
 
   meters = arrToQuantity(generateHexCombos(dactyls), "Hexameter");
@@ -410,7 +449,7 @@ export let hexScan = (map: sylMap): quantity[][] => {
     });
   });
   let curQuant: quantity;
-  for (let vowelCounter = 0; vowelCounter < vowels; vowelCounter++) {
+  for (let vowelCounter = 0; vowelCounter < vowels - 5; vowelCounter++) {
     curQuant = quantValues[vowelCounter];
     if (curQuant !== "undefined") {
       for (let meterCounter = 0; meterCounter < meters.length; meterCounter++) {
@@ -424,11 +463,16 @@ export let hexScan = (map: sylMap): quantity[][] => {
       }
     }
   }
+  for (let each of meters) {
+    each[each.length - 1] = quantValues[quantValues.length - 1];
+  }
 
-  return meters;
+  return meters.map((each) => {
+    return marryUp(each, positions);
+  });
 };
 
-export let penScan = (map: sylMap): quantity[][] => {
+export let penScan = (map: sylMap): [sylMap, number[]][] => {
   function generatePenCombos(dactyls: number): number[][] {
     switch (dactyls) {
       case 0:
@@ -443,6 +487,10 @@ export let penScan = (map: sylMap): quantity[][] => {
     }
     return [[0, 0]]; //the default case is to assume 0 dactyls
   }
+  let positions = Object.keys(map).map((each) => {
+    return parseInt(each);
+  }); //extract the posiions; this is used near the end
+
   let quantValues = Object.values(map); //extract quantities array
   let meters: quantity[][] = [];
 
@@ -451,13 +499,11 @@ export let penScan = (map: sylMap): quantity[][] => {
   let dactyls = vowels - 12;
 
   //handle line too long or short cases
-  if (dactyls > 2) {
-    console.log("too long!");
-    return meters;
-  } else if (dactyls < 0) {
-    console.log("too short!");
-    return meters;
-  }
+  // if (dactyls > 2) {
+  //   console.log("too long!");
+  // } else if (dactyls < 0) {
+  //   console.log("too short!");
+  // }
 
   meters = arrToQuantity(generatePenCombos(dactyls), "Pentameter");
   //create a copy of the meters without breaks
@@ -481,5 +527,8 @@ export let penScan = (map: sylMap): quantity[][] => {
       }
     }
   }
-  return meters;
+
+  return meters.map((each) => {
+    return marryUp(each, positions);
+  });
 };

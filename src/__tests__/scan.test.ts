@@ -66,11 +66,11 @@ describe("scan algorithm functionality testing", () => {
       "undefined",
     ],
   ];
-  let AeneidMarked = "Ārmă vĭ|rūmquĕ că|nō Trō|iāe quī| prīmŭs ă|b ōris";
+  let AeneidMarked = "Ārmă vĭ|rūmquĕ că|nō Trōi|āe quī| prīmŭs ăb| ōris";
   let AeneidLn1Done: scannedLineType = {
     line: AeneidLn1,
     raws: [AeneidNatQuants].map((each) => {
-      return postScan(Aend1Markup, each);
+      return postScan(Aend1Markup, each, []);
     }),
     full: [[AeneidMarked]],
   };
@@ -78,7 +78,7 @@ describe("scan algorithm functionality testing", () => {
   test.todo("scan paragraph");
 
   test("scan line", () => {
-    expect(scanLine(AeneidLn1, PresetOptions)).toEqual(AeneidLn1Done);
+    expect(scanLine(AeneidLn1, PresetOptions.meter)).toEqual(AeneidLn1Done);
   });
 
   test("undress", () => {
@@ -103,7 +103,8 @@ describe("scan algorithm functionality testing", () => {
         return parseInt(el);
       })
     );
-    expect(postScan(Aend1Markup, markings)).toEqual(AeneidMarked);
+    let [quants, breaks] = markings;
+    expect(postScan(Aend1Markup, quants, breaks)).toEqual(AeneidMarked);
   });
 
   test("hex scan", () => {
@@ -184,27 +185,31 @@ describe("scan algorithm functionality testing", () => {
         "undefined",
       ],
     ];
-    expect(arrToQuantity(input)).toEqual(output);
+    expect(arrToQuantity(input, "Hexameter")).toEqual(output);
   });
 
   test("marry up", () => {
     let quantities: quantity[] = [
       "long",
       "short",
+      "break",
       "long",
       "short",
       "long",
       "long",
     ];
     let positions = [11, 32, 34, 40, 50, 51];
-    let ans: sylMap = {
-      11: "long",
-      32: "short",
-      34: "long",
-      40: "short",
-      50: "long",
-      51: "long",
-    };
+    let ans = [
+      {
+        11: "long",
+        32: "short",
+        34: "long",
+        40: "short",
+        50: "long",
+        51: "long",
+      },
+      [33],
+    ];
     expect(marryUp(quantities, positions)).toEqual(ans);
   });
 

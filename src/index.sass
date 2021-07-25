@@ -94,24 +94,30 @@ ul
   border: black solid 1px
   border-radius: 10px
 
-.options-box 
-  background-color: var(--background)
-  height: max-content
-
-
 .go 
   visibility: hidden
 
+.about-menu-enter
+  transform: translateX(-110%)
 
-.about 
+.about-menu-enter-active
+  transform: translateX(0%)
+  transition: all 500ms ease
+
+.about-menu-exit
+  transform: translateX(0%)
+
+.about-menu-exit-active
+  transform: translateX(-110%)
+  transition: all 500ms ease
+  
+.about
   position: absolute
-  left: 10px
-  max-width: 25%
   top: calc(var(--toolbar-height))
+  max-width: 25%
   padding: 10px
   height: calc(100vh - var(--toolbar-height))
   overflow-y: auto
-
 
 .about::-webkit-scrollbar 
   width: 0
@@ -162,8 +168,8 @@ ul
 .line 
   font-size: var(--fontSize)
   min-height: 2em
-  padding: 10px
-  margin: 0
+    padding: 10px
+    margin: 0
   display: flex
   flex-direction: column
   border-bottom: black solid 1px
@@ -174,6 +180,27 @@ ul
   margin: 3px
   border-bottom: 3px solid rgb(102, 102, 102)
 
+.options-box
+  overflow: hidden
+  margin: 3px
+  transition: height 200ms ease
+
+.line-options-enter
+  transform: translateY(-110%)
+
+.line-options-enter-active
+  transform: translateY(0%)
+  transition: all 200ms ease
+
+.line-options-exit
+  transform: translateY(0%)
+
+.line-options-exit-active
+  transform: translateY(-110%)
+  transition: all 200ms ease
+
+.line-alts 
+  list-style-type: none
 
 .option 
   display: flex
@@ -196,19 +223,6 @@ ul
   background-color: rgb(144, 255, 149)
 
 
-.line-alts 
-  --scale: 0
-  
-  list-style-type: none
-  transform: scale(1, var(--scale)) 
-  transition: transform 200ms, visibility 200s
-  transform-origin: top
-
-.true
-    --scale: 1
-
-.false
-  visibility: hidden
 
 .info 
   position: relative

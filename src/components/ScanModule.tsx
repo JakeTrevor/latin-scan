@@ -52,6 +52,7 @@ function AutoHeightTextarea({
 
   return (
     <textarea
+      autoFocus
       className={className}
       ref={textareaRef}
       value={value}

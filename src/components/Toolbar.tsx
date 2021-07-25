@@ -20,7 +20,7 @@ export let Toolbar = ({ settings, setSettings, switchMode }) => {
       <button className="toolbarButton" onClick={toggleAbout}>
         about
       </button>
-      {aboutOpen && <About />}
+      <About aboutOpen={aboutOpen} />
       <SettingsButton settings={settings} setSettings={setSettings} />
 
       <p>LatinScan</p>

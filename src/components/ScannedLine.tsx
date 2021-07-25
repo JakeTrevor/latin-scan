@@ -1,9 +1,9 @@
 import "../index.css";
 import React, { useEffect, useState } from "react";
-import type { scannedLineType } from "../scanTypes";
+import type { rawType, scannedLineType } from "../scanTypes";
+import { CSSTransition } from "react-transition-group";
 
-export let ScannedLine = (props: { line: scannedLineType }) => {
-  let line: scannedLineType = props.line;
+export let ScannedLine = ({ line }) => {
   let options = compileResults(line);
 
   //setup some state
@@ -14,6 +14,12 @@ export let ScannedLine = (props: { line: scannedLineType }) => {
     setOpen(!open);
   };
 
+  const [height, setHeight] = useState(null);
+  function calcHeight(el) {
+    let height = el.offsetHeight;
+    setHeight(height);
+  }
+
   //handler for a "selection out of range" bug
   useEffect(() => {
     if (selection >= options.length) {
@@ -21,40 +27,42 @@ export let ScannedLine = (props: { line: scannedLineType }) => {
     }
   });
 
-  let warnTip;
-  let num = line.full.length;
-  if (num === 0) {
-    let warnTip = "There are no valid scans for this line.";
-    //eventually, this will look up erros
-  } else {
-  }
-
-  let warn = <div className="info" data-tooltip=""></div>;
-
   //main component below
   return (
     <div className="line">
       <div className="lineSelection" onClick={toggleOpen}>
         {options[selection]}
-        {warn}
       </div>
-      {open && (
-        <ul className={"line-alts " + open}>
-          {options
-            .map((elt, i) => (
-              <li
-                key={i}
-                onClick={() => {
-                  setSelection(i);
-                  toggleOpen();
-                }}
-              >
-                {elt}
-              </li>
-            ))
-            .reverse()}
-        </ul>
-      )}
+      <div className="options-box" style={{ height: height }}>
+        <CSSTransition
+          in={open}
+          unmountOnExit
+          timeout={200}
+          classNames="line-options"
+          onEnter={calcHeight}
+          onExit={() => {
+            setHeight(0);
+          }}
+        >
+          <div>
+            <ul className="line-alts">
+              {options
+                .map((elt, i) => (
+                  <li
+                    key={i}
+                    onClick={() => {
+                      setSelection(i);
+                      toggleOpen();
+                    }}
+                  >
+                    {elt}
+                  </li>
+                ))
+                .reverse()}
+            </ul>
+          </div>
+        </CSSTransition>
+      </div>
     </div>
   );
 };
@@ -73,16 +81,16 @@ function Option({ type, typeDisplay, ...props }) {
 let compileResults = (input: scannedLineType) => {
   let options = [];
   let str = "";
-  for (let i = 0; i < input.raws.length; i++) {
-    for (let j = 0; j < input.full[i].length; j++) {
-      str = input.full[i][j];
+  for (let i = 0; i < input.output.length; i++) {
+    for (let j = 0; j < input.output[i].full.length; j++) {
+      str = input.output[i].full[j];
       options.push(
         <Option type="This line is a Full scan" typeDisplay="S">
           {str}
         </Option>
       );
     }
-    str = input.raws[i];
+    str = input.output[i].raw;
     options.push(
       <Option
         type="This line is incomplete; only the quantities that could be determined are displayed"
