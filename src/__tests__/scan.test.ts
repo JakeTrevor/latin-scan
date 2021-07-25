@@ -41,38 +41,33 @@ describe("scan algorithm functionality testing", () => {
     40: "undefined",
     42: "undefined",
   };
-  let Aend1Markup: metaLine = { line: AeneidLn1, markup: {} };
-  let Aeneid1Scan: quantity[][] = [
-    [
-      "long",
-      "short",
-      "short",
-      "break",
-      "long",
-      "short",
-      "short",
-      "break",
-      "long",
-      "long",
-      "break",
-      "long",
-      "long",
-      "break",
-      "long",
-      "short",
-      "short",
-      "break",
-      "long",
-      "undefined",
-    ],
-  ];
+  let Aeneid1Scan: sylMap = {
+    "0": "long",
+    "12": "short",
+    "15": "short",
+    "17": "long",
+    "21": "long",
+    "23": "long",
+    "28": "long",
+    "3": "short",
+    "32": "long",
+    "34": "short",
+    "37": "short",
+    "40": "long",
+    "42": "undefined",
+    "6": "short",
+    "8": "long",
+  };
   let AeneidMarked = "Ārmă vĭ|rūmquĕ că|nō Trōi|āe quī| prīmŭs ăb| ōris";
   let AeneidLn1Done: scannedLineType = {
     line: AeneidLn1,
-    raws: [AeneidNatQuants].map((each) => {
-      return postScan(Aend1Markup, each, []);
-    }),
-    full: [[AeneidMarked]],
+    output: [
+      {
+        raw: "Ārma virūmque canō Trōiāe quī primus ab oris",
+        full: [AeneidMarked],
+      },
+    ],
+    errors: [],
   };
 
   test.todo("scan paragraph");
@@ -84,10 +79,10 @@ describe("scan algorithm functionality testing", () => {
   test("undress", () => {
     let input =
       "this: is; a, line? to be undressed! it has a bunch of punctuation.";
-    let output: metaLine = {
-      line: "this is a line to be undressed it has a bunch of punctuation",
-      markup: { 4: ":", 8: ";", 11: ",", 17: "?", 34: "!", 65: "." },
-    };
+    let output = [
+      { 4: ":", 8: ";", 11: ",", 17: "?", 34: "!", 65: "." },
+      "this is a line to be undressed it has a bunch of punctuation",
+    ];
     expect(undress(input)).toEqual(output);
   });
 
@@ -97,18 +92,17 @@ describe("scan algorithm functionality testing", () => {
   });
 
   test("post-scan", () => {
-    let markings = marryUp(
-      Aeneid1Scan[0],
-      Object.keys(AeneidNatQuants).map((el) => {
-        return parseInt(el);
-      })
-    );
-    let [quants, breaks] = markings;
-    expect(postScan(Aend1Markup, quants, breaks)).toEqual(AeneidMarked);
+    let breaks = [7, 16, 22, 29, 38];
+    expect(postScan(AeneidLn1, {}, Aeneid1Scan, breaks)).toEqual(AeneidMarked);
   });
 
   test("hex scan", () => {
-    expect(hexScan(AeneidNatQuants)).toEqual(Aeneid1Scan);
+    let output: [sylMap, number[]][] = [];
+    output.push([Aeneid1Scan, [7, 16, 22, 29, 38]]);
+
+    expect(hexScan(AeneidNatQuants)).toEqual([
+      [Aeneid1Scan, [7, 16, 22, 29, 38]],
+    ]);
   });
 
   test("array to quantity", () => {

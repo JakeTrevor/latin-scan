@@ -1,6 +1,5 @@
 //scan.ts
 import type {
-  metaLine,
   meter,
   quantity,
   rawType,

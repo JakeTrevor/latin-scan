@@ -1,8 +1,3 @@
-export type metaLine = {
-  line: string;
-  markup: Record<number, string>;
-};
-
 export type setting = {
   meter: meter;
   first: meter;
