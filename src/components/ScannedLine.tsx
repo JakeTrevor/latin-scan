@@ -14,7 +14,7 @@ export let ScannedLine = ({ line }) => {
     setOpen(!open);
   };
 
-  const [height, setHeight] = useState(null);
+  const [height, setHeight] = useState(0);
   function calcHeight(el) {
     let height = el.offsetHeight;
     setHeight(height);
