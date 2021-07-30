@@ -3,12 +3,16 @@ import React, { useState } from "react";
 import { ScanModule } from "./components/ScanModule";
 import { Toolbar } from "./components/Toolbar";
 import { PresetOptions } from "./utils";
+import { ScanModuleMobile } from "./components/ScanModuleMobile";
+import { useWindowSize } from "./components/useWindowSize";
 
 export default function App() {
-  const [mode, setMode] = useState("in");
+  //some state to handle which component should be rendred on small screens (mobile devices)
+  const [mode, setMode] = useState("input");
   function switchMode() {
-    setMode(mode === "in" ? "out" : "in");
+    setMode(mode === "input" ? "output" : "input");
   }
+  let size = useWindowSize();
 
   const [settings, setSettings] = useState(PresetOptions);
 
@@ -20,7 +24,11 @@ export default function App() {
         setSettings={setSettings}
         switchMode={switchMode}
       />
-      <ScanModule settings={settings} inputDisplayed={mode} />
+      {size.width <= 750 ? (
+        <ScanModuleMobile settings={settings} mode={mode} />
+      ) : (
+        <ScanModule settings={settings} />
+      )}
     </div>
   );
 }

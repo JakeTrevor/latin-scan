@@ -1,1 +1,9 @@
 Latin-Scan is an automatic latin poetry scanner
+
+for the most part, this project is complete; there are some features that could still be implemented, but in one way or annother they extend the scope of the project some. 
+
+one component that i have considered adding is an improved input system - weather this be by allowing users to enter files from their PC environment (which is on the easier end) to a more complicated endeavour to allow uers to upload photos and use a computer vision API - like that provided by firebase ML - to read out the text and input it.
+the camera is a much more complicated endeavour; i am dumping some links here for future reference if (when) i come back to this project later.
+https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
+https://gist.github.com/anantn/1852070
+

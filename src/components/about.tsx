@@ -24,8 +24,8 @@ export function About({ aboutOpen }) {
             Scansion is the process of determining the meter (rhythm) of poetry.
             In latin, this is done through a combination of following some
             rules, and through a process of elimination. First, you determine
-            the "quantity" or length of each vowel in the line. you then compare
-            this to a small number of patterns that the line could take. the
+            the "quantity" or length of each vowel in the line. You then compare
+            this to a small number of patterns that the line could take on. The
             pattern you have left (and hopefully, it will only be one) is that
             line's rhythm.
           </p>
@@ -56,6 +56,10 @@ export function About({ aboutOpen }) {
             "_" (underscore) before a vowel to make it long, or "@" (at) before
             a vowel to make it short. This can be useful if the line isnt
             scanning right.
+          </p>
+          <p>
+            On mobile, a "Go" button will be in the top right corner - press
+            this to switch between the input and output.
           </p>
 
           <h1>A note on capabilities</h1>
