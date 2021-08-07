@@ -5,8 +5,7 @@ import { ScanParagraph } from "../scan";
 import { AutoHeightTextarea } from "./AutoHeightTextArea";
 import { CSSTransition } from "react-transition-group";
 
-export let ScanModuleMobile = ({ mode, settings }) => {
-  let [text, setText] = useState("");
+export let ScanModuleMobile = ({ mode, settings, text, setText }) => {
   let lines = ScanParagraph(text, settings);
 
   return (

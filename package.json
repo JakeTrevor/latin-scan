@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Automatic Latin Poetry Scanner",
   "main": "/src/index.ts",
-  "author": "Jake-the-llama",
+  "author": "JakeTrevor",
   "license": "ISC",
   "keywords": [],
   "dependencies": {
@@ -39,7 +39,7 @@
   "scripts": {
     "test": "jest --verbose",
     "build": "snowpack build && workbox generateSW workbox-config.js",
-    "build-NOSW": "snowpack build",
+    "build-NoSW": "snowpack build",
     "build-SW": "workbox generateSW workbox-config.js",
     "start": "snowpack dev"
   }

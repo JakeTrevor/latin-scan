@@ -4,8 +4,7 @@ import { ScannedLine } from "./ScannedLine";
 import { ScanParagraph } from "../scan";
 import { AutoHeightTextarea } from "./AutoHeightTextArea";
 
-export let ScanModule = ({ settings }) => {
-  let [text, setText] = useState("");
+export let ScanModule = ({ settings, text, setText }) => {
   let lines = ScanParagraph(text, settings);
 
   return (
