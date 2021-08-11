@@ -1,6 +1,9 @@
 import type { vowel, quantity, strictQuant, setting } from "./scanTypes";
 
-export let PresetOptions: setting = { meter: "Hexameter", first: "Hexameter" };
+export let PresetOptions: setting = {
+  meter: "Hexameter",
+  firstMeter: "Hexameter",
+};
 
 //regex expressions for constants to do with latin lanaguge
 export default {

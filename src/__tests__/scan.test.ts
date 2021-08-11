@@ -1,12 +1,11 @@
 import type {
-  metaLine,
   quantity,
   scannedLineType,
-  sylMap,
-} from "src/scanTypes";
-import { PresetOptions } from "../utils";
+  syllableMap,
+} from "src/SCAN/scanTypes";
+import { PresetOptions } from "../SCAN/utils";
 import {
-  ScanParagraph,
+  scanParagraph,
   scanLine,
   undress,
   preScan,
@@ -15,7 +14,7 @@ import {
   arrToQuantity,
   marryUp,
   insertPunctuation,
-} from "../scan";
+} from "../SCAN/scan";
 
 describe("scan algorithm functionality testing", () => {
   //test if each of the functions in scan.ts *works* in some case
@@ -23,7 +22,7 @@ describe("scan algorithm functionality testing", () => {
 
   //some vairbles used throughout the testing:
   let AeneidLn1 = "Arma virumque cano Troiae qui primus ab oris";
-  let AeneidNatQuants: sylMap = {
+  let AeneidNatQuants: syllableMap = {
     //short for Aeneidln1 natural quantities
     0: "long",
     3: "undefined",
@@ -41,7 +40,7 @@ describe("scan algorithm functionality testing", () => {
     40: "undefined",
     42: "undefined",
   };
-  let Aeneid1Scan: sylMap = {
+  let Aeneid1Scan: syllableMap = {
     "0": "long",
     "12": "short",
     "15": "short",
@@ -97,7 +96,7 @@ describe("scan algorithm functionality testing", () => {
   });
 
   test("hex scan", () => {
-    let output: [sylMap, number[]][] = [];
+    let output: [syllableMap, number[]][] = [];
     output.push([Aeneid1Scan, [7, 16, 22, 29, 38]]);
 
     expect(hexScan(AeneidNatQuants)).toEqual([

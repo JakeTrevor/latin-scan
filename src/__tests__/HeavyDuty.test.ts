@@ -1,6 +1,11 @@
-import type { metaLine } from "src/scanTypes";
-import { marryUp, postScan, preScan, scanLine, ScanParagraph } from "../scan";
-import { PresetOptions } from "../utils";
+import {
+  marryUp,
+  postScan,
+  preScan,
+  scanLine,
+  scanParagraph,
+} from "../SCAN/scan";
+import { PresetOptions } from "../SCAN/utils";
 
 describe("testing the placement of line breaks", () => {
   let AeneidLn1 = "Arma virumque cano Troiae qui primus ab oris";

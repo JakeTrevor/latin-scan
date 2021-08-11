@@ -5,7 +5,7 @@ import type {
   rawType,
   scannedLineType,
   setting,
-  sylMap,
+  syllableMap,
   vowel,
 } from "./scanTypes";
 import expressions, {
@@ -17,34 +17,31 @@ import expressions, {
 } from "./utils";
 
 //*main functions
-/**
- * Wrapper function; The interface for scanning lines with the scan algorithm.
- *
- * @param {string} text - a list of lines to be scanned
- * @param {settings} settings - special object that details the specifics of the scan
- * @returns {scannedLineType}
- */
-export let ScanParagraph = (text: string, settings: setting) => {
+export let scanParagraph = (
+  text: string,
+  settings: setting
+): scannedLineType[] => {
   let lines = text.split("\n");
-  let done: scannedLineType[] = [];
+  let finishedLines: scannedLineType[] = [];
 
   if (settings.meter === "Elegaic") {
-    let currentMeter = settings.first;
+    let currentMeter = settings.firstMeter;
+
     for (let line of lines) {
       if (line !== "") {
-        done.push(scanLine(line, currentMeter));
-        currentMeter =
-          currentMeter === "Hexameter" ? "Pentameter" : "Hexameter";
+        finishedLines.push(scanLine(line, currentMeter));
+        currentMeter = switchElegaicMeter(currentMeter);
       }
     }
   } else {
     for (let line of lines) {
       if (line !== "") {
-        done.push(scanLine(line, settings.meter));
+        finishedLines.push(scanLine(line, settings.meter));
       }
     }
   }
-  return done;
+
+  return finishedLines;
 };
 
 export let scanLine = (line: string, meter: meter): scannedLineType => {
@@ -108,8 +105,8 @@ export let undress = (line: string): [Record<number, string>, string] => {
   return [markup, line];
 };
 
-export let preScan = (line: string): sylMap[] => {
-  let quants: sylMap = {};
+export let preScan = (line: string): syllableMap[] => {
+  let quants: syllableMap = {};
   line = line.toLowerCase();
 
   let forcedSpondees = find(line, expressions.spondeeVowels);
@@ -191,7 +188,7 @@ export let preScan = (line: string): sylMap[] => {
   }
 
   //now to handle the maybe Dipthongs
-  let outputArr: sylMap[];
+  let outputArr: syllableMap[];
   if (maybeDiphs.length !== 0) {
     //there is an instance of "eu"
     let combos = nBitCombos(maybeDiphs.length);
@@ -219,7 +216,7 @@ export let preScan = (line: string): sylMap[] => {
 export let postScan = (
   lineString: string,
   punctuation: Record<number, string>,
-  markings: sylMap,
+  markings: syllableMap,
   breaks: number[]
 ): string => {
   let line: string[] = Array.from(lineString); //we want to use array.splice to inset our characters, so we need our string to be an array
@@ -299,6 +296,10 @@ export let postScan = (
   return line.join("");
 };
 
+function switchElegaicMeter(meter: meter): meter {
+  return meter === "Hexameter" ? "Pentameter" : "Hexameter";
+}
+
 /** function that takes a list of permutator outputs (4 binary arrays) and returns a list of complete quantity descriptions; 1 for each arr in the input.
  *
  * @param { number[][] } arr
@@ -352,14 +353,14 @@ export function arrToQuantity(arr: number[][], meter: meter): quantity[][] {
  *
  * @param { quantity[] } quants
  * @param { number [] } positions
- * @returns { sylMap }
+ * @returns { syllableMap }
  */
 export function marryUp(
   quants: quantity[],
   positions: number[]
-): [sylMap, number[]] {
+): [syllableMap, number[]] {
   //defining structrures to be returned
-  let output: sylMap = {};
+  let output: syllableMap = {};
   let breaks: number[] = [];
 
   //looping over all quantities/positions
@@ -393,7 +394,7 @@ export let insertPunctuation = (
  * each object containing
  * @param {Object} quants
  */
-export let hexScan = (map: sylMap): [sylMap, number[]][] => {
+export let hexScan = (map: syllableMap): [syllableMap, number[]][] => {
   /**
    * you tell it how many spondees there are
    * and it generates all the possible combinations for that line
@@ -471,7 +472,7 @@ export let hexScan = (map: sylMap): [sylMap, number[]][] => {
   });
 };
 
-export let penScan = (map: sylMap): [sylMap, number[]][] => {
+export let penScan = (map: syllableMap): [syllableMap, number[]][] => {
   function generatePenCombos(dactyls: number): number[][] {
     switch (dactyls) {
       case 0:

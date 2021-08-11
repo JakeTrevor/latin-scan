@@ -6,7 +6,7 @@ import expressions, {
   nBitCombos,
   nBitCombosManual,
   sum,
-} from "../utils";
+} from "../SCAN/utils";
 
 describe("utilities tests", () => {
   test("array summer", () => {

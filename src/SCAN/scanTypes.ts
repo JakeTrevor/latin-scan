@@ -1,6 +1,6 @@
 export type setting = {
   meter: meter;
-  first: meter;
+  firstMeter: meter;
 };
 
 export type scannedLineType = {
@@ -15,8 +15,7 @@ export type rawType = {
   errors?: string[];
 };
 
-export type sylMap = Record<number, quantity>;
-export type generalRecord = Record<number, string>;
+export type syllableMap = Record<number, quantity>;
 
 export type meter = "Hexameter" | "Pentameter" | "Elegaic";
 export type quantity = "undefined" | "long" | "short" | "break";
