@@ -5,10 +5,9 @@ export default function OutputArea({ toRender }) {
     <div>
       <ul>
         {toRender.map((each) => {
-          <li>{each.toString()}</li>;
+          return <li>{each.output[0].raw}</li>;
         })}
       </ul>
     </div>
   );
 }
-``;

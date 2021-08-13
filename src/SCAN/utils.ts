@@ -85,6 +85,7 @@ export function getLetter(quantity: quantity, letter: vowel): string {
  * @returns {number[]}
  */
 export function find(string: string, regex: RegExp): number[] {
+  regex.test(""); //"clear" the regex, since .test() followed by .exec() will return second instance.
   let posArray: number[] = [];
   let item: RegExpExecArray | null;
   while ((item = regex.exec(string)) !== null) {
@@ -106,10 +107,6 @@ export function mapFind(string: string, regex: RegExp): Record<number, string> {
   return dict;
 }
 
-/** function that sums an array
- * takes an array, returns the sum.
- * @param {number[]} arr
- */
 export function sum(arr: number[]): number {
   return arr.reduce((accumulator, currentValue) => {
     return accumulator + currentValue;

@@ -16,7 +16,6 @@ export default function App() {
   }
   let size = useWindowSize();
 
-  console.log(settings);
   return (
     <div className="app">
       <h1>Latin Scan</h1>

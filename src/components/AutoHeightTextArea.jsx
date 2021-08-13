@@ -1,8 +1,9 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { find, getLetter } from "../SCAN/utils";
 
 const FORCED_SPONDEE_REGEX = /_[aeiouy]/g;
 const FORCED_DACTYL_REGEX = /@[aeiouy]/g;
+const FOUND_FORCED_VOWEL = /[@_][aeiouy]/;
 
 function catchForcedDactyls(text) {
   if (FORCED_DACTYL_REGEX.test(text.toLocaleLowerCase())) {
@@ -34,10 +35,36 @@ function replaceLetter(text, position, replacement) {
   );
 }
 
+function setCaretPos(elRef, pos) {
+  console.log("was used.");
+  if (elRef.setSelectionRange) {
+    elRef.focus();
+    elRef.setSelectionRange(pos, pos);
+  } else if (elRef.createTextRange) {
+    var range = elRef.createTextRange();
+    range.collapse(true);
+    range.moveEnd("character", pos);
+    range.moveStart("character", pos);
+    range.select();
+  }
+}
+
 //A textArea component that grows and shrinks with the size of the input.
 //AND includes functionality to insert forced spondees and dactyls
 export default function AutoHeightTextarea({ value, setValue, placeholder }) {
+  let [caretPos, storeCaretPos] = useState(0);
   const textareaRef = useRef(null);
+
+  function handleTextChange(e) {
+    let text = e.target.value;
+    if (FOUND_FORCED_VOWEL.test(text.toLocaleLowerCase())) {
+      let caretPosition = e.target.selectionStart - 1;
+      storeCaretPos(caretPosition);
+      text = catchForcedSpondees(text);
+      text = catchForcedDactyls(text);
+    }
+    setValue(text);
+  }
 
   //when the component is re-rendered with a new value, recalculate and update the height
   useEffect(() => {
@@ -46,18 +73,18 @@ export default function AutoHeightTextarea({ value, setValue, placeholder }) {
     textareaRef.current.style.height = scrollHeight + "px";
   }, [value]);
 
+  //when a user forces a vowel quantity, ensure that the caret/cursor does not move to the end.
+  useEffect(() => {
+    setCaretPos(textareaRef.current, caretPos);
+  }, [caretPos]);
+
   return (
     <textarea
       autoFocus
       ref={textareaRef}
       value={value}
       placeholder={placeholder}
-      onChange={(e) => {
-        let text = e.target.value;
-        text = catchForcedSpondees(text);
-        text = catchForcedDactyls(text);
-        setValue(text);
-      }}
+      onChange={handleTextChange}
     />
   );
 }
