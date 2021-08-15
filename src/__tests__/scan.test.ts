@@ -7,7 +7,7 @@ import { PresetOptions } from "../SCAN/utils";
 import {
   scanParagraph,
   scanLine,
-  undress,
+  removePunctuation,
   preScan,
   postScan,
   hexScan,
@@ -82,7 +82,7 @@ describe("scan algorithm functionality testing", () => {
       { 4: ":", 8: ";", 11: ",", 17: "?", 34: "!", 65: "." },
       "this is a line to be undressed it has a bunch of punctuation",
     ];
-    expect(undress(input)).toEqual(output);
+    expect(removePunctuation(input)).toEqual(output);
   });
 
   test("pre-scan", () => {

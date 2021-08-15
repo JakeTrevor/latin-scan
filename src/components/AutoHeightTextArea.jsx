@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { find, getLetter } from "../SCAN/utils";
+import { findAllMatches, getLetterWithMarking } from "../SCAN/utils";
 
 const FORCED_SPONDEE_REGEX = /_[aeiouy]/g;
 const FORCED_DACTYL_REGEX = /@[aeiouy]/g;
@@ -7,10 +7,13 @@ const FOUND_FORCED_VOWEL = /[@_][aeiouy]/;
 
 function catchForcedDactyls(text) {
   if (FORCED_DACTYL_REGEX.test(text.toLocaleLowerCase())) {
-    let forcedDactyls = find(text.toLocaleLowerCase(), FORCED_DACTYL_REGEX);
+    let forcedDactyls = findAllMatches(
+      text.toLocaleLowerCase(),
+      FORCED_DACTYL_REGEX
+    );
     for (let each of forcedDactyls) {
       let letter = text.charAt(each + 1);
-      let replacement = getLetter("short", letter);
+      let replacement = getLetterWithMarking("short", letter);
       text = replaceLetter(text, each, replacement);
     }
   }
@@ -19,10 +22,13 @@ function catchForcedDactyls(text) {
 
 function catchForcedSpondees(text) {
   if (FORCED_SPONDEE_REGEX.test(text.toLowerCase())) {
-    let forcedSpondees = find(text.toLocaleLowerCase(), FORCED_SPONDEE_REGEX);
+    let forcedSpondees = findAllMatches(
+      text.toLocaleLowerCase(),
+      FORCED_SPONDEE_REGEX
+    );
     for (let each of forcedSpondees) {
       let letter = text.charAt(each + 1);
-      let replacement = getLetter("long", letter);
+      let replacement = getLetterWithMarking("long", letter);
       text = replaceLetter(text, each, replacement);
     }
   }

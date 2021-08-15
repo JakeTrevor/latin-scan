@@ -19,7 +19,6 @@ export type syllableMap = Record<number, quantity>;
 
 export type meter = "Hexameter" | "Pentameter" | "Elegaic";
 export type quantity = "undefined" | "long" | "short" | "break";
-export type strictQuant = "long" | "short";
 
 export type vowel =
   | "a"

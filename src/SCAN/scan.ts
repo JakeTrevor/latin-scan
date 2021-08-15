@@ -9,9 +9,9 @@ import type {
   vowel,
 } from "./scanTypes";
 import expressions, {
-  find,
-  getLetter,
-  mapFind,
+  findAllMatches,
+  getLetterWithMarking,
+  matchAndMap,
   nBitCombos,
   sum,
 } from "./utils";
@@ -45,10 +45,11 @@ export let scanParagraph = (
 };
 
 export let scanLine = (line: string, meter: meter): scannedLineType => {
-  //start by strippin the line of punctuation and performin a first pass
-  let [punctuation, strippedLine] = undress(line);
-  let firstPasses = preScan(strippedLine);
   let output: scannedLineType = { line: line, output: [], errors: [] };
+
+  //start by strippin the line of punctuation and performin a first pass
+  let [punctuation, strippedLine] = removePunctuation(line);
+  let firstPasses = preScan(strippedLine);
 
   //now we need to match the possible scans to the first passes
   switch (meter) {
@@ -99,18 +100,19 @@ export let scanLine = (line: string, meter: meter): scannedLineType => {
   return output;
 };
 
-export let undress = (line: string): [Record<number, string>, string] => {
-  let markup = mapFind(line, expressions["punc"]);
-  line = line.replace(expressions["punc"], "");
+export let removePunctuation = (
+  line: string
+): [Record<number, string>, string] => {
+  let markup = matchAndMap(line, expressions["punctuation"]);
+  line = line.replace(expressions["punctuation"], "");
   return [markup, line];
 };
 
 export let preScan = (line: string): syllableMap[] => {
   let quants: syllableMap = {};
   line = line.toLowerCase();
-
-  let forcedSpondees = find(line, expressions.spondeeVowels);
-  let forcedDactyls = find(line, expressions.dactylVowels);
+  let forcedSpondees = findAllMatches(line, expressions.spondeeVowels);
+  let forcedDactyls = findAllMatches(line, expressions.dactylVowels);
 
   line = line.normalize("NFD").replace(/[\u0300-\u036f]/g, ""); //pull out all the forced vowels and normalise the string.
 
@@ -118,19 +120,19 @@ export let preScan = (line: string): syllableMap[] => {
   line = line.replace(expressions["silent1"], " @y");
   line = line.replace(expressions["silent2"], "q@");
 
-  let positions = find(line, expressions["vowels"]); //a list of vowel positions
+  let positions = findAllMatches(line, expressions["vowels"]); //a list of vowel positions
 
   //all the things to be removed
-  let elide1 = find(line, expressions["ellisionFirstChar"]); //ellisions on the first word
-  let elide2 = find(line, expressions["ellisionLastChar"]); //elisions on the second word
+  let elide1 = findAllMatches(line, expressions["ellisionOnFirstChar"]); //ellisions on the first word
+  let elide2 = findAllMatches(line, expressions["ellisionOnLastChar"]); //elisions on the second word
   elide2 = elide2.map((x) => positions[positions.indexOf(x) + 1]); //this line changes the pos. so they refer to the first letter of the second word.
 
   //now we look for known quantity.
-  let longByPos = find(line, expressions["twoCons"]);
-  let diphs = find(line, expressions["diphthongs"]);
+  let longByPos = findAllMatches(line, expressions["twoConsonants"]);
+  let diphs = findAllMatches(line, expressions["diphthongs"]);
   let diphs2 = diphs.map((x) => x + 1); //the second vowel of a dipthong, to be removed
-  let maybeDiphs = find(line, expressions["maybeDiphthong"]); //look for "eu" formations. these are weird and are handled later.
-  let adjacents = find(line, expressions["doubleVowel"]);
+  let maybeDiphs = findAllMatches(line, expressions["maybeDiphthong"]); //look for "eu" formations. these are weird and are handled later.
+  let adjacents = findAllMatches(line, expressions["doubleVowel"]);
   adjacents = adjacents.filter(
     (pos) => !(diphs.includes(pos) || maybeDiphs.includes(pos))
   ); //find cases of vowel adjacency where no diphthong is formed.
@@ -204,7 +206,7 @@ export let preScan = (line: string): syllableMap[] => {
           quants[maybeDiphs[j] + 1] = "undefined";
         }
       }
-      outputArr.push(JSON.parse(JSON.stringify(quants))); //references are the bain of my life
+      outputArr.push(JSON.parse(JSON.stringify(quants))); //deepcopy
     }
   } else {
     outputArr = [quants];
@@ -219,181 +221,25 @@ export let postScan = (
   markings: syllableMap,
   breaks: number[]
 ): string => {
-  let line: string[] = Array.from(lineString); //we want to use array.splice to inset our characters, so we need our string to be an array
-  let afterBreaks: number[] = [];
-
-  let flag = false;
-  let positions = Object.keys(markings).map((el) => {
-    //positions currently holds the positions of valid vowels.
-    let temp = parseInt(el);
-
-    //this if statement generates an index we can use to look at the section of text a break is in
-    //this helps place the break in an intuitive way
-    if (flag) {
-      afterBreaks.push(temp);
-      flag = false;
-    } else if (breaks?.includes(temp + 1)) {
-      flag = true;
-    }
-
-    return temp;
-  });
+  let line: string[] = Array.from(lineString);
+  let vowelPositions = Object.keys(markings).map((el) => parseInt(el));
 
   //insert acented letters
-  for (let each of positions) {
-    line.splice(each, 1, getLetter(markings[each], line[each] as vowel));
+  for (let each of vowelPositions) {
+    line.splice(
+      each,
+      1,
+      getLetterWithMarking(markings[each], line[each] as vowel)
+    );
   }
 
   //add the punctuation back in
-  //get a list of positions with punctuation
-  line = insertPunctuation(line, punctuation); //this inserts the punctuation into the line
-  positions = Object.keys(punctuation).map((el) => {
-    //positions now holds the positions of punctuation marks
-    return parseInt(el);
-  });
+  line = insertPunctuation(line, punctuation);
 
-  //?this section handles the foot breaks.
-  if (breaks) {
-    //start by figuring out where in the line the break should go
-    //i.e. after a dipthong, in a space, before punctuation
-
-    //start by iterating over the breaks
-    for (let i = 0; i < breaks.length; i++) {
-      let subsection = lineString.substring(breaks[i], afterBreaks[i]) || "@"; //get the section of text the break will be inserted into
-      ///You need the @ because if subsection defaults to "", then subsection[0] is undefined
-      //and the regex match for /[aeiouy]/ returns true for some unfathomable reason
-      if (/\s/.test(subsection)) {
-        //if subsection contains a space
-        breaks[i] += subsection.search(/\s/); //place the break before the space
-
-        //
-      } else if (/[aeiouy]/.test(subsection[0])) {
-        //if the vowel is followed by annother unmarked vowel (i.e. it forms a diphthong)
-        breaks[i] += 1; //place the break after the vowel.
-      } //note that a space takes precedent over a dipthong.
-    }
-
-    //adjust the position of each break to account for the previous breaks
-    for (let i = 0; i < breaks.length; i++) {
-      breaks[i] += i;
-    }
-
-    //now correct for punctuation
-    for (let i = 0; i < breaks.length; i++) {
-      for (let each of positions) {
-        if (each < breaks[i]) {
-          breaks[i] += 1;
-        }
-      }
-    }
-
-    //insert
-    for (let each of breaks) {
-      line.splice(each, 0, "|");
-    }
-  }
-
+  line = insertBreaks(breaks, vowelPositions, punctuation, line);
   return line.join("");
 };
 
-function switchElegaicMeter(meter: meter): meter {
-  return meter === "Hexameter" ? "Pentameter" : "Hexameter";
-}
-
-/** function that takes a list of permutator outputs (4 binary arrays) and returns a list of complete quantity descriptions; 1 for each arr in the input.
- *
- * @param { number[][] } arr
- * @returns { quantity[][] }
- */
-export function arrToQuantity(arr: number[][], meter: meter): quantity[][] {
-  let output: quantity[][] = [];
-  let temp: quantity[][];
-  for (let each of arr) {
-    temp = each.map((el) => {
-      //first we map each 0 or 1 to an array of quantities.
-      return el === 0 //if the element is 0, then the foot is long
-        ? ["long", "long", "break"] //so insert the long foot template
-        : ["long", "short", "short", "break"]; //else, insert the short foot template
-    });
-
-    //we have now an array of quantity arrays; (quantity[][])
-    switch (meter) {
-      case "Hexameter":
-        temp.push(["long", "short", "short", "break", "long", "undefined"]);
-        break;
-      case "Pentameter":
-        temp.push([
-          "long",
-          "break",
-          "long",
-          "short",
-          "short",
-          "break",
-          "long",
-          "short",
-          "short",
-          "break",
-          "long",
-        ]);
-        break;
-    }
-
-    //we then flatten this by concatenating all the inner lists
-    //resulting in a quant[]
-    let temp2 = temp.reduce((acc, val) => {
-      return acc.concat(val);
-    });
-
-    output.push(temp2); //push this to the list of meters
-  }
-  return output;
-}
-
-/** utility function that marries up a list of quantities with a list of positions into a record/dictionary
- *
- * @param { quantity[] } quants
- * @param { number [] } positions
- * @returns { syllableMap }
- */
-export function marryUp(
-  quants: quantity[],
-  positions: number[]
-): [syllableMap, number[]] {
-  //defining structrures to be returned
-  let output: syllableMap = {};
-  let breaks: number[] = [];
-
-  //looping over all quantities/positions
-  for (let i = 0; i < quants.length; i++) {
-    let curQuant = quants[i];
-    let curPos: number;
-    if (curQuant === "break") {
-      breaks.push(positions[i - breaks.length - 1] + 1);
-    } else {
-      curPos = positions[i - breaks.length];
-      output[curPos] = curQuant;
-    }
-  }
-  return [output, breaks];
-}
-
-export let insertPunctuation = (
-  line: string[],
-  markup: Record<number, string>
-): string[] => {
-  let positions = Object.keys(markup).map((el) => parseInt(el));
-  for (let each of positions) {
-    line.splice(each, 0, markup[each]);
-  }
-  return line;
-};
-
-/**
- * hexScan matches the possible scans to the known quantities
- * returns an array of objects
- * each object containing
- * @param {Object} quants
- */
 export let hexScan = (map: syllableMap): [syllableMap, number[]][] => {
   /**
    * you tell it how many spondees there are
@@ -531,4 +377,160 @@ export let penScan = (map: syllableMap): [syllableMap, number[]][] => {
   return meters.map((each) => {
     return marryUp(each, positions);
   });
+};
+
+function insertBreaks(
+  breaks: number[],
+  vowelPositions: number[],
+  punctuation: Record<number, string>,
+  line: string[]
+) {
+  if (breaks) {
+    let nextVowelAfterBreak = getVowelsAfterBreaks(vowelPositions, breaks);
+    adjustBreakPositionsForSpacesAndDiphthongs(nextVowelAfterBreak);
+
+    for (let i = 0; i < breaks.length; i++) {
+      breaks[i] += i;
+    }
+
+    //now correct for punctuation
+    let punctuationPositions = Object.keys(punctuation).map((el) => {
+      return parseInt(el);
+    });
+    for (let i = 0; i < breaks.length; i++) {
+      for (let each of punctuationPositions) {
+        if (each < breaks[i]) {
+          breaks[i] += 1;
+        }
+      }
+    }
+
+    //insert
+    for (let each of breaks) {
+      line.splice(each, 0, "|");
+    }
+  }
+  return line;
+
+  function adjustBreakPositionsForSpacesAndDiphthongs(
+    nextVowelAfterBreak: number[]
+  ) {
+    let lineString = line.join("");
+    for (let i = 0; i < breaks.length; i++) {
+      let subsection =
+        lineString.substring(breaks[i], nextVowelAfterBreak[i]) || "@"; //!@ is needed to prevent "" default, which causes an error
+      if (/\s/.test(subsection)) {
+        breaks[i] += subsection.search(/\s/);
+      } else if (/[aeiouy]/.test(subsection[0])) {
+        breaks[i] += 1;
+      }
+    }
+  }
+
+  function getVowelsAfterBreaks(vowelPositions: number[], breaks: number[]) {
+    let vowelsFollowingBreak: number[] = [];
+    let nextVowelIsAfterBreak = false;
+    for (let each of vowelPositions) {
+      if (nextVowelIsAfterBreak) {
+        vowelsFollowingBreak.push(each);
+        nextVowelIsAfterBreak = false;
+      }
+      if (breaks.includes(each + 1)) {
+        nextVowelIsAfterBreak = true;
+      }
+    }
+    return vowelsFollowingBreak;
+  }
+}
+
+function switchElegaicMeter(meter: meter): meter {
+  return meter === "Hexameter" ? "Pentameter" : "Hexameter";
+}
+
+/** function that takes a list of permutator outputs (4 binary arrays) and returns a list of complete quantity descriptions; 1 for each arr in the input.
+ *
+ * @param { number[][] } arr
+ * @returns { quantity[][] }
+ */
+export function arrToQuantity(arr: number[][], meter: meter): quantity[][] {
+  let output: quantity[][] = [];
+  let temp: quantity[][];
+  for (let each of arr) {
+    temp = each.map((el) => {
+      //first we map each 0 or 1 to an array of quantities.
+      return el === 0 //if the element is 0, then the foot is long
+        ? ["long", "long", "break"] //so insert the long foot template
+        : ["long", "short", "short", "break"]; //else, insert the short foot template
+    });
+
+    //we have now an array of quantity arrays; (quantity[][])
+    switch (meter) {
+      case "Hexameter":
+        temp.push(["long", "short", "short", "break", "long", "undefined"]);
+        break;
+      case "Pentameter":
+        temp.push([
+          "long",
+          "break",
+          "long",
+          "short",
+          "short",
+          "break",
+          "long",
+          "short",
+          "short",
+          "break",
+          "long",
+        ]);
+        break;
+    }
+
+    //we then flatten this by concatenating all the inner lists
+    //resulting in a quant[]
+    let temp2 = temp.reduce((acc, val) => {
+      return acc.concat(val);
+    });
+
+    output.push(temp2); //push this to the list of meters
+  }
+  return output;
+}
+
+/** utility function that marries up a list of quantities with a list of positions into a record/dictionary
+ *
+ * @param { quantity[] } quants
+ * @param { number [] } positions
+ * @returns { syllableMap }
+ */
+export function marryUp(
+  quants: quantity[],
+  positions: number[]
+): [syllableMap, number[]] {
+  //defining structrures to be returned
+  let output: syllableMap = {};
+  let breaks: number[] = [];
+
+  //looping over all quantities/positions
+  for (let i = 0; i < quants.length; i++) {
+    let curQuant = quants[i];
+    let curPos: number;
+    if (curQuant === "break") {
+      breaks.push(positions[i - breaks.length - 1] + 1);
+    } else {
+      curPos = positions[i - breaks.length];
+      output[curPos] = curQuant;
+    }
+  }
+  return [output, breaks];
+}
+
+export let insertPunctuation = (
+  line: string[],
+  markup: Record<number, string>
+): string[] => {
+  let positions = Object.keys(markup).map((el) => parseInt(el));
+  for (let each of positions) {
+    line.splice(each, 0, markup[each]); //"0" ensures this is an inserting splice
+  }
+  return line;
 };

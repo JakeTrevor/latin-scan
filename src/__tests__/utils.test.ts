@@ -1,10 +1,7 @@
-//*all pass!
-
 import expressions, {
-  find,
-  mapFind,
+  findAllMatches,
+  matchAndMap,
   nBitCombos,
-  nBitCombosManual,
   sum,
 } from "../SCAN/utils";
 
@@ -13,7 +10,7 @@ describe("utilities tests", () => {
     expect(sum([1, 1, 1, 1])).toEqual(4);
   });
 
-  //? testing the combinatorial generators
+  //? testing the combinatorial generator
 
   let ans2 = ["00", "01", "10", "11"];
   let ans3 = "000 001 010 011 100 101 110 111".split(" ");
@@ -22,31 +19,27 @@ describe("utilities tests", () => {
     expect(nBitCombos(3)).toEqual(ans3);
   });
 
-  test("nBitCombos with arr. counting", () => {
-    expect(nBitCombosManual(3)).toEqual(ans3);
-    expect(nBitCombosManual(2)).toEqual(ans2);
-  });
-
   //? testing regex functions
 
   let string = "this is a string, can you see that it is a string?";
   let regex = /is/g;
+  let matchPositions = [
+    2, 5, 8, 13, 19, 22, 23, 24, 27, 28, 32, 35, 38, 41, 46,
+  ];
 
-  test("RegEx find", () => {
-    expect(find(string, regex)).toEqual([2, 5, 38]);
-    expect(find(string, expressions.vowels)).toEqual([
-      2, 5, 8, 13, 19, 22, 23, 24, 27, 28, 32, 35, 38, 41, 46,
-    ]);
+  test("RegEx finder", () => {
+    expect(findAllMatches(string, regex)).toEqual([2, 5, 38]);
+    expect(findAllMatches(string, expressions.vowels)).toEqual(matchPositions);
   });
 
   regex = /is/g;
-  test("RegEx mapFind", () => {
-    expect(mapFind(string, regex)).toEqual({
+  test("RegEx match", () => {
+    expect(matchAndMap(string, regex)).toEqual({
       "2": "is",
       "5": "is",
       "38": "is",
     });
-    expect(mapFind(string, expressions.vowels)).toEqual({
+    expect(matchAndMap(string, expressions.vowels)).toEqual({
       "2": "i",
       "5": "i",
       "8": "a",

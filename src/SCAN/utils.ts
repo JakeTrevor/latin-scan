@@ -1,4 +1,4 @@
-import type { vowel, quantity, strictQuant, setting } from "./scanTypes";
+import type { vowel, quantity, setting } from "./scanTypes";
 
 export let PresetOptions: setting = {
   meter: "Hexameter",
@@ -15,16 +15,15 @@ export default {
   dactylVowels: /[ăĕĭŏŭy̌]/g,
   silent1: /(\sia)|(\sio)|(\siu)/g,
   silent2: /(qu)/g,
-  twoCons: /[aeiouy]\s*([b-df-hj-np-tvwxz]\s*[b-df-hj-np-tvwxz])|[xz]}/g,
-  ellisionFirstChar:
+  twoConsonants: /[aeiouy]\s*([b-df-hj-np-tvwxz]\s*[b-df-hj-np-tvwxz])|[xz]}/g,
+  ellisionOnFirstChar:
     /([aeiouy]m\s+[aeiouy])|([aeiouy]\s+h[aeiouy])|([aeiouy]m\s+h[aeiouy])/g,
-  ellisionLastChar: /[aeiouy]\s+[aeiouy]/g,
-  punc: /[,.?!;:]/g,
-  ellisionMark: /([aeiouy])|([aeiouy]m)|(h[aeiouy])/gi, //todo think harder
+  ellisionOnLastChar: /[aeiouy]\s+[aeiouy]/g,
+  punctuation: /[,.?!;:]/g,
 };
 
 //object that contains the alternate character set for the vowels
-export const alts = {
+export const vowelsWithMarkings = {
   a: {
     long: "ā",
     short: "ă",
@@ -57,14 +56,11 @@ export const alts = {
   Y: { long: "Ȳ", short: "Y̌" },
 };
 
-//*busywork functons
-/** helper function that just returns the alternate version of the letter required.
- *
- * @param {quantity} quantity - the quantity of the vowel
- * @param {string} letter - the letter itself.
- * @returns {string}
- */
-export function getLetter(quantity: quantity, letter: vowel): string {
+//*busywork functions
+export function getLetterWithMarking(
+  quantity: quantity,
+  letter: vowel
+): string {
   if (
     quantity === "undefined" ||
     quantity === "break" ||
@@ -72,33 +68,24 @@ export function getLetter(quantity: quantity, letter: vowel): string {
   ) {
     return letter;
   } else {
-    let reduced: strictQuant = quantity;
-    return alts[letter][reduced];
+    return vowelsWithMarkings[letter][quantity];
   }
 }
 
-/** matches substrings within the string using the regex.
- * returns an array of the positions of the matches
- * why is this not built in?
- * @param {string} string
- * @param {RegExp} regex
- * @returns {number[]}
- */
-export function find(string: string, regex: RegExp): number[] {
+export function findAllMatches(string: string, regex: RegExp): number[] {
   regex.test(""); //"clear" the regex, since .test() followed by .exec() will return second instance.
   let posArray: number[] = [];
-  let item: RegExpExecArray | null;
-  while ((item = regex.exec(string)) !== null) {
-    posArray.push(item.index);
+  let objectReturnedByRegex: RegExpExecArray | null;
+  while ((objectReturnedByRegex = regex.exec(string)) !== null) {
+    posArray.push(objectReturnedByRegex.index);
   }
   return posArray;
 }
 
-/** returns a list of matches and their correspoding positions.
- * @param {String} string
- * @param {RegExp} regex
- */
-export function mapFind(string: string, regex: RegExp): Record<number, string> {
+export function matchAndMap(
+  string: string,
+  regex: RegExp
+): Record<number, string> {
   let dict: Record<number, string> = {};
   let item: RegExpExecArray | null;
   while ((item = regex.exec(string)) !== null) {
@@ -114,18 +101,6 @@ export function sum(arr: number[]): number {
 }
 
 export function nBitCombos(nBits: number): string[] {
-  let boundary = 2 ** nBits;
-  let curNum: string;
-  let output: string[] = [];
-  for (let i = 0; i < boundary; i++) {
-    curNum = i.toString(2);
-    while (curNum.length < nBits) curNum = "0" + curNum;
-    output.push(curNum);
-  }
-  return output;
-}
-
-export function nBitCombosManual(nBits: number): string[] {
   let work = Array(nBits).fill(0);
   let output: string[] = [work.join("")];
   while (sum(work) < nBits) {

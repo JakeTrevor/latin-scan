@@ -9,7 +9,6 @@ import { PresetOptions } from "../SCAN/utils";
 
 describe("testing the placement of line breaks", () => {
   let AeneidLn1 = "Arma virumque cano Troiae qui primus ab oris";
-  let Aend1Markup: metaLine = { line: AeneidLn1, markup: { 18: "," } };
 
   test("testing placement of line breaks", () => {
     let output = "Ārmă vĭ|rūmquĕ că|nō, Trōi|āe quī| prīmŭs ăb| ōris";
