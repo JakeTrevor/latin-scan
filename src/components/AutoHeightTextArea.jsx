@@ -42,7 +42,6 @@ function replaceLetter(text, position, replacement) {
 }
 
 function setCaretPos(elRef, pos) {
-  console.log("was used.");
   if (elRef.setSelectionRange) {
     elRef.focus();
     elRef.setSelectionRange(pos, pos);

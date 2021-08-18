@@ -56,7 +56,7 @@ export let scanLine = (line: string, meter: meter): scannedLineType => {
     case "Hexameter":
       for (let each of firstPasses) {
         //iterate over each quantity possibility
-        let temp: rawType = { raw: "", full: [] };
+        let temp: rawType = { raw: "", full: [], errors: [] };
         try {
           let secondPasses = hexScan(each);
           temp.raw = postScan(strippedLine, punctuation, each, []); //post process the line
@@ -78,7 +78,7 @@ export let scanLine = (line: string, meter: meter): scannedLineType => {
     case "Pentameter":
       for (let each of firstPasses) {
         //iterate over each quantity possibility
-        let temp: rawType = { raw: "", full: [] };
+        let temp: rawType = { raw: "", full: [], errors: [] };
         try {
           let secondPasses = penScan(each);
           temp.raw = postScan(strippedLine, punctuation, each, []); //post process the line
@@ -241,11 +241,6 @@ export let postScan = (
 };
 
 export let hexScan = (map: syllableMap): [syllableMap, number[]][] => {
-  /**
-   * you tell it how many spondees there are
-   * and it generates all the possible combinations for that line
-   * @param {Integer} spondees
-   */
   function generateHexCombos(dactyls: number): number[][] {
     let combos = [];
     let temp = [0, 0, 0, 0];
@@ -271,9 +266,9 @@ export let hexScan = (map: syllableMap): [syllableMap, number[]][] => {
   }
   let positions = Object.keys(map).map((each) => {
     return parseInt(each);
-  }); //extract the posiions; this is used near the end
+  });
 
-  let quantValues = Object.values(map); //extract quantities array
+  let quantValues = Object.values(map);
   let meters: quantity[][] = [];
 
   //now, calculate the number of spondaic syllables
@@ -345,11 +340,11 @@ export let penScan = (map: syllableMap): [syllableMap, number[]][] => {
   let dactyls = vowels - 12;
 
   //handle line too long or short cases
-  // if (dactyls > 2) {
-  //   console.log("too long!");
-  // } else if (dactyls < 0) {
-  //   console.log("too short!");
-  // }
+  if (dactyls > 2) {
+    throw "too long!";
+  } else if (dactyls < 0) {
+    throw "too short!";
+  }
 
   meters = arrToQuantity(generatePenCombos(dactyls), "Pentameter");
   //create a copy of the meters without breaks
