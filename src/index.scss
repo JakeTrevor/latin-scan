@@ -1,0 +1,46 @@
+* {
+  font-family: "Roboto", sans-serif;
+  font-size: 18px;
+  line-height: 40px;
+  width: 100%;
+}
+ul {
+  margin: 0;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  box-shadow: 0 1px 4px -4px rgb(0 0 0 / 37%);
+}
+
+.ScanArea {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: flex-start;
+  max-width: 1280px;
+  outline: none;
+  margin-top: 20px;
+  padding: 10px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px 0 rgb(0 0 0 / 37%);
+  :focus {
+    outline: none;
+  }
+}
+
+.IOArea {
+  border-radius: 8px;
+  resize: none;
+  width: 50%;
+  border: none;
+}

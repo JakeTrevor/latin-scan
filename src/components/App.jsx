@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { PresetOptions } from "../SCAN/utils";
+import AboutSection from "./AboutSection";
 import ScanArea from "./ScanArea";
 import useWindowSize from "./useWindowSize";
+import "../index.css";
 
 export default function App() {
   //the "Text" state of the app; the users input.
@@ -18,7 +20,11 @@ export default function App() {
 
   return (
     <div className="app">
-      <h1>Latin Scan</h1>
+      <div className="header">
+        <AboutSection />
+        <h1>Latin Scan</h1>
+        <div className="placeholder" />
+      </div>
       <ScanArea text={text} setText={setText} />
     </div>
   );

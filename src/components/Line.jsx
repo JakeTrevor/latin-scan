@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import "../index.css";
 
 export function Line({ scannedLine }) {
   let [optionSelected, setOptionSelected] = useState(0);
@@ -13,7 +14,7 @@ export function Line({ scannedLine }) {
   return (
     <div>
       <Selection toggleOpen={toggleOpen}>{textArray[optionSelected]}</Selection>
-      {options}
+      {open && options}
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { findAllMatches, getLetterWithMarking } from "../SCAN/utils";
+import "../index.css";
 
 const FORCED_SPONDEE_REGEX = /_[aeiouy]/g;
 const FORCED_DACTYL_REGEX = /@[aeiouy]/g;
@@ -56,7 +57,7 @@ function setCaretPos(elRef, pos) {
 
 //A textArea component that grows and shrinks with the size of the input.
 //AND includes functionality to insert forced spondees and dactyls
-export default function AutoHeightTextarea({ value, setValue, placeholder }) {
+export default function InputArea({ value, setValue, placeholder }) {
   let [caretPos, storeCaretPos] = useState(0);
   const textareaRef = useRef(null);
 
@@ -90,6 +91,7 @@ export default function AutoHeightTextarea({ value, setValue, placeholder }) {
       value={value}
       placeholder={placeholder}
       onChange={handleTextChange}
+      className="IOArea"
     />
   );
 }
