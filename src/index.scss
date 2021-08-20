@@ -1,11 +1,14 @@
 * {
   font-family: "Roboto", sans-serif;
   font-size: 18px;
-  line-height: 40px;
+  line-height: 30px;
   width: 100%;
 }
 ul {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  list-style-type: none;
 }
 
 .app {
@@ -30,7 +33,7 @@ ul {
   max-width: 1280px;
   outline: none;
   margin-top: 20px;
-  padding: 10px;
+  padding: 10px 20px;
   border-radius: 8px;
   box-shadow: 0 1px 4px 0 rgb(0 0 0 / 37%);
   :focus {
@@ -43,4 +46,40 @@ ul {
   resize: none;
   width: 50%;
   border: none;
+}
+
+.scanSelection {
+  display: flex;
+  justify-content: space-between;
+}
+
+.dropdownIcon {
+  width: min-content;
+}
+
+.tooltip {
+  position: relative;
+  width: min-content;
+  &::before {
+    //controll how/where the tooltip renders
+    --scale: 0;
+    position: absolute;
+    top: -0.25rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(-100%) scale(var(--scale));
+    transition: 100ms transform;
+
+    //controll what the tooltip looks like
+    background-color: rgb(255 255 255);
+    box-shadow: 0 1px 1px 0 rgb(0 0 0 / 50%);
+    padding: 2px;
+    border-radius: 5px;
+    line-height: 20px;
+    content: attr(data-tooltip);
+  }
+
+  &:hover::before {
+    z-index: 100;
+    --scale: 1;
+  }
 }

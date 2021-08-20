@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import "../index.css";
+import Tooltip from "./Tooltip";
+
+import { ReactComponent as DownArrow } from "./ICONS/DownArrow.svg";
 
 export function Line({ scannedLine }) {
   let [optionSelected, setOptionSelected] = useState(0);
@@ -19,7 +22,6 @@ export function Line({ scannedLine }) {
   );
 }
 
-//flatten the object into an ordered array
 function flattenScannedLine(scannedLine) {
   let temp = [];
   let output = scannedLine.output;
@@ -58,7 +60,13 @@ function makeOptionArray(scannedLine, setOption, setOpen) {
 }
 
 function Selection({ toggleOpen, children }) {
-  return <div onClick={toggleOpen}>{children}</div>;
+  return (
+    <div onClick={toggleOpen} className="scanSelection">
+      <DownArrow />
+      <div>{children}</div>
+      <Tooltip tooltip="info">[i]</Tooltip>
+    </div>
+  );
 }
 
 function Option({ id, setOptionSelected, setOpen, children }) {
@@ -67,8 +75,10 @@ function Option({ id, setOptionSelected, setOpen, children }) {
     setOpen(false);
   }
   return (
-    <li key={id} onClick={handleClick}>
-      {children}
+    <li key={id} onClick={handleClick} className="scanSelection">
+      <Tooltip tooltip="style">[Q]</Tooltip>
+      <div>{children}</div>
+      <Tooltip tooltip="info">[i]</Tooltip>
     </li>
   );
 }
