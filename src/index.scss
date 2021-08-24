@@ -58,6 +58,7 @@ ul {
 }
 
 .tooltip {
+  padding: 0 10px;
   position: relative;
   width: min-content;
   &::before {
@@ -82,4 +83,11 @@ ul {
     z-index: 100;
     --scale: 1;
   }
+}
+
+.icon {
+  --size: 16px;
+  height: var(--size);
+  width: var(--size);
+  padding: 7px;
 }

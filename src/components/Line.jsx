@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "../index.css";
 import Tooltip from "./Tooltip";
 
-import { ReactComponent as DownArrow } from "./ICONS/DownArrow.svg";
+import DownArrow from "./ICONS/DownArrow.svg";
 
 export function Line({ scannedLine }) {
   let [optionSelected, setOptionSelected] = useState(0);
@@ -62,7 +62,7 @@ function makeOptionArray(scannedLine, setOption, setOpen) {
 function Selection({ toggleOpen, children }) {
   return (
     <div onClick={toggleOpen} className="scanSelection">
-      <DownArrow />
+      <DownArrow className="icon" />
       <div>{children}</div>
       <Tooltip tooltip="info">[i]</Tooltip>
     </div>
