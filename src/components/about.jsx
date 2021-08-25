@@ -8,9 +8,11 @@ export default function About({ title, children }) {
   }
 
   return (
-    <div>
-      <h1 onClick={toggleOpen}>{title}</h1>
-      {open && <p>{children}</p>}
+    <div className="aboutBox">
+      <h1 className="aboutTitle" onClick={toggleOpen}>
+        {title}
+      </h1>
+      {open && <div className="aboutContent">{children}</div>}
     </div>
   );
 }

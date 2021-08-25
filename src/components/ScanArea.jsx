@@ -3,6 +3,7 @@ import { PresetOptions } from "../SCAN/utils";
 import { scanParagraph } from "../SCAN/scan";
 import InputArea from "./InputArea";
 import OutputArea from "./OutputArea";
+import { Route } from "react-router-dom";
 import "../index.css";
 
 export default function ScanArea({ text, setText }) {

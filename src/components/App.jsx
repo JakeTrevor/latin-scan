@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { PresetOptions } from "../SCAN/utils";
 import AboutSection from "./AboutSection";
 import ScanArea from "./ScanArea";
-import useWindowSize from "./useWindowSize";
+import { HashRouter, Switch, Route, Link } from "react-router-dom";
+
 import "../index.css";
 
 export default function App() {
@@ -16,16 +17,30 @@ export default function App() {
   function switchMode() {
     setMode(mode === "input" ? "output" : "input");
   }
-  let size = useWindowSize();
 
   return (
-    <div className="app">
-      <div className="header">
-        <AboutSection />
-        <h1>Latin Scan</h1>
-        <div className="placeholder" />
+    <HashRouter>
+      <div className="app">
+        <div className="header">
+          <Link to="/about">
+            <h1 className="headerItem">About</h1>
+          </Link>
+          <Link to="/">
+            <h1 className="headerItem">Latin Scan</h1>
+          </Link>
+          <Link to="/">
+            <h1 className="headerItem"></h1>
+          </Link>
+        </div>
+        <Switch>
+          <Route exact path="/about">
+            <AboutSection />
+          </Route>
+          <Route path="">
+            <ScanArea text={text} setText={setText} />
+          </Route>
+        </Switch>
       </div>
-      <ScanArea text={text} setText={setText} />
-    </div>
+    </HashRouter>
   );
 }
