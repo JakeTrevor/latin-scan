@@ -4,7 +4,7 @@ import "../index.css";
 
 export default function OutputArea({ toRender }) {
   return (
-    <div className="IOArea">
+    <div className="outputArea">
       <ul>
         {toRender.map((each) => {
           return <Line scannedLine={each} />;

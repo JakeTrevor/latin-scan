@@ -91,7 +91,7 @@ export default function InputArea({ value, setValue, placeholder }) {
       value={value}
       placeholder={placeholder}
       onChange={handleTextChange}
-      className="IOArea"
+      className="inputArea"
     />
   );
 }

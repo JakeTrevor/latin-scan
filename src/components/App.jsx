@@ -37,7 +37,12 @@ export default function App() {
             <AboutSection />
           </Route>
           <Route path="">
-            <ScanArea text={text} setText={setText} />
+            <ScanArea
+              text={text}
+              setText={setText}
+              settings={settings}
+              setSettings={setSettings}
+            />
           </Route>
         </Switch>
       </div>
