@@ -4,6 +4,7 @@ export type setting = {
 };
 
 export type scannedLineType = {
+  meter: meter;
   line: string;
   output: rawType[];
   errors: string[];

@@ -4,6 +4,8 @@
   line-height: 30px;
   width: 100%;
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 ul {
   margin: 0;
@@ -29,7 +31,7 @@ a {
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-start;
-  box-shadow: 0 1px 4px -4px rgb(0 0 0 / 37%);
+  box-shadow: 0 5px 4px -4px rgb(0 0 0 / 37%);
 }
 
 .headerItem {
@@ -71,9 +73,9 @@ a {
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
-  max-width: 1280px;
+  width: clamp(320px, 85%, 1280px);
   outline: none;
-  margin-top: 20px;
+  margin: 20px 0;
   border-radius: 8px;
   box-shadow: 0 1px 4px 0 rgb(0 0 0 / 37%);
 }
@@ -135,10 +137,20 @@ a {
   justify-content: space-between;
 }
 
+.lineList {
+  border-radius: 5px;
+  box-shadow: 0 1px 4px 0 rgb(0 0 0 / 37%);
+}
+
+.outputText {
+  margin: 0 5px;
+}
+
 .tooltip {
-  padding: 0 10px;
+  //this is naughty....
   position: relative;
-  width: min-content;
+  width: fit-content;
+  height: 30px;
   &::before {
     //controll how/where the tooltip renders
     --scale: 0;
@@ -151,10 +163,11 @@ a {
     //controll what the tooltip looks like
     background-color: rgb(255 255 255);
     box-shadow: 0 1px 1px 0 rgb(0 0 0 / 50%);
+    width: max-content;
     padding: 2px;
     border-radius: 5px;
     line-height: 20px;
-    content: attr(data-tooltip);
+    content: attr(tooltip);
   }
 
   &:hover::before {
@@ -167,5 +180,5 @@ a {
   --size: 30px;
   height: var(--size);
   width: var(--size);
-  padding: 7px;
+  transform: scale(75%);
 }

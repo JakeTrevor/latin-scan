@@ -3,23 +3,44 @@ import "../index.css";
 import Tooltip from "./Tooltip";
 
 import DownArrow from "./ICONS/DownArrow.svg";
+import Hexagon from "./ICONS/hexagon.svg";
+import Pentagon from "./ICONS/pentagon.svg";
+import Warning from "./ICONS/warning.svg";
+import Checkmark from "./ICONS/checkmark1.svg";
 
-export function Line({ scannedLine }) {
-  let [optionSelected, setOptionSelected] = useState(0);
-  let [open, setOpen] = useState(false);
-  function toggleOpen() {
-    setOpen(!open);
+//helper functions
+function makeOptionArray(scannedLine, setOption, setOpen) {
+  let temp = [];
+  let output = scannedLine.output;
+  let id = 0;
+
+  function addOptionToList(id, text, type, warnings) {
+    temp.push(
+      <Option
+        id={id}
+        type={type}
+        warnings={warnings}
+        setOptionSelected={setOption}
+        setOpen={setOpen}
+      >
+        {text}
+      </Option>
+    );
   }
 
-  let options = makeOptionArray(scannedLine, setOptionSelected, setOpen);
-  let textArray = flattenScannedLine(scannedLine);
-
-  return (
-    <div>
-      <Selection toggleOpen={toggleOpen}>{textArray[optionSelected]}</Selection>
-      {open && options}
-    </div>
-  );
+  for (let raw of output) {
+    let fullScans = raw.full;
+    for (let full of fullScans) {
+      addOptionToList(id, full, "Full Scan", null);
+      ++id;
+    }
+    addOptionToList(id, raw.raw, "Quantities", null);
+    ++id;
+  }
+  addOptionToList(id, scannedLine.line, "Input", null);
+  ++id;
+  temp = temp.reverse();
+  return temp;
 }
 
 function flattenScannedLine(scannedLine) {
@@ -33,52 +54,92 @@ function flattenScannedLine(scannedLine) {
   return temp;
 }
 
-function makeOptionArray(scannedLine, setOption, setOpen) {
-  let temp = [];
-  let output = scannedLine.output;
-  let id = 0;
-
-  function addOptionToList(text) {
-    temp.push(
-      <Option id={id} setOptionSelected={setOption} setOpen={setOpen}>
-        {text}
-      </Option>
-    );
-    ++id;
+function getStatus(scannedLine) {
+  // returning --> [status(warn, hexOK, pentOK), message]
+  let meter = scannedLine.meter;
+  let status = "warn";
+  let solutions = [];
+  for (let each of scannedLine.output) {
+    solutions = solutions.concat(each.full);
   }
-
-  for (let raw of output) {
-    let fullScans = raw.full;
-    for (let full of fullScans) {
-      addOptionToList(full);
-    }
-    addOptionToList(raw.raw);
+  console.log(solutions);
+  console.log(solutions.length);
+  if (solutions.length > 0) {
+    status = meter + "OK";
+    console.log(status);
   }
-  addOptionToList(scannedLine.line);
-  temp = temp.reverse();
-  return temp;
+  let statusMessage = scannedLine.errors[0] || "Scanned as " + meter;
+  return [status, statusMessage];
 }
 
-function Selection({ toggleOpen, children }) {
+//components
+export function Line({ scannedLine }) {
+  let [optionSelected, setOptionSelected] = useState(0);
+  let [open, setOpen] = useState(false);
+  function toggleOpen() {
+    setOpen(!open);
+  }
+
+  let options = makeOptionArray(scannedLine, setOptionSelected, setOpen);
+  let textArray = flattenScannedLine(scannedLine);
+  let [status, statusMessage] = getStatus(scannedLine);
   return (
-    <div onClick={toggleOpen} className="scanSelection">
-      <DownArrow className="icon" />
-      <div>{children}</div>
-      <Tooltip tooltip="info">[i]</Tooltip>
+    <div>
+      <Selection
+        toggleOpen={toggleOpen}
+        status={status}
+        statusMessage={statusMessage}
+      >
+        {textArray[optionSelected]}
+      </Selection>
+      {open && <div className="lineList">{options}</div>}
     </div>
   );
 }
 
-function Option({ id, setOptionSelected, setOpen, children }) {
+let iconDictionary = {
+  warn: <Warning className="icon" />,
+  HexameterOK: <Hexagon className="icon" />,
+  PentameterOK: <Pentagon className="icon" />,
+};
+
+function Selection({ toggleOpen, status, statusMessage, children }) {
+  return (
+    <div onClick={toggleOpen} className="scanSelection">
+      <DownArrow className="icon" />
+      <div className="outputText">{children}</div>
+      <Tooltip tooltip={statusMessage}>{iconDictionary[status]}</Tooltip>
+    </div>
+  );
+}
+
+let typeIconDictionary = {
+  "Full Scan": <Tooltip tooltip="This is a full Scan">[S]</Tooltip>,
+  Quantities: (
+    <Tooltip tooltip="This line contains only certain quantities.">[Q]</Tooltip>
+  ),
+  Input: <Tooltip tooltip="This line is your input.">[i]</Tooltip>,
+};
+
+function Option({ id, type, warnings, setOptionSelected, setOpen, children }) {
   function handleClick() {
     setOptionSelected(id);
     setOpen(false);
   }
+  let typeElement = typeIconDictionary[type];
+  let warningElement = warnings ? (
+    <Tooltip tooltip={warnings}>
+      <Warning className="icon" />;
+    </Tooltip>
+  ) : (
+    <div className="icon"></div>
+  );
+
   return (
     <li key={id} onClick={handleClick} className="scanSelection">
-      <Tooltip tooltip="style">[Q]</Tooltip>
-      <div>{children}</div>
-      <Tooltip tooltip="info">[i]</Tooltip>
+      {typeElement}
+      <div className="outputText">{children}</div>
+      {warningElement}
     </li>
   );
 }

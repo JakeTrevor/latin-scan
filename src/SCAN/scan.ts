@@ -45,7 +45,12 @@ export let scanParagraph = (
 };
 
 export let scanLine = (line: string, meter: meter): scannedLineType => {
-  let output: scannedLineType = { line: line, output: [], errors: [] };
+  let output: scannedLineType = {
+    meter: meter,
+    line: line,
+    output: [],
+    errors: [],
+  };
 
   //start by strippin the line of punctuation and performin a first pass
   let [punctuation, strippedLine] = removePunctuation(line);
@@ -68,7 +73,7 @@ export let scanLine = (line: string, meter: meter): scannedLineType => {
           temp = {
             raw: postScan(strippedLine, punctuation, each, []),
             full: [],
-            errors: error,
+            errors: [error],
           };
         }
         output.output.push(temp);
@@ -90,7 +95,7 @@ export let scanLine = (line: string, meter: meter): scannedLineType => {
           temp = {
             raw: postScan(strippedLine, punctuation, each, []),
             full: [],
-            errors: error,
+            errors: [error],
           };
         }
         output.output.push(temp);
