@@ -54,21 +54,19 @@ function flattenScannedLine(scannedLine) {
   return temp;
 }
 
+//todo move to scan file.
 function getStatus(scannedLine) {
-  // returning --> [status(warn, hexOK, pentOK), message]
+  // returning --> [status[warn, hexOK, pentOK], message]
   let meter = scannedLine.meter;
   let status = "warn";
   let solutions = [];
   for (let each of scannedLine.output) {
     solutions = solutions.concat(each.full);
   }
-  console.log(solutions);
-  console.log(solutions.length);
   if (solutions.length > 0) {
     status = meter + "OK";
-    console.log(status);
   }
-  let statusMessage = scannedLine.errors[0] || "Scanned as " + meter;
+  let statusMessage = scannedLine.statusMessage || "Scanned as " + meter;
   return [status, statusMessage];
 }
 

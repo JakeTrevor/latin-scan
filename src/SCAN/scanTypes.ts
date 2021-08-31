@@ -4,10 +4,11 @@ export type setting = {
 };
 
 export type scannedLineType = {
+  status: string;
+  statusMessage: string;
   meter: meter;
   line: string;
   output: rawType[];
-  errors: string[];
 };
 
 export type rawType = {

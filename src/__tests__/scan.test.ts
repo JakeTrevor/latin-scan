@@ -10,7 +10,7 @@ import {
   removePunctuation,
   preScan,
   postScan,
-  hexScan,
+  analyseHex,
   arrToQuantity,
   marryUp,
   insertPunctuation,
@@ -99,7 +99,7 @@ describe("scan algorithm functionality testing", () => {
     let output: [syllableMap, number[]][] = [];
     output.push([Aeneid1Scan, [7, 16, 22, 29, 38]]);
 
-    expect(hexScan(AeneidNatQuants)).toEqual([
+    expect(analyseHex(AeneidNatQuants)).toEqual([
       [Aeneid1Scan, [7, 16, 22, 29, 38]],
     ]);
   });

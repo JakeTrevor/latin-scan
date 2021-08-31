@@ -82,18 +82,6 @@ export function findAllMatches(string: string, regex: RegExp): number[] {
   return posArray;
 }
 
-export function matchAndMap(
-  string: string,
-  regex: RegExp
-): Record<number, string> {
-  let dict: Record<number, string> = {};
-  let item: RegExpExecArray | null;
-  while ((item = regex.exec(string)) !== null) {
-    dict[item.index] = item[0];
-  }
-  return dict;
-}
-
 export function sum(arr: number[]): number {
   return arr.reduce((accumulator, currentValue) => {
     return accumulator + currentValue;
