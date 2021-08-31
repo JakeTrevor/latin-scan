@@ -149,7 +149,7 @@ a {
 .tooltip {
   //this is naughty....
   position: relative;
-  width: fit-content;
+  width: 30px;
   height: 30px;
   &::before {
     //controll how/where the tooltip renders

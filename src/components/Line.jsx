@@ -6,8 +6,8 @@ import DownArrow from "./ICONS/DownArrow.svg";
 import Hexagon from "./ICONS/hexagon.svg";
 import Pentagon from "./ICONS/pentagon.svg";
 import Warning from "./ICONS/warning.svg";
-import Checkmark from "./ICONS/checkmark1.svg";
-
+import Checkmark from "./ICONS/checkmark.svg";
+import Input from "./ICONS/Input.svg";
 //helper functions
 function makeOptionArray(scannedLine, setOption, setOpen) {
   let temp = [];
@@ -114,11 +114,19 @@ function Selection({ toggleOpen, status, statusMessage, children }) {
 }
 
 let typeIconDictionary = {
-  "Full Scan": <Tooltip tooltip="This is a full Scan">[S]</Tooltip>,
+  "Full Scan": (
+    <Tooltip tooltip="This is a full Scan">
+      <Checkmark className="icon" />
+    </Tooltip>
+  ),
   Quantities: (
     <Tooltip tooltip="This line contains only certain quantities.">[Q]</Tooltip>
   ),
-  Input: <Tooltip tooltip="This line is your input.">[i]</Tooltip>,
+  Input: (
+    <Tooltip tooltip="This line is your input.">
+      <Input className="icon" />
+    </Tooltip>
+  ),
 };
 
 function Option({ id, type, warnings, setOptionSelected, setOpen, children }) {
