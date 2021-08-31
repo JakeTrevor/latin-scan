@@ -46,30 +46,31 @@ export let scanParagraph = (
 
 export let scanLine = (line: string, meter: meter): scannedLineType => {
   let output: scannedLineType = {
+    status: "warn",
+    statusMessage: "This line cannot be scanned",
     meter: meter,
     line: line,
     output: [],
-    errors: [],
   };
 
-  //start by strippin the line of punctuation and performin a first pass
+  //start by stripping the line of punctuation and performin a first pass
   let [punctuation, strippedLine] = removePunctuation(line);
-  let firstPasses = preScan(strippedLine);
+  let firstPass = preScan(strippedLine);
 
   //now we need to match the possible scans to the first passes
   switch (meter) {
     case "Hexameter":
-      for (let each of firstPasses) {
+      for (let each of firstPass) {
         //iterate over each quantity possibility
         let temp: rawType = { raw: "", full: [], errors: [] };
         try {
-          let secondPasses = hexScan(each);
+          let secondPasses = analyseHex(each);
           temp.raw = postScan(strippedLine, punctuation, each, []); //post process the line
           temp.full = secondPasses.map((each) => {
             let [sylables, breaks] = each;
             return postScan(strippedLine, punctuation, sylables, breaks);
           });
-        } catch (error) {
+        } catch (error: any) {
           temp = {
             raw: postScan(strippedLine, punctuation, each, []),
             full: [],
@@ -81,17 +82,17 @@ export let scanLine = (line: string, meter: meter): scannedLineType => {
       break;
 
     case "Pentameter":
-      for (let each of firstPasses) {
+      for (let each of firstPass) {
         //iterate over each quantity possibility
         let temp: rawType = { raw: "", full: [], errors: [] };
         try {
-          let secondPasses = penScan(each);
+          let secondPasses = analysePen(each);
           temp.raw = postScan(strippedLine, punctuation, each, []); //post process the line
           temp.full = secondPasses.map((each) => {
             let [sylables, breaks] = each;
             return postScan(strippedLine, punctuation, sylables, breaks);
           });
-        } catch (error) {
+        } catch (error: any) {
           temp = {
             raw: postScan(strippedLine, punctuation, each, []),
             full: [],
@@ -211,12 +212,11 @@ export let preScan = (line: string): syllableMap[] => {
           quants[maybeDiphs[j] + 1] = "undefined";
         }
       }
-      outputArr.push(JSON.parse(JSON.stringify(quants))); //deepcopy
+      outputArr.push({ ...quants }); //deepcopy
     }
   } else {
     outputArr = [quants];
   }
-  //i feel so gross....
   return outputArr;
 };
 
@@ -245,7 +245,7 @@ export let postScan = (
   return line.join("");
 };
 
-export let hexScan = (map: syllableMap): [syllableMap, number[]][] => {
+export let analyseHex = (map: syllableMap): [syllableMap, number[]][] => {
   function generateHexCombos(dactyls: number): number[][] {
     let combos = [];
     let temp = [0, 0, 0, 0];
@@ -318,7 +318,7 @@ export let hexScan = (map: syllableMap): [syllableMap, number[]][] => {
   });
 };
 
-export let penScan = (map: syllableMap): [syllableMap, number[]][] => {
+export let analysePen = (map: syllableMap): [syllableMap, number[]][] => {
   function generatePenCombos(dactyls: number): number[][] {
     switch (dactyls) {
       case 0:
@@ -359,6 +359,7 @@ export let penScan = (map: syllableMap): [syllableMap, number[]][] => {
     });
   });
   let curQuant: quantity;
+
   for (let vowelCounter = 0; vowelCounter < vowels; vowelCounter++) {
     curQuant = quantValues[vowelCounter];
     if (curQuant !== "undefined") {
@@ -393,7 +394,7 @@ function insertBreaks(
       breaks[i] += i;
     }
 
-    //now correct for punctuation
+    //correct for punctuation
     let punctuationPositions = Object.keys(punctuation).map((el) => {
       return parseInt(el);
     });
@@ -418,7 +419,7 @@ function insertBreaks(
     let lineString = line.join("");
     for (let i = 0; i < breaks.length; i++) {
       let subsection =
-        lineString.substring(breaks[i], nextVowelAfterBreak[i]) || "@"; //!@ is needed to prevent "" default, which causes an error
+        lineString.substring(breaks[i], nextVowelAfterBreak[i]) || "@"; //! "@" is needed to prevent "" default, which causes an error
       if (/\s/.test(subsection)) {
         breaks[i] += subsection.search(/\s/);
       } else if (/[aeiouy]/.test(subsection[0])) {
@@ -447,11 +448,7 @@ function switchElegaicMeter(meter: meter): meter {
   return meter === "Hexameter" ? "Pentameter" : "Hexameter";
 }
 
-/** function that takes a list of permutator outputs (4 binary arrays) and returns a list of complete quantity descriptions; 1 for each arr in the input.
- *
- * @param { number[][] } arr
- * @returns { quantity[][] }
- */
+//TODO needs cleaning
 export function arrToQuantity(arr: number[][], meter: meter): quantity[][] {
   let output: quantity[][] = [];
   let temp: quantity[][];
@@ -496,21 +493,14 @@ export function arrToQuantity(arr: number[][], meter: meter): quantity[][] {
   return output;
 }
 
-/** utility function that marries up a list of quantities with a list of positions into a record/dictionary
- *
- * @param { quantity[] } quants
- * @param { number [] } positions
- * @returns { syllableMap }
- */
+//*clean
 export function marryUp(
   quants: quantity[],
   positions: number[]
 ): [syllableMap, number[]] {
-  //defining structrures to be returned
-  let output: syllableMap = {};
+  let quantMap: syllableMap = {};
   let breaks: number[] = [];
 
-  //looping over all quantities/positions
   for (let i = 0; i < quants.length; i++) {
     let curQuant = quants[i];
     let curPos: number;
@@ -518,10 +508,10 @@ export function marryUp(
       breaks.push(positions[i - breaks.length - 1] + 1);
     } else {
       curPos = positions[i - breaks.length];
-      output[curPos] = curQuant;
+      quantMap[curPos] = curQuant;
     }
   }
-  return [output, breaks];
+  return [quantMap, breaks];
 }
 
 export let insertPunctuation = (
