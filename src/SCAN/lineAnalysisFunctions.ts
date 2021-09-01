@@ -30,7 +30,8 @@ function generateHexCombos(dactyls: number): number[][] {
   return combos;
 }
 
-export let analyseHex = (map: syllableMap): [syllableMap, number[]][] => {
+export function analyseHex(map: syllableMap): [syllableMap, number[]][] {
+  // returning -->
   let positions = Object.keys(map).map((each) => {
     return parseInt(each);
   });
@@ -46,7 +47,7 @@ export let analyseHex = (map: syllableMap): [syllableMap, number[]][] => {
   if (dactyls > 4) {
     throw "Too long!";
   } else if (dactyls < 0) {
-    throw "Too short!";
+    ("Too short!");
   }
 
   meters = arrToQuantity(generateHexCombos(dactyls), "Hexameter");
@@ -78,9 +79,9 @@ export let analyseHex = (map: syllableMap): [syllableMap, number[]][] => {
   return meters.map((each) => {
     return marryUp(each, positions);
   });
-};
+}
 
-export let analysePen = (map: syllableMap): [syllableMap, number[]][] => {
+export function analysePen(map: syllableMap): [syllableMap, number[]][] {
   function generatePenCombos(dactyls: number): number[][] {
     switch (dactyls) {
       case 0:
@@ -140,7 +141,7 @@ export let analysePen = (map: syllableMap): [syllableMap, number[]][] => {
   return meters.map((each) => {
     return marryUp(each, positions);
   });
-};
+}
 
 function marryUp(
   quants: quantity[],
@@ -161,3 +162,11 @@ function marryUp(
   }
   return [quantMap, breaks];
 }
+
+const ANALYSIS_FUNCTIONS = {
+  Hexameter: analyseHex,
+  Pentameter: analysePen,
+  Elegaic: analyseHex, //bit of a bodge to get the types working. whagamabagado?
+};
+
+export default ANALYSIS_FUNCTIONS;

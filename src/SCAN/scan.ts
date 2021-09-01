@@ -5,9 +5,10 @@ import type {
   rawType,
   scannedLineType,
   setting,
+  syllableMap,
 } from "./scanTypes";
 import { removePunctuation } from "./punctuationFunctions";
-import { analyseHex, analysePen } from "./lineAnalysisFunctions";
+import ANALYSIS_FUNCTIONS from "./lineAnalysisFunctions";
 import { preScan, postScan } from "./commonFunctions";
 
 //*main functions
@@ -39,6 +40,7 @@ export let scanParagraph = (
 };
 
 export let scanLine = (line: string, meter: meter): scannedLineType => {
+  let numberOfSolutions = 0;
   let output: scannedLineType = {
     status: "warn",
     statusMessage: "This line cannot be scanned",
@@ -46,56 +48,36 @@ export let scanLine = (line: string, meter: meter): scannedLineType => {
     line: line,
     output: [],
   };
-
   //start by stripping the line of punctuation and performin a first pass
   let [punctuation, strippedLine] = removePunctuation(line);
   let firstPass = preScan(strippedLine);
 
-  //now we need to match the possible scans to the first passes
-  switch (meter) {
-    case "Hexameter":
-      for (let each of firstPass) {
-        //iterate over each quantity possibility
-        let temp: rawType = { raw: "", full: [], errors: [] };
-        try {
-          let secondPasses = analyseHex(each);
-          temp.raw = postScan(strippedLine, punctuation, each, []); //post process the line
-          temp.full = secondPasses.map((each) => {
-            let [sylables, breaks] = each;
-            return postScan(strippedLine, punctuation, sylables, breaks);
-          });
-        } catch (error: any) {
-          temp = {
-            raw: postScan(strippedLine, punctuation, each, []),
-            full: [],
-            errors: [error],
-          };
-        }
-        output.output.push(temp);
-      }
-      break;
+  for (let each of firstPass) {
+    let temp: rawType = { raw: "", full: [], errors: [] };
 
-    case "Pentameter":
-      for (let each of firstPass) {
-        //iterate over each quantity possibility
-        let temp: rawType = { raw: "", full: [], errors: [] };
-        try {
-          let secondPasses = analysePen(each);
-          temp.raw = postScan(strippedLine, punctuation, each, []); //post process the line
-          temp.full = secondPasses.map((each) => {
-            let [sylables, breaks] = each;
-            return postScan(strippedLine, punctuation, sylables, breaks);
-          });
-        } catch (error: any) {
-          temp = {
-            raw: postScan(strippedLine, punctuation, each, []),
-            full: [],
-            errors: [error],
-          };
-        }
-        output.output.push(temp);
-      }
-      break;
+    try {
+      let secondPasses = ANALYSIS_FUNCTIONS[meter](each);
+      temp.raw = postScan(strippedLine, punctuation, each, []); //post process the line
+      temp.full = secondPasses.map((each) => {
+        ++numberOfSolutions;
+        let [sylables, breaks] = each;
+        return postScan(strippedLine, punctuation, sylables, breaks);
+      });
+    } catch (error: any) {
+      temp = {
+        raw: postScan(strippedLine, punctuation, each, []),
+        full: [],
+        errors: [error],
+      };
+    }
+    output.output.push(temp);
+  }
+  if (numberOfSolutions === 1) {
+    output.status = meter + "OK";
+    output.statusMessage = "This line has been scanned in " + meter;
+  } else if (numberOfSolutions > 1) {
+    output.status = meter + "+";
+    output.statusMessage = "This line has multiple scans in " + meter;
   }
   return output;
 };
