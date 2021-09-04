@@ -7,6 +7,24 @@
   margin: 0;
   padding: 0;
 }
+
+::-webkit-scrollbar {
+  width: 5px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #888;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+body {
+  overflow-y: scroll;
+}
+
 ul {
   margin: 0;
   padding: 0;
@@ -19,7 +37,6 @@ a {
   width: fit-content;
   display: contents;
 }
-
 .app {
   display: flex;
   flex-direction: column;
@@ -37,6 +54,7 @@ a {
 .headerItem {
   width: fit-content;
   text-align: center;
+  font-weight: 300;
   margin: 0;
   padding: 10px;
   &:hover {
@@ -162,7 +180,7 @@ a {
     //controll what the tooltip looks like
     background-color: rgb(255 255 255);
     box-shadow: 0 1px 1px 0 rgb(0 0 0 / 50%);
-    width: max-content;
+    width: 200px;
     padding: 2px;
     border-radius: 5px;
     line-height: 20px;

@@ -54,22 +54,6 @@ function flattenScannedLine(scannedLine) {
   return temp;
 }
 
-//todo move to scan file.
-function getStatus(scannedLine) {
-  // returning --> [status[warn, hexOK, pentOK], message]
-  let meter = scannedLine.meter;
-  let status = "warn";
-  let solutions = [];
-  for (let each of scannedLine.output) {
-    solutions = solutions.concat(each.full);
-  }
-  if (solutions.length > 0) {
-    status = meter + "OK";
-  }
-  let statusMessage = scannedLine.statusMessage || "Scanned as " + meter;
-  return [status, statusMessage];
-}
-
 //components
 export function Line({ scannedLine }) {
   let [optionSelected, setOptionSelected] = useState(0);
@@ -80,18 +64,17 @@ export function Line({ scannedLine }) {
 
   let options = makeOptionArray(scannedLine, setOptionSelected, setOpen);
   let textArray = flattenScannedLine(scannedLine);
-  let [status, statusMessage] = getStatus(scannedLine);
   return (
-    <div>
+    <li>
       <Selection
         toggleOpen={toggleOpen}
-        status={status}
-        statusMessage={statusMessage}
+        status={scannedLine.status}
+        statusMessage={scannedLine.statusMessage}
       >
         {textArray[optionSelected]}
       </Selection>
-      {open && <div className="lineList">{options}</div>}
-    </div>
+      {open && <ul className="lineList">{options}</ul>}
+    </li>
   );
 }
 
