@@ -3,7 +3,7 @@ import "../index.css";
 import Tooltip from "./Tooltip";
 import { CSSTransition } from "react-transition-group";
 import ICONS from "./ICONS/ICONS";
-import { TYPES } from "@babel/types";
+import { Option } from "./Option";
 //helper functions
 
 //todo: this could be its own component, have it return a UL.
@@ -68,6 +68,12 @@ export function Line({ scannedLine }) {
       setOptionSelected(0);
     }
   });
+  const [height, setHeight] = useState(0);
+  function calcHeight(el) {
+    let height = el.offsetHeight;
+    setHeight(height);
+  }
+
   return (
     <li>
       <Selection
@@ -78,12 +84,14 @@ export function Line({ scannedLine }) {
         {textArray[optionSelected]}
       </Selection>
       <CSSTransition in={open} timeout={500} classNames="bounder">
-        <div>
+        <div className="bounder" style={{ height: height }}>
           <CSSTransition
             in={open}
             unmountOnExit
             timeout={500}
             classNames={"lineList"}
+            onEnter={calcHeight}
+            onExit={() => setHeight(0)}
           >
             <ul className="lineList">{options}</ul>
           </CSSTransition>
@@ -100,36 +108,5 @@ function Selection({ toggleOpen, status, statusMessage, children }) {
       <div className="outputText">{children}</div>
       <Tooltip tooltip={statusMessage}>{ICONS[status]}</Tooltip>
     </div>
-  );
-}
-
-let typeIconDictionary = {
-  "Full Scan": <Tooltip tooltip="This is a full Scan">{ICONS.Tick}</Tooltip>,
-  Quantities: (
-    <Tooltip tooltip="This line contains only certain quantities.">
-      {ICONS.Bar}
-    </Tooltip>
-  ),
-  Input: <Tooltip tooltip="This line is your input.">{ICONS.Input}</Tooltip>,
-};
-
-function Option({ id, type, warnings, setOptionSelected, setOpen, children }) {
-  function handleClick() {
-    setOptionSelected(id);
-    setOpen(false);
-  }
-  let typeElement = typeIconDictionary[type];
-  let warningElement = warnings ? (
-    <Tooltip tooltip={warnings}>{ICONS.Warning}</Tooltip>
-  ) : (
-    <div className="icon"></div>
-  );
-
-  return (
-    <li key={id} onClick={handleClick} className={"scanSelection " + type}>
-      {typeElement}
-      <div className="outputText ">{children}</div>
-      {warningElement}
-    </li>
   );
 }
