@@ -8,6 +8,12 @@
   padding: 0;
 }
 
+:root {
+  --inputBlue: rgb(26, 115, 232);
+  --red: rgb(255, 0, 0);
+  --green: rgb(0, 128, 0);
+}
+
 ::-webkit-scrollbar {
   width: 5px;
 }
@@ -152,11 +158,51 @@ a {
 .scanSelection {
   display: flex;
   justify-content: space-between;
+  transition: all 500ms;
+  &.Input {
+    &:hover {
+      color: var(--inputBlue);
+    }
+  }
+  &.Quantities {
+    &:hover {
+      color: var(--red);
+    }
+  }
+  &.Full.Scan {
+    &:hover {
+      color: var(--green);
+    }
+  }
 }
 
 .lineList {
   border-radius: 5px;
   box-shadow: 0 1px 4px 0 rgb(0 0 0 / 37%);
+  background-color: white;
+  &-enter {
+    transform: translateY(-100%);
+  }
+  &-enter-active {
+    transform: translateY(0);
+    transition: all 0.5s;
+  }
+  &-exit-active {
+    transform: translateY(-100%);
+    transition: all 0.5s;
+  }
+}
+
+.bounder {
+  &-enter-active {
+    overflow: hidden;
+  }
+  &-enter-done {
+    overflow: visible;
+  }
+  &-exit-active {
+    overflow: hidden;
+  }
 }
 
 .outputText {
@@ -198,4 +244,7 @@ a {
   height: var(--size);
   width: var(--size);
   transform: scale(75%);
+  &.warning {
+    color: var(--red);
+  }
 }

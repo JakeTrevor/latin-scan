@@ -42,8 +42,8 @@ export let scanParagraph = (
 export let scanLine = (line: string, meter: meter): scannedLineType => {
   let numberOfSolutions = 0;
   let output: scannedLineType = {
-    status: "warn",
-    statusMessage: "This line cannot be scanned",
+    status: "Warning",
+    statusMessage: "This line cannot be scanned in " + meter,
     meter: meter,
     line: line,
     output: [],

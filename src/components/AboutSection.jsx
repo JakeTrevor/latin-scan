@@ -67,6 +67,16 @@ export default function AboutSection() {
           on the upside: this site is still under construction! New Features are
           incoming.
         </About>
+        <About title="Credits">
+          The Icons used in this project were created by{" "}
+          <a href="https://fontawesome.com/" className="visibleLink">
+            Font Awesome
+          </a>{" "}
+          under their{" "}
+          <a href="https://fontawesome.com/license" className="visibleLink">
+            license.
+          </a>
+        </About>
       </div>
     </Route>
   );
