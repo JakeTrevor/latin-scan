@@ -94,8 +94,12 @@ export function analyseHex(map: syllableMap): analysedLine {
   });
 
   //check for bad patterns
-  if (!returnedObject.error && checkForLongShortLong(knownQuantValues)) {
+  if (returnedObject.error) {
+    //do nothing
+  } else if (checkForLongShortLong(knownQuantValues)) {
     returnedObject.error = "A long short long pattern is in this line.";
+  } else if (meters.length === 0) {
+    returnedObject.error = "We have found no valid scans for this vowel set";
   }
   return returnedObject;
 }
@@ -169,8 +173,12 @@ export function analysePen(map: syllableMap): analysedLine {
   });
 
   //check for bad patterns
-  if (!returnedObject.error && checkForLongShortLong(knownQuantValues)) {
+  if (returnedObject.error) {
+    //do nothing
+  } else if (checkForLongShortLong(knownQuantValues)) {
     returnedObject.error = "A long short long pattern is in this line.";
+  } else if (meters.length === 0) {
+    returnedObject.error = "We have found no valid scans for this vowel set";
   }
   return returnedObject;
 }
