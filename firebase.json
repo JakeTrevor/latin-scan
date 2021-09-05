@@ -7,6 +7,13 @@
         "source": "**",
         "destination": "/index.html"
       }
+    ],
+    "redirects": [
+      {
+        "source": "/about",
+        "destination": "/#/about",
+        "type": 301
+      }
     ]
   }
 }

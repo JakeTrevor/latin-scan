@@ -7,3 +7,6 @@ the camera is a much more complicated endeavour; i am dumping some links here fo
 https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
 https://gist.github.com/anantn/1852070
 
+
+PRINCIPLE:
+as far as possible, logic should be kept OUT of the gui components.
