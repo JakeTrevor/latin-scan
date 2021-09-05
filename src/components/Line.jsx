@@ -29,13 +29,13 @@ function makeOptionArray(scannedLine, setOption, setOpen) {
   for (let raw of output) {
     let fullScans = raw.full;
     for (let full of fullScans) {
-      addOptionToList(id, full, "Full Scan", null);
+      addOptionToList(id, full, "Full Scan", []);
       ++id;
     }
-    addOptionToList(id, raw.raw, "Quantities", null);
+    addOptionToList(id, raw.raw, "Quantities", raw.error);
     ++id;
   }
-  addOptionToList(id, scannedLine.line, "Input", null);
+  addOptionToList(id, scannedLine.line, "Input", []);
   ++id;
   temp = temp.reverse();
   return temp;
@@ -53,7 +53,7 @@ function flattenScannedLine(scannedLine) {
 }
 
 //components
-export function Line({ scannedLine }) {
+export function Line({ scannedLine, id }) {
   let [optionSelected, setOptionSelected] = useState(0);
   let [open, setOpen] = useState(false);
   function toggleOpen() {
@@ -75,7 +75,7 @@ export function Line({ scannedLine }) {
   }
 
   return (
-    <li>
+    <li key={id}>
       <Selection
         toggleOpen={toggleOpen}
         status={scannedLine.status}
@@ -83,8 +83,8 @@ export function Line({ scannedLine }) {
       >
         {textArray[optionSelected]}
       </Selection>
-      <CSSTransition in={open} timeout={500} classNames="bounder">
-        <div className="bounder" style={{ height: height }}>
+      <CSSTransition in={open} timeout={500} classNames="lineBounder">
+        <div className="lineBounder" style={{ height: height }}>
           <CSSTransition
             in={open}
             unmountOnExit

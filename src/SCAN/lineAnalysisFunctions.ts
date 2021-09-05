@@ -30,36 +30,46 @@ function generateHexCombos(dactyls: number): number[][] {
   return combos;
 }
 
-export function analyseHex(map: syllableMap): [syllableMap, number[]][] {
-  // returning -->
+interface analysedLine {
+  line: [syllableMap, number[]][];
+  error: string;
+}
+
+export function analyseHex(map: syllableMap): analysedLine {
+  let returnedObject: analysedLine = { line: [], error: "" };
   let positions = Object.keys(map).map((each) => {
     return parseInt(each);
   });
 
-  let quantValues = Object.values(map);
+  let knownQuantValues = Object.values(map);
   let meters: quantity[][] = [];
 
   //now, calculate the number of spondaic syllables
-  let vowels = quantValues.length;
+  let vowels = knownQuantValues.length;
   let dactyls = vowels - 13;
 
   //handle line too long or short cases
   if (dactyls > 4) {
-    throw "Too long!";
+    returnedObject.error = "This line has too many vowels";
+    return returnedObject;
   } else if (dactyls < 0) {
-    ("Too short!");
+    returnedObject.error = "This line has too few vowels";
+    return returnedObject;
   }
 
   meters = arrToQuantity(generateHexCombos(dactyls), "Hexameter");
+
   //create a copy of the meters without breaks
   let clone = meters.map((each) => {
     return each.filter((elt) => {
       return elt !== "break";
     });
   });
+
+  //compare each possible scan to the array of known quantities.
   let curQuant: quantity;
   for (let vowelCounter = 0; vowelCounter < vowels - 5; vowelCounter++) {
-    curQuant = quantValues[vowelCounter];
+    curQuant = knownQuantValues[vowelCounter];
     if (curQuant !== "undefined") {
       for (let meterCounter = 0; meterCounter < meters.length; meterCounter++) {
         if (clone[meterCounter][vowelCounter] === "undefined") {
@@ -72,16 +82,25 @@ export function analyseHex(map: syllableMap): [syllableMap, number[]][] {
       }
     }
   }
+
+  //if the quantity of the last vowel is known, add it.
   for (let each of meters) {
-    each[each.length - 1] = quantValues[quantValues.length - 1];
+    each[each.length - 1] = knownQuantValues[knownQuantValues.length - 1];
   }
 
-  return meters.map((each) => {
+  //convert quantity arrays to records mapping position to quantity
+  returnedObject.line = meters.map((each) => {
     return marryUp(each, positions);
   });
+
+  //check for bad patterns
+  if (!returnedObject.error && checkForLongShortLong(knownQuantValues)) {
+    returnedObject.error = "A long short long pattern is in this line.";
+  }
+  return returnedObject;
 }
 
-export function analysePen(map: syllableMap): [syllableMap, number[]][] {
+export function analysePen(map: syllableMap): analysedLine {
   function generatePenCombos(dactyls: number): number[][] {
     switch (dactyls) {
       case 0:
@@ -96,35 +115,41 @@ export function analysePen(map: syllableMap): [syllableMap, number[]][] {
     }
     return [[0, 0]]; //the default case is to assume 0 dactyls
   }
+
+  let returnedObject: analysedLine = { line: [], error: "" };
   let positions = Object.keys(map).map((each) => {
     return parseInt(each);
   }); //extract the posiions; this is used near the end
 
-  let quantValues = Object.values(map); //extract quantities array
+  let knownQuantValues = Object.values(map); //extract quantities array
   let meters: quantity[][] = [];
 
   //now, calculate the number of spondaic syllables
-  let vowels = quantValues.length;
+  let vowels = knownQuantValues.length;
   let dactyls = vowels - 12;
 
   //handle line too long or short cases
   if (dactyls > 2) {
-    throw "too long!";
+    returnedObject.error = "This line has too many vowels";
+    return returnedObject;
   } else if (dactyls < 0) {
-    throw "too short!";
+    returnedObject.error = "This line has too few vowels";
+    return returnedObject;
   }
 
   meters = arrToQuantity(generatePenCombos(dactyls), "Pentameter");
+
   //create a copy of the meters without breaks
   let clone = meters.map((each) => {
     return each.filter((elt) => {
       return elt !== "break";
     });
   });
-  let curQuant: quantity;
 
+  //compare each possible scan to the array of known quantities.
+  let curQuant: quantity;
   for (let vowelCounter = 0; vowelCounter < vowels; vowelCounter++) {
-    curQuant = quantValues[vowelCounter];
+    curQuant = knownQuantValues[vowelCounter];
     if (curQuant !== "undefined") {
       for (let meterCounter = 0; meterCounter < meters.length; meterCounter++) {
         if (clone[meterCounter][vowelCounter] === "undefined") {
@@ -138,9 +163,16 @@ export function analysePen(map: syllableMap): [syllableMap, number[]][] {
     }
   }
 
-  return meters.map((each) => {
+  //convert quantity arrays to records mapping position to quantity
+  returnedObject.line = meters.map((each) => {
     return marryUp(each, positions);
   });
+
+  //check for bad patterns
+  if (!returnedObject.error && checkForLongShortLong(knownQuantValues)) {
+    returnedObject.error = "A long short long pattern is in this line.";
+  }
+  return returnedObject;
 }
 
 function marryUp(
@@ -170,3 +202,14 @@ const ANALYSIS_FUNCTIONS = {
 };
 
 export default ANALYSIS_FUNCTIONS;
+
+function checkForLongShortLong(line: quantity[]): boolean {
+  const TARGET = ["long", "short", "long"];
+  for (let i = 0; i < line.length - 3; i++) {
+    let subsection = line.slice(i, i + 3);
+    if (subsection.every((element, i) => element === TARGET[i])) {
+      return true;
+    }
+  }
+  return false;
+}

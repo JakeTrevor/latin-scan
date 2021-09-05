@@ -1,7 +1,7 @@
 import React from "react";
 import "../index.css";
 
-export default function OptionsBar({ settings, setSettings }) {
+export default function SettingsBar({ settings, setSettings }) {
   function setMeter(meter) {
     let temp = { ...settings }; //this creates a deep copy. WHY IS THIS NOT THE DEFAULT!
     temp.meter = meter;

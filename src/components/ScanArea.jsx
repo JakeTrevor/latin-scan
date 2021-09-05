@@ -3,7 +3,7 @@ import { PresetOptions } from "../SCAN/utils";
 import { scanParagraph } from "../SCAN/scan";
 import InputArea from "./InputArea";
 import OutputArea from "./OutputArea";
-import OptionsBar from "./OptionsBar";
+import SettingsBar from "./SettingsBar";
 
 import "../index.css";
 
@@ -11,7 +11,7 @@ export default function ScanArea({ text, setText, settings, setSettings }) {
   let scanned = scanParagraph(text, settings);
   return (
     <div className="ScanArea">
-      <OptionsBar settings={settings} setSettings={setSettings} />
+      <SettingsBar settings={settings} setSettings={setSettings} />
       <div className="IOArea">
         <InputArea
           value={text}

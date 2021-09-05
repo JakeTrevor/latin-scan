@@ -5,7 +5,6 @@ import type {
   rawType,
   scannedLineType,
   setting,
-  syllableMap,
 } from "./scanTypes";
 import { removePunctuation } from "./punctuationFunctions";
 import ANALYSIS_FUNCTIONS from "./lineAnalysisFunctions";
@@ -53,25 +52,20 @@ export let scanLine = (line: string, meter: meter): scannedLineType => {
   let firstPass = preScan(strippedLine);
 
   for (let each of firstPass) {
-    let temp: rawType = { raw: "", full: [], errors: [] };
+    let temp: rawType = { raw: "", full: [], error: "" };
 
-    try {
-      let secondPasses = ANALYSIS_FUNCTIONS[meter](each);
-      temp.raw = postScan(strippedLine, punctuation, each, []); //post process the line
-      temp.full = secondPasses.map((each) => {
-        ++numberOfSolutions;
-        let [sylables, breaks] = each;
-        return postScan(strippedLine, punctuation, sylables, breaks);
-      });
-    } catch (error: any) {
-      temp = {
-        raw: postScan(strippedLine, punctuation, each, []),
-        full: [],
-        errors: [error],
-      };
-    }
+    let { line: secondPasses, error } = ANALYSIS_FUNCTIONS[meter](each);
+    temp.error = error;
+    temp.raw = postScan(strippedLine, punctuation, each, []); //post process the line
+
+    temp.full = secondPasses.map((each) => {
+      ++numberOfSolutions;
+      let [sylables, breaks] = each;
+      return postScan(strippedLine, punctuation, sylables, breaks);
+    });
     output.output.push(temp);
   }
+
   if (numberOfSolutions === 1) {
     output.status = meter + "OK";
     output.statusMessage = "This line has been scanned in " + meter;

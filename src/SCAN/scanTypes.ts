@@ -14,7 +14,7 @@ export type scannedLineType = {
 export type rawType = {
   raw: string;
   full: string[];
-  errors: string[];
+  error: string;
 };
 
 export type syllableMap = Record<number, quantity>;

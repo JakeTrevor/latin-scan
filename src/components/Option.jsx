@@ -15,11 +15,13 @@ export function Option({
     setOpen(false);
   }
   let typeElement = typeIconDictionary[type];
-  let warningElement = warnings ? (
-    <Tooltip tooltip={warnings}>{ICONS.Warning}</Tooltip>
-  ) : (
-    <div className="icon"></div>
-  );
+  console.log(warnings, warnings.length);
+  let warningElement =
+    warnings.length > 0 ? (
+      <Tooltip tooltip={warnings}>{ICONS.Warning}</Tooltip>
+    ) : (
+      <div className="icon"></div>
+    );
 
   return (
     <li key={id} onClick={handleClick} className={"scanSelection " + type}>
