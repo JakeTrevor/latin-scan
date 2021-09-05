@@ -1,14 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../index.css";
 import Tooltip from "./Tooltip";
-
-import DownArrow from "./ICONS/DownArrow.svg";
-import Hexagon from "./ICONS/hexagon.svg";
-import Pentagon from "./ICONS/pentagon.svg";
-import Warning from "./ICONS/warning.svg";
-import Checkmark from "./ICONS/checkmark.svg";
-import Input from "./ICONS/Input.svg";
+import { CSSTransition } from "react-transition-group";
+import ICONS from "./ICONS/ICONS";
+import { TYPES } from "@babel/types";
 //helper functions
+
+//todo: this could be its own component, have it return a UL.
 function makeOptionArray(scannedLine, setOption, setOpen) {
   let temp = [];
   let output = scannedLine.output;
@@ -64,6 +62,12 @@ export function Line({ scannedLine }) {
 
   let options = makeOptionArray(scannedLine, setOptionSelected, setOpen);
   let textArray = flattenScannedLine(scannedLine);
+
+  useEffect(() => {
+    if (optionSelected >= textArray.length) {
+      setOptionSelected(0);
+    }
+  });
   return (
     <li>
       <Selection
@@ -73,41 +77,40 @@ export function Line({ scannedLine }) {
       >
         {textArray[optionSelected]}
       </Selection>
-      {open && <ul className="lineList">{options}</ul>}
+      <CSSTransition in={open} timeout={500} classNames="bounder">
+        <div>
+          <CSSTransition
+            in={open}
+            unmountOnExit
+            timeout={500}
+            classNames={"lineList"}
+          >
+            <ul className="lineList">{options}</ul>
+          </CSSTransition>
+        </div>
+      </CSSTransition>
     </li>
   );
 }
 
-let iconDictionary = {
-  warn: <Warning className="icon" />,
-  HexameterOK: <Hexagon className="icon" />,
-  PentameterOK: <Pentagon className="icon" />,
-};
-
 function Selection({ toggleOpen, status, statusMessage, children }) {
   return (
     <div onClick={toggleOpen} className="scanSelection">
-      <DownArrow className="icon" />
+      {ICONS.DownArrow}
       <div className="outputText">{children}</div>
-      <Tooltip tooltip={statusMessage}>{iconDictionary[status]}</Tooltip>
+      <Tooltip tooltip={statusMessage}>{ICONS[status]}</Tooltip>
     </div>
   );
 }
 
 let typeIconDictionary = {
-  "Full Scan": (
-    <Tooltip tooltip="This is a full Scan">
-      <Checkmark className="icon" />
-    </Tooltip>
-  ),
+  "Full Scan": <Tooltip tooltip="This is a full Scan">{ICONS.Tick}</Tooltip>,
   Quantities: (
-    <Tooltip tooltip="This line contains only certain quantities.">[Q]</Tooltip>
-  ),
-  Input: (
-    <Tooltip tooltip="This line is your input.">
-      <Input className="icon" />
+    <Tooltip tooltip="This line contains only certain quantities.">
+      {ICONS.Bar}
     </Tooltip>
   ),
+  Input: <Tooltip tooltip="This line is your input.">{ICONS.Input}</Tooltip>,
 };
 
 function Option({ id, type, warnings, setOptionSelected, setOpen, children }) {
@@ -117,17 +120,15 @@ function Option({ id, type, warnings, setOptionSelected, setOpen, children }) {
   }
   let typeElement = typeIconDictionary[type];
   let warningElement = warnings ? (
-    <Tooltip tooltip={warnings}>
-      <Warning className="icon" />;
-    </Tooltip>
+    <Tooltip tooltip={warnings}>{ICONS.Warning}</Tooltip>
   ) : (
     <div className="icon"></div>
   );
 
   return (
-    <li key={id} onClick={handleClick} className="scanSelection">
+    <li key={id} onClick={handleClick} className={"scanSelection " + type}>
       {typeElement}
-      <div className="outputText">{children}</div>
+      <div className="outputText ">{children}</div>
       {warningElement}
     </li>
   );
