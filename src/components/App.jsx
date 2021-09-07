@@ -5,6 +5,7 @@ import ScanArea from "./ScanArea";
 import { HashRouter, Switch, Route, Link } from "react-router-dom";
 
 import "../index.css";
+import InputOptionsBar from "./INPUTS/InputOptionsBar";
 
 export default function App() {
   //the "Text" state of the app; the users input.
@@ -32,11 +33,13 @@ export default function App() {
             <h1 className="headerItem"></h1>
           </Link>
         </div>
+
         <Switch>
           <Route exact path="/about">
             <AboutSection />
           </Route>
           <Route path="">
+            <InputOptionsBar />
             <ScanArea
               text={text}
               setText={setText}

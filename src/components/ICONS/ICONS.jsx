@@ -6,6 +6,9 @@ import Warning from "./Warning.svg";
 import Tick from "./Tick.svg";
 import Input from "./Input.svg";
 import Bar from "./Bar.svg";
+import Camera from "./Camera.svg";
+import Keyboard from "./Keyboard.svg";
+import TextFileInput from "./TextFileInput.svg";
 
 //put all the icons imports in one place, keeps things clean.
 const ICONS = {
@@ -18,6 +21,9 @@ const ICONS = {
   Tick: <Tick className="icon" />,
   Input: <Input className="icon" />,
   Bar: <Bar className="icon" />,
+  Camera: <Camera className="icon" />,
+  Keyboard: <Keyboard className="icon" />,
+  TextFileInput: <TextFileInput className="icon" />,
 };
 
 export default ICONS;

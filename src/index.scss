@@ -6,6 +6,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  z-index: 10;
 }
 
 :root {
@@ -14,19 +15,7 @@
   --green: rgb(0, 128, 0);
   --buttonHover: rgb(0 0 0 / 5%);
   --buttonPress: rgb(0 0 0 / 10%);
-}
-
-::-webkit-scrollbar {
-  width: 5px;
-}
-::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-::-webkit-scrollbar-thumb {
-  background: #888;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  --headerBoxShadow: 0 5px 4px -4px rgb(0 0 0 / 10%);
 }
 
 body {
@@ -49,6 +38,7 @@ a {
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow: hidden;
 }
 
 .header {
@@ -56,7 +46,7 @@ a {
   flex-direction: row;
   justify-content: space-between;
   align-items: flex-start;
-  box-shadow: 0 5px 4px -4px rgb(0 0 0 / 37%);
+  box-shadow: var(--headerBoxShadow);
 }
 
 .headerItem {
@@ -128,9 +118,11 @@ a {
   align-items: flex-start;
   width: clamp(320px, 85%, 1280px);
   outline: none;
-  margin: 20px 0;
+  margin: 0 0 20px;
   border-radius: 8px;
+  background: white;
   box-shadow: 0 1px 4px 0 rgb(0 0 0 / 37%);
+  transform: translateY(-15px);
 }
 
 .optionsBox {
@@ -148,11 +140,14 @@ a {
   background: white;
   border: none;
   border-bottom: solid white 2px;
+  transition: all ease 1s;
   &:hover {
     background-color: var(--buttonHover);
+    transition: none;
   }
   &:active {
     background-color: var(--buttonPress);
+    transition: none;
   }
   &:disabled {
     background: white;
@@ -163,7 +158,6 @@ a {
 .selectedMeter {
   color: rgb(26, 115, 232);
   border-bottom: solid rgb(26, 115, 232) 2px;
-  transition: color ease 1s, border-bottom ease 1s;
 }
 
 .IOArea {
@@ -285,5 +279,44 @@ a {
   transform: scale(75%);
   &.warning {
     color: var(--red);
+  }
+  align-self: center;
+  justify-self: center;
+}
+.inputOptionsBar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+
+  z-index: 1;
+  box-sizing: content-box;
+  background-color: rgb(250, 250, 250);
+  box-shadow: var(--headerBoxShadow);
+
+  padding: 10px 100% 25px;
+  width: clamp(320px, 85%, 1280px);
+}
+
+.inputOption {
+  box-sizing: content-box;
+  width: 30px;
+  height: 30px;
+  padding: 5px;
+  background: white;
+  border-radius: 50%;
+  border: none;
+  transition: all 1s;
+  margin: 0 10px;
+  border: solid 1px rgb(218, 220, 224);
+  &:hover {
+    background-color: var(--buttonHover);
+    transition: color 1s;
+  }
+  &:active {
+    background-color: var(--buttonPress);
+    transition: none;
+  }
+  &.selected {
+    color: var(--inputBlue);
   }
 }
