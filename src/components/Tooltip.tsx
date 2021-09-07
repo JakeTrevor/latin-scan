@@ -1,10 +1,16 @@
 import React from "react";
-import "../index.css";
+import type { FC } from "react";
 
-export default function Tooltip({ tooltip, children }) {
+interface tooltipProps {
+  tooltip: string;
+}
+
+const Tooltip: FC<tooltipProps> = ({ tooltip, children }) => {
   return (
     <div className="tooltip" tooltip={tooltip}>
       {children}
     </div>
   );
-}
+};
+
+export default Tooltip;

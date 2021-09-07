@@ -1,8 +1,13 @@
 import React from "react";
-import { Line } from "./Line";
-import "../index.css";
+import type { FC } from "react";
+import type { scannedLineType } from "../projectTypes";
+import Line from "./Line";
 
-export default function OutputArea({ toRender }) {
+interface outputAreaProps {
+  toRender: scannedLineType[];
+}
+
+const OutputArea: FC<outputAreaProps> = ({ toRender }) => {
   return (
     <div className="outputArea">
       <ul>
@@ -12,4 +17,6 @@ export default function OutputArea({ toRender }) {
       </ul>
     </div>
   );
-}
+};
+
+export default OutputArea;

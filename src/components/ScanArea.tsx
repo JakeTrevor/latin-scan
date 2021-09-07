@@ -1,13 +1,25 @@
 import React from "react";
-import { PresetOptions } from "../SCAN/utils";
+import type { FC } from "react";
+import type { setting, settingsSetter, stringSetter } from "../projectTypes";
+
 import { scanParagraph } from "../SCAN/scan";
 import InputArea from "./InputArea";
 import OutputArea from "./OutputArea";
 import SettingsBar from "./SettingsBar";
 
-import "../index.css";
+interface scanAreaProps {
+  text: string;
+  setText: stringSetter;
+  settings: setting;
+  setSettings: settingsSetter;
+}
 
-export default function ScanArea({ text, setText, settings, setSettings }) {
+const ScanArea: FC<scanAreaProps> = ({
+  text,
+  setText,
+  settings,
+  setSettings,
+}) => {
   let scanned = scanParagraph(text, settings);
   return (
     <div className="ScanArea">
@@ -22,4 +34,6 @@ export default function ScanArea({ text, setText, settings, setSettings }) {
       </div>
     </div>
   );
-}
+};
+
+export default ScanArea;

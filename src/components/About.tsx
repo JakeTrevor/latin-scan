@@ -1,15 +1,18 @@
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
 import { CSSTransition } from "react-transition-group";
-import "../index.css";
 
-export default function About({ title, children }) {
+interface aboutProps {
+  title: string;
+}
+
+let About: FC<aboutProps> = ({ title, children }) => {
   let [open, setOpen] = useState(false);
   function toggleOpen() {
     setOpen(!open);
   }
 
   const [height, setHeight] = useState(0);
-  function calcHeight(el) {
+  function calcHeight(el: HTMLElement) {
     let height = el.offsetHeight;
     setHeight(height);
   }
@@ -33,4 +36,6 @@ export default function About({ title, children }) {
       </div>
     </div>
   );
-}
+};
+
+export default About;

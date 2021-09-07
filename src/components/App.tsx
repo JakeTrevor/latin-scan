@@ -1,45 +1,29 @@
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
+import "../index.scss";
+import { HashRouter, Switch, Route } from "react-router-dom";
 import { PresetOptions } from "../SCAN/utils";
 import AboutSection from "./AboutSection";
 import ScanArea from "./ScanArea";
-import { HashRouter, Switch, Route, Link } from "react-router-dom";
-
-import "../index.css";
 import InputOptionsBar from "./INPUTS/InputOptionsBar";
+import Header from "./Header";
 
-export default function App() {
+const App: FC = () => {
   //the "Text" state of the app; the users input.
   //kept at top level so it can be consistent across mobile and webapp components.
   let [text, setText] = useState("");
   let [settings, setSettings] = useState(PresetOptions);
 
-  //some state to handle which component should be rendred on small screens (mobile devices)
-  const [mode, setMode] = useState("input");
-  function switchMode() {
-    setMode(mode === "input" ? "output" : "input");
-  }
-
   return (
     <HashRouter>
       <div className="app">
-        <div className="header">
-          <Link to="/about">
-            <h1 className="headerItem">About</h1>
-          </Link>
-          <Link to="/">
-            <h1 className="headerItem">Latin Scan</h1>
-          </Link>
-          <Link to="/">
-            <h1 className="headerItem"></h1>
-          </Link>
-        </div>
+        <Header />
 
         <Switch>
           <Route exact path="/about">
             <AboutSection />
           </Route>
           <Route path="">
-            <InputOptionsBar />
+            <InputOptionsBar text={text} setText={setText} />
             <ScanArea
               text={text}
               setText={setText}
@@ -51,4 +35,6 @@ export default function App() {
       </div>
     </HashRouter>
   );
-}
+};
+
+export default App;
