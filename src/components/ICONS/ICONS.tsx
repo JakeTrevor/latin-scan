@@ -11,7 +11,7 @@ import Keyboard from "./Keyboard.svg";
 import TextFileInput from "./TextFileInput.svg";
 
 //put all the icons imports in one place, keeps things clean.
-const ICONS = {
+const ICONS: Record<string, JSX.Element> = {
   DownArrow: <DownArrow className="icon" />,
   HexameterOK: <Hexagon className="icon" />,
   "Hexameter+": <Hexagon className="icon" />,

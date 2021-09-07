@@ -1,20 +1,44 @@
-import React, { FC, useState } from "react";
+import React, { FC, useRef, useState } from "react";
+import type { stringSetter } from "src/projectTypes";
 import ICONS from "../ICONS/ICONS";
 
-const FileInput: FC = () => {
+interface fileInputProps {
+  text: string;
+  setText: stringSetter;
+}
+
+const FileInput: FC<fileInputProps> = ({ text, setText }) => {
+  let inputRef = useRef<HTMLInputElement>(null);
   let [selected, setSelected] = useState("");
-  function toggle() {
-    setSelected(selected === "" ? "selected" : "");
+  function clear() {
+    if (inputRef.current) {
+      inputRef.current.value = "";
+    }
   }
 
-  function onChange(e: React.ChangeEvent<HTMLInputElement>) {
-    let files = e.target.files;
-    console.log(files);
+  function addNewText(newContent: string) {
+    let temp = text + newContent;
+    setText(temp);
+  }
+
+  async function handleInput(e: React.ChangeEvent<HTMLInputElement>) {
+    try {
+      let files = e.target.files;
+      if (files) {
+        let file = files[0];
+        if (file.name.endsWith(".txt")) {
+          let text = await file.text();
+          addNewText(text + "\n");
+        } else {
+          alert("This file format isnt supported (yet)");
+        }
+      }
+    } catch {}
   }
 
   return (
-    <label onClick={toggle} className={"inputOption " + selected}>
-      <input type="file" onChange={onChange} />
+    <label onClick={clear} className={"inputOption " + selected}>
+      <input ref={inputRef} type="file" onInput={handleInput} />
       {ICONS.TextFileInput}
     </label>
   );

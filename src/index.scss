@@ -319,6 +319,7 @@ input[type="file"] {
   }
   &:active {
     background-color: var(--buttonPress);
+    color: var(--inputBlue);
     transition: none;
   }
   &.selected {
