@@ -1,9 +1,15 @@
 import React from "react";
-import "../index.css";
+import type { FC } from "react";
+import type { meter, setting, settingsSetter } from "../projectTypes";
 
-export default function SettingsBar({ settings, setSettings }) {
-  function setMeter(meter) {
-    let temp = { ...settings }; //this creates a deep copy. WHY IS THIS NOT THE DEFAULT!
+interface settingsBarProps {
+  settings: setting;
+  setSettings: settingsSetter;
+}
+
+const SettingsBar: FC<settingsBarProps> = ({ settings, setSettings }) => {
+  function setMeter(meter: meter) {
+    let temp = { ...settings };
     temp.meter = meter;
     setSettings(temp);
   }
@@ -52,4 +58,6 @@ export default function SettingsBar({ settings, setSettings }) {
       </button>
     </div>
   );
-}
+};
+
+export default SettingsBar;

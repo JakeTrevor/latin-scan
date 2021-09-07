@@ -1,4 +1,4 @@
-import type { syllableMap, vowel } from "./scanTypes";
+import type { syllableMap, vowel } from "../projectTypes";
 import expressions, {
   findAllMatches,
   getLetterWithMarking,

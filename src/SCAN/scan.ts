@@ -5,7 +5,7 @@ import type {
   rawType,
   scannedLineType,
   setting,
-} from "./scanTypes";
+} from "../projectTypes";
 import { removePunctuation } from "./punctuationFunctions";
 import ANALYSIS_FUNCTIONS from "./lineAnalysisFunctions";
 import { preScan, postScan } from "./commonFunctions";
@@ -124,3 +124,5 @@ export function arrToQuantity(arr: number[][], meter: meter): quantity[][] {
   }
   return output;
 }
+
+export default scanParagraph;

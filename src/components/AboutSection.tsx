@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import About from "./About";
-import "../index.css";
+import React from "react";
+import type { FC } from "react";
 import { Route } from "react-router-dom";
+import About from "./About";
 
-export default function AboutSection() {
+const AboutSection: FC = () => {
   return (
     <Route exact path="/about">
       <div className="aboutArea">
@@ -86,4 +86,6 @@ export default function AboutSection() {
       </div>
     </Route>
   );
-}
+};
+
+export default AboutSection;

@@ -1,24 +1,34 @@
 import React from "react";
+import type { FC } from "react";
+import type { booleanSetter, numberSetter, scanType } from "src/projectTypes";
 import Tooltip from "./Tooltip";
 import ICONS from "./ICONS/ICONS";
 
-export function Option({
+interface optionProps {
+  id: number;
+  type: scanType;
+  warning: string;
+  setOptionSelected: numberSetter;
+  setOpen: booleanSetter;
+}
+
+const Option: FC<optionProps> = ({
   id,
   type,
-  warnings,
+  warning,
   setOptionSelected,
   setOpen,
   children,
-}) {
+}) => {
   function handleClick() {
     setOptionSelected(id);
     setOpen(false);
   }
   let typeElement = typeIconDictionary[type];
-  console.log(warnings, warnings.length);
+  console.log(warning, warning.length);
   let warningElement =
-    warnings.length > 0 ? (
-      <Tooltip tooltip={warnings}>{ICONS.Warning}</Tooltip>
+    warning.length > 0 ? (
+      <Tooltip tooltip={warning}>{ICONS.Warning}</Tooltip>
     ) : (
       <div className="icon"></div>
     );
@@ -30,9 +40,9 @@ export function Option({
       {warningElement}
     </li>
   );
-}
+};
 
-let typeIconDictionary = {
+let typeIconDictionary: Record<scanType, any> = {
   "Full Scan": <Tooltip tooltip="This is a full Scan">{ICONS.Tick}</Tooltip>,
   Quantities: (
     <Tooltip tooltip="This line contains only certain quantities.">
@@ -41,3 +51,5 @@ let typeIconDictionary = {
   ),
   Input: <Tooltip tooltip="This line is your input.">{ICONS.Input}</Tooltip>,
 };
+
+export default Option;

@@ -1,4 +1,4 @@
-import type { syllableMap, quantity } from "./scanTypes";
+import type { syllableMap, quantity } from "../projectTypes";
 import { arrToQuantity } from "./scan";
 import { sum } from "./utils";
 // the issue is that throwing the error does not allow me to return a value.

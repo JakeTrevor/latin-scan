@@ -1,23 +1,36 @@
-import React, { useState, useEffect } from "react";
-import "../index.css";
-import Tooltip from "./Tooltip";
+import React, { FC, useState, useEffect } from "react";
+import type {
+  booleanSetter,
+  numberSetter,
+  scannedLineType,
+  scanType,
+} from "../projectTypes";
 import { CSSTransition } from "react-transition-group";
-import ICONS from "./ICONS/ICONS";
-import { Option } from "./Option";
+import Option from "./Option";
+import Selection from "./Selection";
 //helper functions
 
 //todo: this could be its own component, have it return a UL.
-function makeOptionArray(scannedLine, setOption, setOpen) {
-  let temp = [];
+function makeOptionArray(
+  scannedLine: scannedLineType,
+  setOption: numberSetter,
+  setOpen: booleanSetter
+) {
+  let temp: any[] = [];
   let output = scannedLine.output;
   let id = 0;
 
-  function addOptionToList(id, text, type, warnings) {
+  function addOptionToList(
+    id: number,
+    text: string,
+    scanType: scanType,
+    warnings: string
+  ) {
     temp.push(
       <Option
         id={id}
-        type={type}
-        warnings={warnings}
+        type={scanType}
+        warning={warnings}
         setOptionSelected={setOption}
         setOpen={setOpen}
       >
@@ -29,20 +42,21 @@ function makeOptionArray(scannedLine, setOption, setOpen) {
   for (let raw of output) {
     let fullScans = raw.full;
     for (let full of fullScans) {
-      addOptionToList(id, full, "Full Scan", []);
+      addOptionToList(id, full, "Full Scan", "");
       ++id;
     }
     addOptionToList(id, raw.raw, "Quantities", raw.error);
     ++id;
   }
-  addOptionToList(id, scannedLine.line, "Input", []);
+  addOptionToList(id, scannedLine.line, "Input", "");
   ++id;
   temp = temp.reverse();
   return temp;
 }
 
-function flattenScannedLine(scannedLine) {
-  let temp = [];
+//todo this should not be in this file
+function flattenScannedLine(scannedLine: scannedLineType) {
+  let temp: string[] = [];
   let output = scannedLine.output;
   for (let each of output) {
     temp = temp.concat(each.full);
@@ -53,7 +67,13 @@ function flattenScannedLine(scannedLine) {
 }
 
 //components
-export function Line({ scannedLine, id }) {
+
+interface lineProps {
+  scannedLine: scannedLineType;
+  id: number;
+}
+
+let Line: FC<lineProps> = ({ scannedLine, id }) => {
   let [optionSelected, setOptionSelected] = useState(0);
   let [open, setOpen] = useState(false);
   function toggleOpen() {
@@ -69,7 +89,7 @@ export function Line({ scannedLine, id }) {
     }
   });
   const [height, setHeight] = useState(0);
-  function calcHeight(el) {
+  function calcHeight(el: HTMLElement) {
     let height = el.offsetHeight;
     setHeight(height);
   }
@@ -99,14 +119,6 @@ export function Line({ scannedLine, id }) {
       </CSSTransition>
     </li>
   );
-}
+};
 
-function Selection({ toggleOpen, status, statusMessage, children }) {
-  return (
-    <div onClick={toggleOpen} className="scanSelection">
-      {ICONS.DownArrow}
-      <div className="outputText">{children}</div>
-      <Tooltip tooltip={statusMessage}>{ICONS[status]}</Tooltip>
-    </div>
-  );
-}
+export default Line;

@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
 import ICONS from "../ICONS/ICONS";
 
-export default function CameraInput() {
+const CameraInput: FC = () => {
   let [selected, setSelected] = useState("");
   function toggle() {
     setSelected(selected === "" ? "selected" : "");
@@ -11,4 +11,6 @@ export default function CameraInput() {
       {ICONS.Camera}
     </button>
   );
-}
+};
+
+export default CameraInput;

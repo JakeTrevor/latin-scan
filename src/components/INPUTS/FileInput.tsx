@@ -1,16 +1,15 @@
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
 import ICONS from "../ICONS/ICONS";
 
-export default function FileInput({}) {
+const FileInput: FC = () => {
   let [selected, setSelected] = useState("");
   function toggle() {
     setSelected(selected === "" ? "selected" : "");
   }
 
-  function onChange(e) {
+  function onChange(e: React.ChangeEvent<HTMLInputElement>) {
     let files = e.target.files;
     console.log(files);
-    
   }
 
   return (
@@ -19,4 +18,6 @@ export default function FileInput({}) {
       {ICONS.TextFileInput}
     </label>
   );
-}
+};
+
+export default FileInput;

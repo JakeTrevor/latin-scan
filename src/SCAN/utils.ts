@@ -1,4 +1,4 @@
-import type { vowel, quantity, setting } from "./scanTypes";
+import type { vowel, quantity, setting } from "../projectTypes";
 
 export let PresetOptions: setting = {
   meter: "Hexameter",
