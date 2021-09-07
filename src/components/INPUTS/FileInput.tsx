@@ -6,9 +6,17 @@ export default function FileInput({}) {
   function toggle() {
     setSelected(selected === "" ? "selected" : "");
   }
+
+  function onChange(e) {
+    let files = e.target.files;
+    console.log(files);
+    
+  }
+
   return (
-    <button onClick={toggle} className={"inputOption " + selected}>
+    <label onClick={toggle} className={"inputOption " + selected}>
+      <input type="file" onChange={onChange} />
       {ICONS.TextFileInput}
-    </button>
+    </label>
   );
 }
