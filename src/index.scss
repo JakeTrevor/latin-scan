@@ -127,6 +127,7 @@ video {
   flex-direction: column;
   justify-content: center;
   align-items: flex-start;
+
   width: clamp(320px, 85%, 1280px);
   outline: none;
   margin: 0 0 20px;
@@ -278,7 +279,6 @@ video {
   }
 
   &:hover::before {
-    z-index: 100;
     --scale: 1;
   }
 }
@@ -298,14 +298,13 @@ video {
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  box-sizing: content-box;
 
   z-index: 1;
-  box-sizing: content-box;
   background-color: rgb(250, 250, 250);
-  box-shadow: var(--headerBoxShadow);
-
   padding: 10px 100% 25px;
   width: clamp(320px, 85%, 1280px);
+  box-shadow: var(--headerBoxShadow);
 }
 
 .inputOption {
@@ -313,6 +312,7 @@ video {
   width: 30px;
   height: 30px;
   padding: 5px;
+
   background: white;
   border-radius: 50%;
   border: none;
@@ -328,9 +328,6 @@ video {
     color: var(--inputBlue);
     transition: none;
   }
-  &.selected {
-    color: var(--inputBlue);
-  }
 }
 
 .modal {
@@ -339,8 +336,12 @@ video {
   bottom: 0;
   left: 0;
   right: 0;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+
+  z-index: 30;
+  background: rgb(0 0 0 / 50%);
 }

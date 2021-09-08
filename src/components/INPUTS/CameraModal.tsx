@@ -1,17 +1,14 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import type { booleanSetter } from "src/projectTypes";
-import ICONS from "./ICONS/ICONS";
+import ICONS from "../ICONS/ICONS";
 
-interface cameraModalProps{
-  open: boolean;
+interface cameraModalProps {
   setOpen: booleanSetter;
 }
-
-const CameraModal: FC<cameraModalProps = ({open, setOpen}) => {
+const CameraModal: FC<cameraModalProps> = ({ setOpen }) => {
   let videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    console.log("hello");
     navigator.mediaDevices
       .getUserMedia({
         video: true,
@@ -25,19 +22,17 @@ const CameraModal: FC<cameraModalProps = ({open, setOpen}) => {
   });
 
   return (
-    open && (
-      <div className="camera modal">
-        <video ref={videoRef} />
-        <button
-          onClick={() => {
-            setOpen(!open);
-          }}
-          className="inputOption"
-        >
-          {ICONS.Camera}
-        </button>
-      </div>
-    )
+    <div className="camera modal">
+      <video ref={videoRef} />
+      <button
+        onClick={() => {
+          setOpen(false);
+        }}
+        className="inputOption"
+      >
+        {ICONS.Camera}
+      </button>
+    </div>
   );
 };
 

@@ -6,26 +6,38 @@ import AboutSection from "./AboutSection";
 import ScanArea from "./ScanArea";
 import InputOptionsBar from "./INPUTS/InputOptionsBar";
 import Header from "./Header";
-import CameraModal from "./CameraModal";
+import CameraModal from "./INPUTS/CameraModal";
 
 const App: FC = () => {
   //the "Text" state of the app; the users input.
   //kept at top level so it can be consistent across mobile and webapp components.
   let [cameraModalOpen, setCameraModalOpen] = useState(false);
+
   let [text, setText] = useState("");
   let [settings, setSettings] = useState(PresetOptions);
+
+  let cam = cameraModalOpen ? (
+    <CameraModal setOpen={setCameraModalOpen} />
+  ) : (
+    <div className="camPlaceholder"></div>
+  );
 
   return (
     <HashRouter>
       <div className="app">
         <Header />
-        <CameraModal open={cameraModalOpen} setOpen={setCameraModalOpen} />
+        {cam}
+
         <Switch>
           <Route exact path="/about">
             <AboutSection />
           </Route>
           <Route path="">
-            <InputOptionsBar text={text} setText={setText} />
+            <InputOptionsBar
+              text={text}
+              setText={setText}
+              setCameraOpen={setCameraModalOpen}
+            />
             <ScanArea
               text={text}
               setText={setText}

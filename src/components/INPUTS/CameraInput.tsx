@@ -1,15 +1,21 @@
-import React, { FC, useState } from "react";
+import React from "react";
+import type { FC } from "react";
+import type { booleanSetter } from "src/projectTypes";
 import ICONS from "../ICONS/ICONS";
 
-const CameraInput: FC = () => {
-  let [selected, setSelected] = useState("");
-  function toggle() {
-    setSelected(selected === "" ? "selected" : "");
-  }
+interface cameraInputProps {
+  setCameraOpen: booleanSetter;
+}
+
+const CameraInput: FC<cameraInputProps> = ({ setCameraOpen }) => {
+  let hasCamera: boolean;
+
   return (
-    <button onClick={toggle} className={"inputOption " + selected}>
-      {ICONS.Camera}
-    </button>
+    <div>
+      <button onClick={() => setCameraOpen(true)} className={"inputOption"}>
+        {ICONS.Camera}
+      </button>
+    </div>
   );
 };
 
