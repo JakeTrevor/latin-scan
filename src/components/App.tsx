@@ -1,12 +1,12 @@
 import React, { FC, useState } from "react";
 import "../index.scss";
 import { HashRouter, Switch, Route } from "react-router-dom";
-import { PresetOptions } from "../SCAN/utils";
 import AboutSection from "./AboutSection";
 import ScanArea from "./ScanArea";
 import InputOptionsBar from "./INPUTS/InputOptionsBar";
 import Header from "./Header";
 import CameraModal from "./INPUTS/CameraModal";
+import { defaultSettings } from "latin-scanner";
 
 const App: FC = () => {
   //the "Text" state of the app; the users input.
@@ -14,7 +14,7 @@ const App: FC = () => {
   let [cameraModalOpen, setCameraModalOpen] = useState(false);
 
   let [text, setText] = useState("");
-  let [settings, setSettings] = useState(PresetOptions);
+  let [settings, setSettings] = useState(defaultSettings);
 
   let cam = cameraModalOpen ? (
     <CameraModal setOpen={setCameraModalOpen} />

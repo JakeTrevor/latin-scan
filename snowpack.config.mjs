@@ -6,20 +6,9 @@ export default {
   },
   plugins: [
     "@snowpack/plugin-react-refresh",
-    [
-      "snowpack-plugin-svgr",
-      {
-        /* see "Plugin Options" below */
-      },
-    ],
     "@snowpack/plugin-dotenv",
-    [
-      "@snowpack/plugin-sass",
-      {
-        /* see options below */
-      },
-    ],
-
+    ["snowpack-plugin-svgr", {}],
+    ["@snowpack/plugin-sass", {}],
     [
       "@snowpack/plugin-typescript",
       {

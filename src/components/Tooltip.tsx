@@ -7,7 +7,7 @@ interface tooltipProps {
 
 const Tooltip: FC<tooltipProps> = ({ tooltip, children }) => {
   return (
-    <div className="tooltip" tooltip={tooltip}>
+    <div className="tooltip" data-tooltip={tooltip}>
       {children}
     </div>
   );

@@ -1,10 +1,10 @@
 import React from "react";
 import type { FC } from "react";
-import type { scannedLineType } from "../projectTypes";
 import Line from "./Line";
+import type { scannedLineObject } from "latin-scanner/build/src/types";
 
 interface outputAreaProps {
-  toRender: scannedLineType[];
+  toRender: scannedLineObject[];
 }
 
 const OutputArea: FC<outputAreaProps> = ({ toRender }) => {

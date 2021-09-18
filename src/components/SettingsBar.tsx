@@ -1,9 +1,11 @@
 import React from "react";
 import type { FC } from "react";
-import type { meter, setting, settingsSetter } from "../projectTypes";
+import type { settingsSetter } from "../projectTypes";
+import type { meter, scanSettingsObject } from "latin-scanner/build/src/types";
 
+//todo make sure that "x first" remains hex untill you click on it.
 interface settingsBarProps {
-  settings: setting;
+  settings: scanSettingsObject;
   setSettings: settingsSetter;
 }
 
@@ -11,13 +13,19 @@ const SettingsBar: FC<settingsBarProps> = ({ settings, setSettings }) => {
   function setMeter(meter: meter) {
     let temp = { ...settings };
     temp.meter = meter;
+    temp.elegaic = false;
     setSettings(temp);
   }
 
   function switchFirstMeter() {
     let temp = { ...settings };
-    temp.firstMeter =
-      temp.firstMeter === "Hexameter" ? "Pentameter" : "Hexameter";
+    temp.meter = temp.meter === "Hexameter" ? "Pentameter" : "Hexameter";
+    setSettings(temp);
+  }
+
+  function setElegaic() {
+    let temp = { ...settings };
+    temp.elegaic = true;
     setSettings(temp);
   }
 
@@ -25,36 +33,39 @@ const SettingsBar: FC<settingsBarProps> = ({ settings, setSettings }) => {
     <div className="optionsBox">
       <button
         className={`optionButton ${
-          settings.meter === "Hexameter" ? "selectedMeter" : ""
+          !settings.elegaic && settings.meter === "Hexameter"
+            ? "selectedMeter"
+            : ""
         }`}
         onClick={() => setMeter("Hexameter")}
       >
         Hexameter
       </button>
+
       <button
         className={`optionButton ${
-          settings.meter === "Pentameter" ? "selectedMeter" : ""
+          !settings.elegaic && settings.meter === "Pentameter"
+            ? "selectedMeter"
+            : ""
         }`}
         onClick={() => setMeter("Pentameter")}
       >
         Pentameter
       </button>
+
       <button
-        className={`optionButton ${
-          settings.meter === "Elegaic" ? "selectedMeter" : ""
-        }`}
-        onClick={() => setMeter("Elegaic")}
+        className={`optionButton ${settings.elegaic ? "selectedMeter" : ""}`}
+        onClick={setElegaic}
       >
         Elegaic
       </button>
+
       <button
-        className={`optionButton ${
-          settings.meter === "Elegaic" ? "selectedMeter" : ""
-        }`}
+        className={`optionButton ${settings.elegaic ? "selectedMeter" : ""}`}
+        disabled={!settings.elegaic}
         onClick={switchFirstMeter}
-        disabled={settings.meter !== "Elegaic"}
       >
-        {settings.firstMeter.substring(0, 3)}. 1st
+        {settings.meter.substring(0, 3)}. 1st
       </button>
     </div>
   );

@@ -1,6 +1,6 @@
 import React, { FC, useRef, useState } from "react";
 import type { stringSetter } from "src/projectTypes";
-import ICONS from "../ICONS/ICONS";
+import { misc } from "../ICONS/ICONS";
 
 interface fileInputProps {
   text: string;
@@ -39,7 +39,7 @@ const FileInput: FC<fileInputProps> = ({ text, setText }) => {
   return (
     <label onClick={clear} className={"inputOption " + selected}>
       <input ref={inputRef} type="file" onInput={handleInput} />
-      {ICONS.TextFileInput}
+      {misc.TextFileInput}
     </label>
   );
 };

@@ -275,7 +275,7 @@ video {
     padding: 2px;
     border-radius: 5px;
     line-height: 20px;
-    content: attr(tooltip);
+    content: attr(data-tooltip);
   }
 
   &:hover::before {

@@ -1,12 +1,13 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import type { FC } from "react";
-import type { booleanSetter, numberSetter, scanType } from "src/projectTypes";
+import type { booleanSetter, numberSetter } from "src/projectTypes";
 import Tooltip from "./Tooltip";
-import ICONS from "./ICONS/ICONS";
+import { misc, scanNatureIcons } from "./ICONS/ICONS";
+import type { scanNature } from "latin-scanner/build/src/types";
 
 interface optionProps {
   id: number;
-  type: scanType;
+  nature: scanNature;
   warning: string;
   setOptionSelected: numberSetter;
   setOpen: booleanSetter;
@@ -14,7 +15,7 @@ interface optionProps {
 
 const Option: FC<optionProps> = ({
   id,
-  type,
+  nature,
   warning,
   setOptionSelected,
   setOpen,
@@ -24,32 +25,22 @@ const Option: FC<optionProps> = ({
     setOptionSelected(id);
     setOpen(false);
   }
-  let typeElement = typeIconDictionary[type];
+  let typeElement = scanNatureIcons[nature];
   console.log(warning, warning.length);
   let warningElement =
     warning.length > 0 ? (
-      <Tooltip tooltip={warning}>{ICONS.Warning}</Tooltip>
+      <Tooltip tooltip={warning}>{misc.Warning}</Tooltip>
     ) : (
       <div className="icon"></div>
     );
 
   return (
-    <li key={id} onClick={handleClick} className={"scanSelection " + type}>
+    <li key={id} onClick={handleClick} className={"scanSelection " + nature}>
       {typeElement}
       <div className="outputText ">{children}</div>
       {warningElement}
     </li>
   );
-};
-
-let typeIconDictionary: Record<scanType, any> = {
-  "Full Scan": <Tooltip tooltip="This is a full Scan">{ICONS.Tick}</Tooltip>,
-  Quantities: (
-    <Tooltip tooltip="This line contains only certain quantities.">
-      {ICONS.Bar}
-    </Tooltip>
-  ),
-  Input: <Tooltip tooltip="This line is your input.">{ICONS.Input}</Tooltip>,
 };
 
 export default Option;

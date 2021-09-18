@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useRef, useState } from "react";
 import type { booleanSetter } from "src/projectTypes";
-import ICONS from "../ICONS/ICONS";
+import { misc } from "../ICONS/ICONS";
 
 interface cameraModalProps {
   setOpen: booleanSetter;
@@ -23,6 +23,9 @@ const CameraModal: FC<cameraModalProps> = ({ setOpen }) => {
 
   return (
     <div className="camera modal">
+      <h1>
+        I'm still working on this feature - this is here for testing purposes.
+      </h1>
       <video ref={videoRef} />
       <button
         onClick={() => {
@@ -30,7 +33,7 @@ const CameraModal: FC<cameraModalProps> = ({ setOpen }) => {
         }}
         className="inputOption"
       >
-        {ICONS.Camera}
+        {misc.Camera}
       </button>
     </div>
   );

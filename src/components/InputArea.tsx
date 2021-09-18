@@ -1,46 +1,8 @@
+import { replaceForcedQuantities } from "latin-scanner";
 import React, { FC, useEffect, useRef, useState } from "react";
-import { findAllMatches, getLetterWithMarking } from "../SCAN/utils";
-import type { stringSetter, vowel } from "../projectTypes";
+import type { stringSetter } from "../projectTypes";
 
-const FORCED_SPONDEE_REGEX = /_[aeiouy]/g;
-const FORCED_DACTYL_REGEX = /@[aeiouy]/g;
-const FOUND_FORCED_VOWEL = /[@_][aeiouy]/;
-
-function catchForcedDactyls(text: string) {
-  if (FORCED_DACTYL_REGEX.test(text.toLocaleLowerCase())) {
-    let forcedDactyls = findAllMatches(
-      text.toLocaleLowerCase(),
-      FORCED_DACTYL_REGEX
-    );
-    for (let each of forcedDactyls) {
-      let letter = text.charAt(each + 1) as vowel;
-      let replacement = getLetterWithMarking("short", letter);
-      text = replaceLetter(text, each, replacement);
-    }
-  }
-  return text;
-}
-
-function catchForcedSpondees(text: string) {
-  if (FORCED_SPONDEE_REGEX.test(text.toLowerCase())) {
-    let forcedSpondees = findAllMatches(
-      text.toLocaleLowerCase(),
-      FORCED_SPONDEE_REGEX
-    );
-    for (let each of forcedSpondees) {
-      let letter = text.charAt(each + 1) as vowel;
-      let replacement = getLetterWithMarking("long", letter);
-      text = replaceLetter(text, each, replacement);
-    }
-  }
-  return text;
-}
-
-function replaceLetter(text: string, position: number, replacement: string) {
-  return (
-    text.substring(0, position) + replacement + text.substring(position + 2)
-  );
-}
+//todo move this
 
 function setCaretPos(elRef: HTMLTextAreaElement, pos: number) {
   if (elRef.setSelectionRange) {
@@ -49,6 +11,7 @@ function setCaretPos(elRef: HTMLTextAreaElement, pos: number) {
   }
 }
 
+//*main
 interface inputAreaProps {
   value: string;
   setValue: stringSetter;
@@ -60,14 +23,13 @@ let InputArea: FC<inputAreaProps> = ({ value, setValue, placeholder }) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   function handleTextChange(e: React.ChangeEvent<HTMLTextAreaElement>) {
+    let caretPosition = e.target.selectionStart - 1;
     let text = e.target.value;
-    if (FOUND_FORCED_VOWEL.test(text.toLocaleLowerCase())) {
-      let caretPosition = e.target.selectionStart - 1;
+    let handledText = replaceForcedQuantities(text);
+    if (handledText !== text) {
       storeCaretPos(caretPosition);
-      text = catchForcedSpondees(text);
-      text = catchForcedDactyls(text);
     }
-    setValue(text);
+    setValue(handledText);
   }
 
   //when the component is re-rendered with a new value, recalculate and update the height

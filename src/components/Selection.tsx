@@ -1,25 +1,31 @@
 import React from "react";
 import type { FC } from "react";
 import Tooltip from "./Tooltip";
-import ICONS from "./ICONS/ICONS";
+import { misc, meterAndStatusIcons } from "./ICONS/ICONS";
+import type { meter, scanStatus } from "latin-scanner/build/src/types";
 
 interface SelectionProps {
   toggleOpen: CallableFunction;
-  status: string;
+  status: scanStatus;
   statusMessage: string;
+  meter: meter;
 }
 
+//todo add some color to status
 const Selection: FC<SelectionProps> = ({
   toggleOpen,
   status,
   statusMessage,
+  meter,
   children,
 }) => {
   return (
     <div onClick={() => toggleOpen()} className="scanSelection">
-      {ICONS.DownArrow}
+      {misc.DownArrow}
       <div className="outputText">{children}</div>
-      <Tooltip tooltip={statusMessage}>{ICONS[status]}</Tooltip>
+      <Tooltip tooltip={statusMessage}>
+        {meterAndStatusIcons[meter][status]}
+      </Tooltip>
     </div>
   );
 };

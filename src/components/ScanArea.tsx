@@ -1,16 +1,17 @@
 import React from "react";
 import type { FC } from "react";
-import type { setting, settingsSetter, stringSetter } from "../projectTypes";
+import type { settingsSetter, stringSetter } from "../projectTypes";
 
-import { scanParagraph } from "../SCAN/scan";
 import InputArea from "./InputArea";
 import OutputArea from "./OutputArea";
 import SettingsBar from "./SettingsBar";
+import { scanParagraph } from "latin-scanner";
+import type { scanSettingsObject } from "latin-scanner/build/src/types";
 
 interface scanAreaProps {
   text: string;
   setText: stringSetter;
-  settings: setting;
+  settings: scanSettingsObject;
   setSettings: settingsSetter;
 }
 
