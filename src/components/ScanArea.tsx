@@ -3,7 +3,7 @@ import type { FC } from "react";
 import type { settingsSetter, stringSetter } from "../projectTypes";
 
 import InputArea from "./InputArea";
-import OutputArea from "./OutputArea";
+import OutputArea from "./output/OutputArea";
 import SettingsBar from "./SettingsBar";
 import { scanParagraph } from "latin-scanner";
 import type { scanSettingsObject } from "latin-scanner/build/src/types";

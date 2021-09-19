@@ -40,9 +40,17 @@ input[type="file"] {
 }
 
 video {
-  width: 100%;
-  max-width: 100%;
+  width: clamp(600px, 60%, 1000px);
   height: auto;
+  margin: 10px;
+  background-color: white;
+  border: solid black;
+}
+
+canvas {
+  width: clamp(600px, 60%, 1000px);
+  height: auto;
+  margin: 10px;
 }
 
 .app {
@@ -194,16 +202,19 @@ video {
   display: flex;
   justify-content: space-between;
   transition: all 500ms;
+  &.Plus,
   &.Input {
     &:hover {
       color: var(--inputBlue);
     }
   }
+  &.Warning,
   &.Quantities {
     &:hover {
       color: var(--red);
     }
   }
+  &.OK,
   &.Full.Scan {
     &:hover {
       color: var(--green);
@@ -332,11 +343,10 @@ video {
 
 .modal {
   position: fixed;
-  top: 0;
-  bottom: 0;
   left: 0;
   right: 0;
 
+  overflow: scroll;
   display: flex;
   flex-direction: column;
   align-items: center;

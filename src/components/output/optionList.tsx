@@ -1,5 +1,5 @@
 import React from "react";
-import type { booleanSetter, numberSetter } from "../projectTypes";
+import type { booleanSetter, numberSetter } from "../../projectTypes";
 import type {
   scanNature,
   scannedLineObject,

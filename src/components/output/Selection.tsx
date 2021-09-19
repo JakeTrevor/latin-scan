@@ -1,7 +1,7 @@
 import React from "react";
 import type { FC } from "react";
-import Tooltip from "./Tooltip";
-import { misc, meterAndStatusIcons } from "./ICONS/ICONS";
+import Tooltip from "../ICONS/Tooltip";
+import { misc, meterAndStatusIcons } from "../ICONS/ICONS";
 import type { meter, scanStatus } from "latin-scanner/build/src/types";
 
 interface SelectionProps {
@@ -20,7 +20,7 @@ const Selection: FC<SelectionProps> = ({
   children,
 }) => {
   return (
-    <div onClick={() => toggleOpen()} className="scanSelection">
+    <div onClick={() => toggleOpen()} className={"scanSelection " + status}>
       {misc.DownArrow}
       <div className="outputText">{children}</div>
       <Tooltip tooltip={statusMessage}>

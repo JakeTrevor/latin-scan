@@ -19,7 +19,7 @@ import type {
   scanNature,
   scanStatus,
 } from "latin-scanner/build/src/types";
-import Tooltip from "../Tooltip";
+import Tooltip from "./Tooltip";
 
 //put all the icons imports in one place, keeps things clean.
 export let misc: Record<string, ReactElement> = {

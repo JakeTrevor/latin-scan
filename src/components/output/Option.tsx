@@ -1,8 +1,8 @@
 import React, { ReactElement } from "react";
 import type { FC } from "react";
 import type { booleanSetter, numberSetter } from "src/projectTypes";
-import Tooltip from "./Tooltip";
-import { misc, scanNatureIcons } from "./ICONS/ICONS";
+import Tooltip from "../ICONS/Tooltip";
+import { misc, scanNatureIcons } from "../ICONS/ICONS";
 import type { scanNature } from "latin-scanner/build/src/types";
 
 interface optionProps {
