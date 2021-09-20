@@ -1,6 +1,7 @@
 import React, { FC, useRef, useState } from "react";
 import type { stringSetter } from "src/projectTypes";
 import { misc } from "../ICONS/ICONS";
+import handleFile from "./FileHandler";
 
 interface fileInputProps {
   text: string;
@@ -26,19 +27,15 @@ const FileInput: FC<fileInputProps> = ({ text, setText }) => {
       let files = e.target.files;
       if (files) {
         let file = files[0];
-        if (file.name.endsWith(".txt")) {
-          let text = await file.text();
-          addNewText(text + "\n");
-        } else {
-          alert("This file format isnt supported (yet)");
-        }
+        let derivedText = await handleFile(file);
+        setText(derivedText);
       }
     } catch {}
   }
 
   return (
     <label onClick={clear} className={"inputOption " + selected}>
-      <input ref={inputRef} type="file" onInput={handleInput} />
+      <input ref={inputRef} onInput={handleInput} type="file" />
       {misc.TextFileInput}
     </label>
   );

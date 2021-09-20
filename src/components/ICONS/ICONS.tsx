@@ -14,6 +14,9 @@ import Bar from "./Bar.svg";
 import Camera from "./Camera.svg";
 import Keyboard from "./Keyboard.svg";
 import TextFileInput from "./TextFileInput.svg";
+import Close from "./Close.svg";
+import Retake from "./Retake.svg";
+
 import type {
   meter,
   scanNature,
@@ -28,6 +31,9 @@ export let misc: Record<string, ReactElement> = {
   Keyboard: <Keyboard className="icon" />,
   TextFileInput: <TextFileInput className="icon" />,
   Warning: <Warning className="icon" />,
+  Close: <Close className="icon" />,
+  Retake: <Retake className="icon" />,
+  Tick: <Tick className="icon" />,
 };
 
 export let scanNatureIcons: Record<scanNature, ReactElement> = {

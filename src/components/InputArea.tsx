@@ -18,6 +18,7 @@ interface inputAreaProps {
   placeholder: string;
 }
 
+//aka autoheight text area
 let InputArea: FC<inputAreaProps> = ({ value, setValue, placeholder }) => {
   let [caretPos, storeCaretPos] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);

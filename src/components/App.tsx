@@ -5,8 +5,8 @@ import AboutSection from "./AboutSection";
 import ScanArea from "./ScanArea";
 import InputOptionsBar from "./INPUTS/InputOptionsBar";
 import Header from "./Header";
-import CameraModal from "./INPUTS/CameraModal";
 import { defaultSettings } from "latin-scanner";
+import { CamController } from "./INPUTS/camModals/CamController";
 
 const App: FC = () => {
   //the "Text" state of the app; the users input.
@@ -17,7 +17,7 @@ const App: FC = () => {
   let [settings, setSettings] = useState(defaultSettings);
 
   let cam = cameraModalOpen ? (
-    <CameraModal setOpen={setCameraModalOpen} />
+    <CamController text={text} setText={setText} setOpen={setCameraModalOpen} />
   ) : (
     <div className="camPlaceholder"></div>
   );
