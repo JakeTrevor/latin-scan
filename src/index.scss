@@ -181,6 +181,7 @@ canvas {
 .outputArea,
 .inputArea {
   resize: none;
+  overflow: hidden;
   width: 50%;
   border: none;
   &:focus {
