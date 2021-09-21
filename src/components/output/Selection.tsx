@@ -11,7 +11,6 @@ interface SelectionProps {
   meter: meter;
 }
 
-//todo add some color to status
 const Selection: FC<SelectionProps> = ({
   toggleOpen,
   status,

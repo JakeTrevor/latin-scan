@@ -3,7 +3,6 @@ import type { FC } from "react";
 import type { settingsSetter } from "../projectTypes";
 import type { meter, scanSettingsObject } from "latin-scanner/build/src/types";
 
-//todo make sure that "x first" remains hex untill you click on it.
 interface settingsBarProps {
   settings: scanSettingsObject;
   setSettings: settingsSetter;
@@ -26,9 +25,13 @@ const SettingsBar: FC<settingsBarProps> = ({ settings, setSettings }) => {
   function setElegaic() {
     let temp = { ...settings };
     temp.elegaic = true;
+    temp.meter = "Hexameter";
     setSettings(temp);
   }
 
+  let firstMeterDisplay = settings.elegaic
+    ? `${settings.meter.substring(0, 3)}. 1st`
+    : "Hex. 1st";
   return (
     <div className="optionsBox">
       <button
@@ -65,7 +68,7 @@ const SettingsBar: FC<settingsBarProps> = ({ settings, setSettings }) => {
         disabled={!settings.elegaic}
         onClick={switchFirstMeter}
       >
-        {settings.meter.substring(0, 3)}. 1st
+        {firstMeterDisplay}
       </button>
     </div>
   );

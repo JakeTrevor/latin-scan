@@ -2,8 +2,6 @@ import { replaceForcedQuantities } from "latin-scanner";
 import React, { FC, useEffect, useRef, useState } from "react";
 import type { stringSetter } from "../projectTypes";
 
-//todo move this
-
 function setCaretPos(elRef: HTMLTextAreaElement, pos: number) {
   if (elRef.setSelectionRange) {
     elRef.focus();

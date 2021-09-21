@@ -6,7 +6,7 @@ import type {
 } from "latin-scanner/build/src/types";
 import Option from "./Option";
 
-//todo
+//todo refactor
 export function optionList(
   scannedLine: scannedLineObject,
   setOption: numberSetter,
