@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<svg
+  viewBox="0 0 21 21"
+  width="20px"
+  height="20px"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlnsBx="https://boxy-svg.com"
+>
+  <path
+    d="M -10 -19.499 L -0.501 -14.75 L -0.501 -5.251 L -10 -0.501 L -19.499 -5.25 L -19.499 -14.75 Z"
+    fill="none"
+    stroke="currentColor"
+    transform="matrix(0, 1, -1, 0, 0.499001, 20.499001)"
+    bxShape="n-gon -10 -10 10.969 9.499 6 0 1@bafd27fe"
+  />
+  <text fill="currentcolor" style="font-size: 15px;" x="8.2" y="15.815">!</text>
+</svg>

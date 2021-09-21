@@ -13,4 +13,5 @@
     bxShape="n-gon 10.5 11.503 9.989 10.503 5 0 1@e8ec58ef"
     bxOrigin="-0.047929 -0.058194"
   />
+  <text fill="currentcolor" style="font-size: 15px;" x="8.2" y="15.815">!</text>
 </svg>

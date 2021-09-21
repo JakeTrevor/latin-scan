@@ -12,7 +12,7 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "importsNotUsedAsValues": "error",
-    "allowJs": true,
+    "allowJs": false,
     "esModuleInterop": true,
     "noFallthroughCasesInSwitch": true,
     "lib": ["dom", "dom.iterable", "esnext"],
