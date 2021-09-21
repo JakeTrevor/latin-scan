@@ -341,7 +341,7 @@ canvas {
 
   height: 100%;
   width: 100%;
-  padding: 5%;
+  padding: 3%;
   overflow: hidden;
   display: flex;
   flex-direction: column;
@@ -366,7 +366,8 @@ canvas {
 
 .preview,
 video {
-  width: clamp(600px, 50%, 1000px);
+  width: auto;
+  max-width: 50%;
   height: auto;
   margin: 20px;
   background-color: white;
@@ -375,6 +376,7 @@ video {
     padding: 10px;
     overflow-y: scroll;
     resize: none;
+    width: -webkit-fill-available;
     &:focus {
       outline: none;
     }
@@ -384,6 +386,7 @@ video {
 .pictureBox {
   display: flex;
   flex-direction: row;
+  max-height: 80%;
 }
 
 .progressBarBox {

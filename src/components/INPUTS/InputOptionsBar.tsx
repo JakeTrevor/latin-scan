@@ -3,18 +3,20 @@ import type { FC } from "react";
 import CameraInput from "./camera/CameraInput";
 import { FileInput } from "./file/FileInput";
 import WriteInput from "./WriteInput";
-import type { booleanSetter, stringSetter } from "src/projectTypes";
+import type { booleanSetter, fileSetter, stringSetter } from "src/projectTypes";
 
 interface inputBarProps {
   text: string;
   setText: stringSetter;
   setCameraOpen: booleanSetter;
+  setFile: CallableFunction;
 }
 
 const InputOptionsBar: FC<inputBarProps> = ({
   text,
   setText,
   setCameraOpen,
+  setFile,
 }) => {
   const [camera, setCamera] = useState(<div />);
 
@@ -34,7 +36,7 @@ const InputOptionsBar: FC<inputBarProps> = ({
   return (
     <div className="inputOptionsBar">
       <WriteInput />
-      <FileInput text={text} setText={setText} />
+      <FileInput setText={setText} setFile={setFile} />
       {camera}
     </div>
   );

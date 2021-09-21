@@ -47,11 +47,13 @@ async function hanleImage(file: File, logger: any) {
   await worker.loadLanguage("lat");
   await worker.initialize("lat");
 
-  const {
+  let {
     data: { text },
   } = await worker.recognize(file);
 
   await worker.terminate();
+  //normalise the line to remove accents.
+  text = text.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   return text;
 }
 export default handleFile;

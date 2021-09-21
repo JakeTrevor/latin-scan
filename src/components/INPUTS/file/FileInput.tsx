@@ -1,14 +1,14 @@
 import React, { FC, useRef, useState } from "react";
-import type { stringSetter } from "src/projectTypes";
+import type { fileSetter, stringSetter } from "src/projectTypes";
 import { misc } from "../../ICONS/ICONS";
 import handleFile from "../FileHandler";
 
 interface fileInputProps {
-  text: string;
   setText: stringSetter;
+  setFile: CallableFunction;
 }
 
-export let FileInput: FC<fileInputProps> = ({ text, setText }) => {
+export let FileInput: FC<fileInputProps> = ({ setText, setFile }) => {
   let inputRef = useRef<HTMLInputElement>(null);
   let [selected, setSelected] = useState("");
   function clear() {
@@ -22,8 +22,14 @@ export let FileInput: FC<fileInputProps> = ({ text, setText }) => {
       let files = e.target.files;
       if (files) {
         let file = files[0];
-        let derivedText = await handleFile(file);
-        setText(derivedText);
+        if (file.type.startsWith("image")) {
+          setFile(file);
+        } else {
+          let derivedText = await handleFile(file, (m: any) => {
+            console.log(m);
+          });
+          setText(derivedText);
+        }
       }
     } catch {}
   }

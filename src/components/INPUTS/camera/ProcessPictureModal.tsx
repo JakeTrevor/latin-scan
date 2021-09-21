@@ -81,6 +81,7 @@ export let ProcessPictureModal: FC<processPictureModalProps> = ({
           onChange={(e) => {
             setNewText(e.target.value);
           }}
+          disabled={loaded}
           className="preview Text"
         />
       </div>
