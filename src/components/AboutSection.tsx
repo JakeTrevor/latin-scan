@@ -48,6 +48,31 @@ const AboutSection: FC = () => {
           vowel to make it short. This can be useful if the line isn't scanning
           right.
         </About>
+        <About title="Alternative input methods">
+          <p>
+            With the newest version of Latin-Scan.com, there are now several
+            options for how to input the text you wish to scan. If your device
+            supports it, you can now upload a file or take a picture of the text
+            to scan. Even if you don’t have a camera, you can still upload
+            images – simply click the file upload button and select the file you
+            wish to upload, be it a PNG or a JPEG. Text detection is powered by{" "}
+            <a
+              href="https://tesseract.projectnaptha.com/"
+              target="_blank"
+              className="visibleLink"
+            >
+              tesseract.js.
+            </a>
+          </p>
+          <p>
+            Unfortunately, not all file types are supported. Word files (.docs,
+            .docx) are difficult to read, as are PDFs. Please rest assured that
+            I am working on adding support for those files. If you are trying to
+            upload a word file, I recommend saving it as a .txt file and
+            uploading that. If that is not possible, or if you are working with
+            a PDF then I suggest copy-pasting the text.
+          </p>
+        </About>
         <About title="Capabilities">
           Unfortunatley, the system behind latin-scan.com is not perfect. It
           cannot, as a rule, detect vowels that have quantity by nature; many of
