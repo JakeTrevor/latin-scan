@@ -181,12 +181,15 @@ canvas {
 .outputArea,
 .inputArea {
   resize: none;
-  overflow: hidden;
   width: 50%;
   border: none;
   &:focus {
     outline: none;
   }
+}
+
+.inputArea {
+  overflow: hidden;
 }
 
 .scanSelection {
@@ -384,7 +387,27 @@ video {
 }
 
 .progressBarBox {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+
   width: 80%;
   border-radius: 10px;
   background-color: white;
+  padding: 10px;
+
+  font-size: small;
+  white-space: nowrap;
+}
+
+.progressBorder {
+  background-color: rgb(0 0 0 / 10%);
+  border-radius: 5px;
+  margin: 5px;
+}
+
+.progressBar {
+  background-color: var(--inputBlue);
+  height: 100%;
+  border-radius: 5px;
 }

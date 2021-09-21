@@ -2,10 +2,13 @@
 import { createWorker } from "tesseract.js";
 
 //proces file, and return text within.
-async function handleFile(file: File): Promise<string> {
+async function handleFile(
+  file: File,
+  logger: CallableFunction
+): Promise<string> {
   let fileExtension = getExtension(file);
   if (supportedTypes.includes(fileExtension)) {
-    let text: Promise<string> = await HANDLERS[fileExtension](file);
+    let text: Promise<string> = await HANDLERS[fileExtension](file, logger);
     return text;
   } else {
     alert("This file format isnt supported (yet)");
@@ -28,18 +31,17 @@ let HANDLERS: Record<string, CallableFunction> = {
 let supportedTypes = Object.keys(HANDLERS);
 
 //* file handlers below:
-async function handlePlainText(file: File): Promise<string> {
+async function handlePlainText(
+  file: File,
+  _logger: any //just catches the logger
+): Promise<string> {
   let text = file.text();
   return await text;
 }
 
-async function handleDocxFile(file: Blob): Promise<string> {
-  return await "hello";
-}
-
-async function hanleImage(file: File) {
+async function hanleImage(file: File, logger: any) {
   let worker = createWorker({
-    logger: (m) => console.log(m),
+    logger: logger,
   });
   await worker.load();
   await worker.loadLanguage("lat");

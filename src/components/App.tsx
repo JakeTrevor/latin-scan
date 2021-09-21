@@ -6,7 +6,7 @@ import ScanArea from "./ScanArea";
 import InputOptionsBar from "./INPUTS/InputOptionsBar";
 import Header from "./Header";
 import { defaultSettings } from "latin-scanner";
-import { CamController } from "./INPUTS/camModals/CamController";
+import { CamController } from "./INPUTS/camera/CamController";
 
 const App: FC = () => {
   //the "Text" state of the app; the users input.

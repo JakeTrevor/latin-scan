@@ -1,7 +1,7 @@
 import React from "react";
 import type { FC } from "react";
 import type { booleanSetter } from "src/projectTypes";
-import { misc } from "../ICONS/ICONS";
+import { misc } from "../../ICONS/ICONS";
 
 interface cameraInputProps {
   setCameraOpen: booleanSetter;

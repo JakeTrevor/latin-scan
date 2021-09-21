@@ -3,7 +3,6 @@ import type { FC } from "react";
 import { CloseButton } from "./CloseButton";
 import { misc } from "../../ICONS/ICONS";
 import type { stringSetter } from "src/projectTypes";
-import { file } from "@babel/types";
 import handleFile from "../FileHandler";
 
 interface processPictureModalProps {
@@ -23,8 +22,9 @@ export let ProcessPictureModal: FC<processPictureModalProps> = ({
 }) => {
   let previewRef = useRef<HTMLImageElement>(null);
   let [newText, setNewText] = useState("loading text...");
-  let [progress, setProgress] = useState("..");
+  let [progress, setProgress] = useState({ status: "Setting up", progress: 0 });
   let [loaded, setLoaded] = useState(true);
+
   //setup preview
   let reader = new FileReader();
   reader.readAsDataURL(picture);
@@ -37,13 +37,23 @@ export let ProcessPictureModal: FC<processPictureModalProps> = ({
 
   //read data from file
   async function load() {
-    let derivedText = await handleFile(picture);
+    let derivedText = await handleFile(picture, logger);
     setLoaded(false);
     setNewText(derivedText);
   }
   useEffect(() => {
     load();
   }, []);
+
+  //logger function for fileHandler
+  function logger(message: any) {
+    let progress = Math.floor(message.progress * 100);
+    let progressStatus = {
+      status: message.status,
+      progress: progress || 0,
+    };
+    setProgress(progressStatus);
+  }
 
   return (
     <div className="modal">
@@ -73,7 +83,15 @@ export let ProcessPictureModal: FC<processPictureModalProps> = ({
           className="preview Text"
         />
       </div>
-      <div className="progressBarBox">{progress}</div>
+      <div className="progressBarBox">
+        {progress.status}
+        <div className="progressBorder">
+          <div
+            className="progressBar"
+            style={{ width: `${progress.progress}%` }}
+          />
+        </div>
+      </div>
     </div>
   );
 };

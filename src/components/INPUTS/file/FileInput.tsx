@@ -1,25 +1,20 @@
 import React, { FC, useRef, useState } from "react";
 import type { stringSetter } from "src/projectTypes";
-import { misc } from "../ICONS/ICONS";
-import handleFile from "./FileHandler";
+import { misc } from "../../ICONS/ICONS";
+import handleFile from "../FileHandler";
 
 interface fileInputProps {
   text: string;
   setText: stringSetter;
 }
 
-const FileInput: FC<fileInputProps> = ({ text, setText }) => {
+export let FileInput: FC<fileInputProps> = ({ text, setText }) => {
   let inputRef = useRef<HTMLInputElement>(null);
   let [selected, setSelected] = useState("");
   function clear() {
     if (inputRef.current) {
       inputRef.current.value = "";
     }
-  }
-
-  function addNewText(newContent: string) {
-    let temp = text + newContent;
-    setText(temp);
   }
 
   async function handleInput(e: React.ChangeEvent<HTMLInputElement>) {
@@ -40,5 +35,3 @@ const FileInput: FC<fileInputProps> = ({ text, setText }) => {
     </label>
   );
 };
-
-export default FileInput;

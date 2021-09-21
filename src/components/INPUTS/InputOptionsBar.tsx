@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import type { FC } from "react";
-import CameraInput from "./CameraInput";
-import FileInput from "./FileInput";
+import CameraInput from "./camera/CameraInput";
+import { FileInput } from "./file/FileInput";
 import WriteInput from "./WriteInput";
 import type { booleanSetter, stringSetter } from "src/projectTypes";
 
