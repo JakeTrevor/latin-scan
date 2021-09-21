@@ -40,6 +40,7 @@ export let ProcessPictureModal: FC<processPictureModalProps> = ({
     let derivedText = await handleFile(picture, logger);
     setLoaded(false);
     setNewText(derivedText);
+    setProgress({ ...progress, status: "done!" });
   }
   useEffect(() => {
     load();
@@ -84,7 +85,7 @@ export let ProcessPictureModal: FC<processPictureModalProps> = ({
         />
       </div>
       <div className="progressBarBox">
-        {progress.status}
+        <div className="status">{progress.status}</div>
         <div className="progressBorder">
           <div
             className="progressBar"
