@@ -10,7 +10,6 @@ interface fileInputProps {
 
 export let FileInput: FC<fileInputProps> = ({ setText, setFile }) => {
   let inputRef = useRef<HTMLInputElement>(null);
-  let [selected, setSelected] = useState("");
   function clear() {
     if (inputRef.current) {
       inputRef.current.value = "";
@@ -35,7 +34,7 @@ export let FileInput: FC<fileInputProps> = ({ setText, setFile }) => {
   }
 
   return (
-    <label onClick={clear} className={"inputOption " + selected}>
+    <label onClick={clear} className="inputOption">
       <input ref={inputRef} onInput={handleInput} type="file" />
       {misc.TextFileInput}
     </label>
