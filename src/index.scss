@@ -401,6 +401,7 @@ video {
   font-size: small;
   white-space: nowrap;
 }
+
 .status {
   flex: 1;
   margin: 10px;
@@ -417,4 +418,45 @@ video {
   background-color: var(--inputBlue);
   height: 100%;
   border-radius: 5px;
+}
+
+.mobileDeviceWarning {
+  display: none;
+}
+
+@media only screen and (max-width: 768px) {
+  //todo implement this.
+  .mobileDeviceWarning {
+    display: block;
+    width: 80%;
+    border-radius: 5px;
+    text-align: center;
+    box-shadow: 0 1px 4px 0 rgb(0 0 0 / 37%);
+    padding: 5px;
+    background-color: #fafafa;
+    font-size: 12px;
+    line-height: 13px;
+    margin-bottom: 3px;
+  }
+
+  .ScanArea {
+    width: 100%;
+    border-radius: 0;
+  }
+
+  .IOArea {
+    flex-direction: column;
+  }
+
+  .inputArea {
+    margin: 0 0 10px 0;
+    width: 100%;
+    border-bottom: 1px solid rgb(0 0 0 / 10%);
+  }
+  .outputArea {
+    width: 100%;
+  }
+  .outputText {
+    margin: 0;
+  }
 }

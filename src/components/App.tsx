@@ -57,6 +57,10 @@ const App: FC = () => {
             />
           </Route>
         </Switch>
+        <div className="mobileDeviceWarning">
+          This site is not optimised for mobile. for best experience, use on a
+          PC or Laptop
+        </div>
       </div>
     </HashRouter>
   );

@@ -18,9 +18,11 @@ const Selection: FC<SelectionProps> = ({
   meter,
   children,
 }) => {
+  let isMobile = /Mobi|Android/i.test(navigator.userAgent); //dont display for mobile.
+  let DownArrow = isMobile ? null : misc.DownArrow;
   return (
     <div onClick={() => toggleOpen()} className={"scanSelection " + status}>
-      {misc.DownArrow}
+      {DownArrow}
       <div className="outputText">{children}</div>
       <Tooltip tooltip={statusMessage}>
         {meterAndStatusIcons[meter][status]}
