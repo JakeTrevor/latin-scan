@@ -7,28 +7,25 @@ interface camMobileProps {
 }
 
 const CamMobile: FC<camMobileProps> = ({ setFile }) => {
-  let hasCamera: boolean;
-
   function handleInput(e: React.ChangeEvent<HTMLInputElement>) {
     let files = e.target.files;
     if (files) {
       let file = files[0];
-      setFile(file);
+      if (file) setFile(file);
     }
   }
 
   return (
-    <div>
+    <label className="inputOption">
       <input
         type="file"
         name="image"
         accept="image/*"
-        capture="environment"
+        capture="camera"
         onInput={handleInput}
-      >
-        {misc.Camera}
-      </input>
-    </div>
+      />
+      {misc.Camera}
+    </label>
   );
 };
 
