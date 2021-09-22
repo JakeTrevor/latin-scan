@@ -17,25 +17,21 @@ const InputOptionsBar: FC<inputBarProps> = ({
   setCameraOpen,
   setFile,
 }) => {
-  const [camera, setCamera] = useState(<div />);
+  const [camera, setCamera] = useState(<div />); //at first assume no camera
 
   async function detectCamera() {
-    //detect if we are on mobile.
-    let isMobile = /Mobi|Android/i.test(navigator.userAgent);
+    let isMobile = /Mobi|Android/i.test(navigator.userAgent); //dont display for mobile.
 
-    let camElement = isMobile ? (
-      <CamMobile setFile={setFile} />
-    ) : (
-      <CameraInput setCameraOpen={setCameraOpen} />
-    );
-
-    return await navigator.mediaDevices
-      .getUserMedia({ video: true })
-      .then((stream) => {
-        if (stream.getVideoTracks().length > 0) {
-          setCamera(camElement);
-        }
-      });
+    let camElement = <CameraInput setCameraOpen={setCameraOpen} />;
+    if (!isMobile) {
+      await navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then((stream) => {
+          if (stream.getVideoTracks().length > 0) {
+            setCamera(camElement);
+          }
+        });
+    }
   }
 
   useEffect(() => {
