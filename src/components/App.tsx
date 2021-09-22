@@ -42,7 +42,6 @@ const App: FC = () => {
           </Route>
           <Route path="">
             <InputOptionsBar
-              text={text}
               setText={setText}
               setCameraOpen={setCameraModalOpen}
               setFile={(file: File) => {

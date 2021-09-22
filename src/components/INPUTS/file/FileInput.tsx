@@ -1,5 +1,5 @@
 import React, { FC, useRef, useState } from "react";
-import type { fileSetter, stringSetter } from "src/projectTypes";
+import type { stringSetter } from "src/projectTypes";
 import { misc } from "../../ICONS/ICONS";
 import handleFile from "../FileHandler";
 

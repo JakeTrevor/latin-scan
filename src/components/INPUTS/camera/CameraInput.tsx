@@ -8,8 +8,6 @@ interface cameraInputProps {
 }
 
 const CameraInput: FC<cameraInputProps> = ({ setCameraOpen }) => {
-  let hasCamera: boolean;
-
   return (
     <div>
       <button onClick={() => setCameraOpen(true)} className={"inputOption"}>

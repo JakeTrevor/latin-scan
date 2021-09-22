@@ -4,16 +4,15 @@ import CameraInput from "./camera/CameraInput";
 import { FileInput } from "./file/FileInput";
 import WriteInput from "./WriteInput";
 import type { booleanSetter, fileSetter, stringSetter } from "src/projectTypes";
+import CamMobile from "./camera/CamMobile";
 
 interface inputBarProps {
-  text: string;
   setText: stringSetter;
   setCameraOpen: booleanSetter;
   setFile: CallableFunction;
 }
 
 const InputOptionsBar: FC<inputBarProps> = ({
-  text,
   setText,
   setCameraOpen,
   setFile,
@@ -21,14 +20,24 @@ const InputOptionsBar: FC<inputBarProps> = ({
   const [camera, setCamera] = useState(<div />);
 
   async function detectCamera() {
+    //detect if we are on mobile.
+    let isMobile = /Mobi|Android/i.test(navigator.userAgent);
+
+    let camElement = isMobile ? (
+      <CamMobile setFile={setFile} />
+    ) : (
+      <CameraInput setCameraOpen={setCameraOpen} />
+    );
+
     return await navigator.mediaDevices
       .getUserMedia({ video: true })
       .then((stream) => {
         if (stream.getVideoTracks().length > 0) {
-          setCamera(<CameraInput setCameraOpen={setCameraOpen} />);
+          setCamera(camElement);
         }
       });
   }
+
   useEffect(() => {
     detectCamera();
   });
